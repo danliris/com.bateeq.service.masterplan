@@ -15,9 +15,8 @@ namespace Com.Bateeq.Service.Masterplan.Lib
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
-
             modelBuilder.ApplyConfiguration(new CommodityConfig());
+            base.OnModelCreating(modelBuilder);
         }
     }
 }
