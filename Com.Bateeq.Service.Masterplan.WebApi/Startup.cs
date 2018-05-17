@@ -5,6 +5,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Com.Bateeq.Service.Masterplan.Lib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using Com.Bateeq.Service.Masterplan.Lib.Services;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Serialization;
+using IdentityServer4.AccessTokenValidation;
 
 namespace Com.Bateeq.Service.Masterplan.WebApi
 {
@@ -31,7 +36,44 @@ namespace Com.Bateeq.Service.Masterplan.WebApi
                     options.AssumeDefaultVersionWhenUnspecified = true;
                     options.DefaultApiVersion = new ApiVersion(1, 0);
                 });
-            services.AddMvc();
+
+            services
+               .AddTransient<CommodityService>();
+
+            var Secret = Configuration.GetValue<string>("Secret") ?? Configuration["Secret"];
+            var Key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Secret));
+
+            services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateAudience = false,
+                        ValidateIssuer = false,
+                        ValidateLifetime = false,
+                        IssuerSigningKey = Key
+                    };
+                });
+
+            services
+                .AddMvcCore()
+                .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver())
+                .AddAuthorization(options =>
+                {
+                    options.AddPolicy("service.core.read", (policyBuilder) =>
+                    {
+                        policyBuilder.RequireClaim("scope", "service.core.read");
+                    });
+                })
+                .AddJsonFormatters();
+
+            services.AddCors(options => options.AddPolicy("MerchandiserPolicy", builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader()
+                       .WithExposedHeaders("Content-Disposition", "api-version", "content-length", "content-md5", "content-type", "date", "request-id", "response-time");
+            }));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
