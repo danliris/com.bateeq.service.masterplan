@@ -67,7 +67,7 @@ namespace Com.Bateeq.Service.Masterplan.WebApi
                 })
                 .AddJsonFormatters();
 
-            services.AddCors(options => options.AddPolicy("MerchandiserPolicy", builder =>
+            services.AddCors(options => options.AddPolicy("MasterplanPolicy", builder =>
             {
                 builder.AllowAnyOrigin()
                        .AllowAnyMethod()
@@ -84,6 +84,14 @@ namespace Com.Bateeq.Service.Masterplan.WebApi
                 app.UseDeveloperExceptionPage();
             }
 
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var context = serviceScope.ServiceProvider.GetService<MasterplanDbContext>();
+                context.Database.Migrate();
+            }
+
+            app.UseAuthentication();
+            app.UseCors("MasterplanPolicy");
             app.UseMvc();
         }
     }
