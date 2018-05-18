@@ -7,7 +7,6 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.Services
 {
@@ -54,12 +53,6 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Services
 
         public override void OnCreating(Commodity model)
         {
-            do
-            {
-                model.Code = Code.Generate();
-            }
-            while (this.DbSet.Any(d => d.Code.Equals(model.Code)));
-
             base.OnCreating(model);
         }
 

@@ -1,8 +1,6 @@
 ﻿using Com.Moonlay.Models;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.Models
 {

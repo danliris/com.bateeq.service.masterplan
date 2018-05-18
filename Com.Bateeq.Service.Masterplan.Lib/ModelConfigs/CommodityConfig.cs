@@ -11,6 +11,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.ModelConfigs
     {
         public void Configure(EntityTypeBuilder<Commodity> builder)
         {
+            builder.HasIndex(c => c.Code).IsUnique(true);
             builder.Property(c => c.Code).HasMaxLength(100);
             builder.Property(c => c.Name).HasMaxLength(255);
         }
