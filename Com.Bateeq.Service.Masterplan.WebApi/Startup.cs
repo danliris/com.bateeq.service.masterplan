@@ -10,6 +10,7 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
 using IdentityServer4.AccessTokenValidation;
+using Com.Bateeq.Service.Masterplan.Lib.BusinessLogic;
 
 namespace Com.Bateeq.Service.Masterplan.WebApi
 {
@@ -38,7 +39,9 @@ namespace Com.Bateeq.Service.Masterplan.WebApi
                 });
 
             services
-               .AddTransient<CommodityService>();
+               .AddTransient<CommodityService>()
+               .AddTransient<SectionBaseLogic>()
+               .AddTransient<SectionLogic>();
 
             var Secret = Configuration.GetValue<string>("Secret") ?? Configuration["Secret"];
             var Key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Secret));
