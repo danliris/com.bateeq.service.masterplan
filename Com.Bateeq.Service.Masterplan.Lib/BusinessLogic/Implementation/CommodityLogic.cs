@@ -13,16 +13,16 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation
 {
-    public class SectionLogic : StandardEntityService<MasterplanDbContext, Section>, IBusiness<Section, SectionViewModel>
+    public class CommodityLogic : StandardEntityService<MasterplanDbContext, Commodity> , IBusiness<Commodity, CommodityViewModel>
     {
         public string Username { get; set; }
         public string Token { get; set; }
 
-        public SectionLogic(IServiceProvider provider) : base(provider)
+        public CommodityLogic(IServiceProvider provider) : base(provider)
         {
         }
 
-        public IQueryable<Section> ConfigureFilter(IQueryable<Section> Query, Dictionary<string, object> FilterDictionary)
+        public IQueryable<Commodity> ConfigureFilter(IQueryable<Commodity> Query, Dictionary<string, object> FilterDictionary)
         {
             if (FilterDictionary != null && !FilterDictionary.Count.Equals(0))
             {
@@ -38,7 +38,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation
             return Query;
         }
 
-        public IQueryable<Section> ConfigureOrder(IQueryable<Section> Query, Dictionary<string, string> OrderDictionary)
+        public IQueryable<Commodity> ConfigureOrder(IQueryable<Commodity> Query, Dictionary<string, string> OrderDictionary)
         {
             /* Default Order */
             if (OrderDictionary.Count.Equals(0))
@@ -63,7 +63,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation
             return Query;
         }
 
-        public IQueryable<Section> ConfigureSearch(IQueryable<Section> Query, List<string> SearchAttributes, string Keyword)
+        public IQueryable<Commodity> ConfigureSearch(IQueryable<Commodity> Query, List<string> SearchAttributes, string Keyword)
         {
             if (Keyword != null)
             {
@@ -72,23 +72,23 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation
             return Query;
         }
 
-        public Section MapToModel(SectionViewModel viewModel)
+        public Commodity MapToModel(CommodityViewModel viewModel)
         {
-            Section model = new Section();
-            PropertyCopier<SectionViewModel, Section>.Copy(viewModel, model);
+            Commodity model = new Commodity();
+            PropertyCopier<CommodityViewModel, Commodity>.Copy(viewModel, model);
             return model;
         }
 
-        public SectionViewModel MapToViewModel(Section model)
+        public CommodityViewModel MapToViewModel(Commodity model)
         {
-            SectionViewModel viewModel = new SectionViewModel();
-            PropertyCopier<Section, SectionViewModel>.Copy(model, viewModel);
+            CommodityViewModel viewModel = new CommodityViewModel();
+            PropertyCopier<Commodity, CommodityViewModel>.Copy(model, viewModel);
             return viewModel;
         }
 
-        public Tuple<List<Section>, int, Dictionary<string, string>, List<string>> ReadModel(int Page, int Size, string Order, List<string> Select, string Keyword, string Filter)
+        public Tuple<List<Commodity>, int, Dictionary<string, string>, List<string>> ReadModel(int Page, int Size, string Order, List<string> Select, string Keyword, string Filter)
         {
-            IQueryable<Section> Query = this.DbContext.Sections;
+            IQueryable<Commodity> Query = this.DbContext.Commodities;
 
             List<string> SearchAttributes = new List<string>()
                 {
@@ -101,28 +101,27 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation
 
             List<string> SelectedFields = new List<string>()
                 {
-                    "Id", "Code", "Name", "Remark"
+                    "Id", "Code", "Name"
                 };
             Query = Query
-                .Select(field => new Section
+                .Select(field => new Commodity
                 {
                     Id = field.Id,
                     Code = field.Code,
-                    Name = field.Name,
-                    Remark = field.Remark
+                    Name = field.Name
                 });
 
             Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Order);
             Query = ConfigureOrder(Query, OrderDictionary);
 
-            Pageable<Section> pageable = new Pageable<Section>(Query, Page - 1, Size);
-            List<Section> Data = pageable.Data.ToList<Section>();
+            Pageable<Commodity> pageable = new Pageable<Commodity>(Query, Page - 1, Size);
+            List<Commodity> Data = pageable.Data.ToList<Commodity>();
             int TotalData = pageable.TotalCount;
 
             return Tuple.Create(Data, TotalData, OrderDictionary, SelectedFields);
         }
 
-        public void Validate(Section model)
+        public void Validate(Commodity model)
         {
             List<ValidationResult> validationResults = new List<ValidationResult>();
             ValidationContext validationContext = new ValidationContext(model, this.ServiceProvider, null);
@@ -131,7 +130,16 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation
                 throw new ServiceValidationExeption(validationContext, validationResults);
         }
 
-        public override void OnCreating(Section model)
+        public void Validate(CommodityViewModel viewModel)
+        {
+            List<ValidationResult> validationResults = new List<ValidationResult>();
+            ValidationContext validationContext = new ValidationContext(viewModel, this.ServiceProvider, null);
+
+            if (!Validator.TryValidateObject(viewModel, validationContext, validationResults, true))
+                throw new ServiceValidationExeption(validationContext, validationResults);
+        }
+
+        public override void OnCreating(Commodity model)
         {
             base.OnCreating(model);
             model._CreatedAgent = "masterplan-service";
@@ -140,27 +148,18 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation
             model._LastModifiedBy = this.Username;
         }
 
-        public override void OnUpdating(int id, Section model)
+        public override void OnUpdating(int id, Commodity model)
         {
             base.OnUpdating(id, model);
             model._LastModifiedAgent = "masterplan-service";
             model._LastModifiedBy = this.Username;
         }
 
-        public override void OnDeleting(Section model)
+        public override void OnDeleting(Commodity model)
         {
             base.OnDeleting(model);
             model._DeletedAgent = "masterplan-service";
             model._DeletedBy = this.Username;
-        }
-
-        public void Validate(SectionViewModel viewModel)
-        {
-            List<ValidationResult> validationResults = new List<ValidationResult>();
-            ValidationContext validationContext = new ValidationContext(viewModel, this.ServiceProvider, null);
-
-            if (!Validator.TryValidateObject(viewModel, validationContext, validationResults, true))
-                throw new ServiceValidationExeption(validationContext, validationResults);
         }
     }
 }
