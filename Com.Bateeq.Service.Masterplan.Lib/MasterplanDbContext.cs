@@ -12,10 +12,12 @@ namespace Com.Bateeq.Service.Masterplan.Lib
         }
 
         public DbSet<Commodity> Commodities { get; set; }
+        public DbSet<Section> Sections { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new CommodityConfig());
+            modelBuilder.ApplyConfiguration(new SectionConfig());
             base.OnModelCreating(modelBuilder);
         }
     }
