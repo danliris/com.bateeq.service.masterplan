@@ -11,6 +11,7 @@ using Com.Moonlay.NetCore.Lib;
 using System.Linq.Dynamic.Core;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation
 {
@@ -134,25 +135,25 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation
 
         public override void OnCreating(Section model)
         {
+            base.OnCreating(model);
             model._CreatedAgent = "masterplan-service";
             model._CreatedBy = this.Username;
             model._LastModifiedAgent = "masterplan-service";
             model._LastModifiedBy = this.Username;
-            base.OnCreating(model);
         }
 
         public override void OnUpdating(int id, Section model)
         {
+            base.OnUpdating(id, model);
             model._LastModifiedAgent = "masterplan-service";
             model._LastModifiedBy = this.Username;
-            base.OnUpdating(id, model);
         }
 
         public override void OnDeleting(Section model)
         {
+            base.OnDeleting(model);
             model._DeletedAgent = "masterplan-service";
             model._DeletedBy = this.Username;
-            base.OnDeleting(model);
         }
 
         public void Validate(SectionViewModel viewModel)

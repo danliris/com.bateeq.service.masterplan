@@ -1,6 +1,7 @@
 ﻿using Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation;
 using Com.Bateeq.Service.Masterplan.Lib.Models;
 using Com.Bateeq.Service.Masterplan.Lib.ViewModels;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
@@ -56,8 +57,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Facades
 
         public async Task<int> UpdateModel(int id, Section model)
         {
-            model._LastModifiedAgent = "masterplan-service";
-            model._LastModifiedBy = this.Username;
+            sectionLogic.Username = Username;
             return await sectionLogic.UpdateAsync(id, model);
         }
 
@@ -68,15 +68,13 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Facades
 
         public async Task<int> CreateModel(Section model)
         {
-            model._CreatedAgent = "masterplan-service";
-            model._CreatedBy = this.Username;
-            model._LastModifiedAgent = "masterplan-service";
-            model._LastModifiedBy = this.Username;
+            sectionLogic.Username = Username;
             return await sectionLogic.CreateAsync(model);
         }
 
         public async Task<int> DeleteModel(int id)
         {
+            sectionLogic.Username = Username;
             return await sectionLogic.DeleteAsync(id);
         }
     }
