@@ -1,7 +1,6 @@
 ﻿using Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation;
 using Com.Bateeq.Service.Masterplan.Lib.Models;
 using Com.Bateeq.Service.Masterplan.Lib.ViewModels;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
