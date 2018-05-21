@@ -22,11 +22,6 @@ namespace Com.Bateeq.Service.Masterplan.Lib.ViewModels
             {
                 yield return new ValidationResult("Section Name must be not empty", new List<string> { "Name" });
             }
-
-            if (string.IsNullOrWhiteSpace(this.Remark))
-            {
-                yield return new ValidationResult("Section Information must be not empty", new List<string> { "Remark" });
-            }
         }
     }
 }

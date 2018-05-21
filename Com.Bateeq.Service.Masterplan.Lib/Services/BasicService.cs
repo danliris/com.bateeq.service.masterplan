@@ -48,11 +48,11 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Services
 
         public override void OnCreating(TModel model)
         {
+            base.OnCreating(model);
             model._CreatedAgent = "masterplan-service";
             model._CreatedBy = this.Username;
             model._LastModifiedAgent = "masterplan-service";
             model._LastModifiedBy = this.Username;
-            base.OnCreating(model);
         }
 
         public virtual async Task<TModel> ReadModelById(int id)
