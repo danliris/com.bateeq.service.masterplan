@@ -22,11 +22,13 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation
         public string Token { get; set; }
         private DbSet<Section> dbSet;
         private MasterplanDbContext dbContext;
+        private IServiceProvider provider;
 
         public SectionLogic(IServiceProvider provider, MasterplanDbContext dbContext)
         {
             this.dbContext = dbContext;
             this.dbSet = dbContext.Sections;
+            this.provider = provider;
         }
 
         public IQueryable<Section> ConfigureFilter(IQueryable<Section> Query, Dictionary<string, object> FilterDictionary)
@@ -132,7 +134,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation
         public void Validate(Section model)
         {
             List<ValidationResult> validationResults = new List<ValidationResult>();
-            ValidationContext validationContext = new ValidationContext(model, null);
+            ValidationContext validationContext = new ValidationContext(model, this.provider, null);
 
             if (!Validator.TryValidateObject(model, validationContext, validationResults, true))
                 throw new ServiceValidationExeption(validationContext, validationResults);
@@ -141,7 +143,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation
         public void Validate(SectionViewModel viewModel)
         {
             List<ValidationResult> validationResults = new List<ValidationResult>();
-            ValidationContext validationContext = new ValidationContext(viewModel, null);
+            ValidationContext validationContext = new ValidationContext(viewModel, this.provider, null);
 
             if (!Validator.TryValidateObject(viewModel, validationContext, validationResults, true))
                 throw new ServiceValidationExeption(validationContext, validationResults);
