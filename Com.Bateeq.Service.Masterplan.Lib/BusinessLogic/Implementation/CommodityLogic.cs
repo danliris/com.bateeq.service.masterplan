@@ -10,16 +10,23 @@ using Newtonsoft.Json;
 using Com.Moonlay.NetCore.Lib;
 using System.Linq.Dynamic.Core;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Com.Moonlay.Models;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation
 {
-    public class CommodityLogic : StandardEntityService<MasterplanDbContext, Commodity> , IBusiness<Commodity, CommodityViewModel>
+    public class CommodityLogic : IBusiness<Commodity, CommodityViewModel>
     {
         public string Username { get; set; }
         public string Token { get; set; }
+        private DbSet<Commodity> dbSet;
+        private MasterplanDbContext dbContext;
 
-        public CommodityLogic(IServiceProvider provider) : base(provider)
+        public CommodityLogic(IServiceProvider provider, MasterplanDbContext dbContext)
         {
+            this.dbContext = dbContext;
+            this.dbSet = dbContext.Commodities;
         }
 
         public IQueryable<Commodity> ConfigureFilter(IQueryable<Commodity> Query, Dictionary<string, object> FilterDictionary)
@@ -43,9 +50,9 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation
             /* Default Order */
             if (OrderDictionary.Count.Equals(0))
             {
-                OrderDictionary.Add("_LastModifiedUtc", General.DESCENDING);
+                OrderDictionary.Add("LastModifiedUtc", General.DESCENDING);
 
-                Query = Query.OrderByDescending(b => b._LastModifiedUtc);
+                Query = Query.OrderByDescending(b => b.LastModifiedUtc);
             }
             /* Custom Order */
             else
@@ -88,7 +95,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation
 
         public Tuple<List<Commodity>, int, Dictionary<string, string>, List<string>> ReadModel(int Page, int Size, string Order, List<string> Select, string Keyword, string Filter)
         {
-            IQueryable<Commodity> Query = this.DbContext.Commodities;
+            IQueryable<Commodity> Query = this.dbSet;
 
             List<string> SearchAttributes = new List<string>()
                 {
@@ -124,7 +131,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation
         public void Validate(Commodity model)
         {
             List<ValidationResult> validationResults = new List<ValidationResult>();
-            ValidationContext validationContext = new ValidationContext(model, this.ServiceProvider, null);
+            ValidationContext validationContext = new ValidationContext(model, null);
 
             if (!Validator.TryValidateObject(model, validationContext, validationResults, true))
                 throw new ServiceValidationExeption(validationContext, validationResults);
@@ -133,33 +140,50 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation
         public void Validate(CommodityViewModel viewModel)
         {
             List<ValidationResult> validationResults = new List<ValidationResult>();
-            ValidationContext validationContext = new ValidationContext(viewModel, this.ServiceProvider, null);
+            ValidationContext validationContext = new ValidationContext(viewModel, null);
 
             if (!Validator.TryValidateObject(viewModel, validationContext, validationResults, true))
                 throw new ServiceValidationExeption(validationContext, validationResults);
         }
 
-        public override void OnCreating(Commodity model)
+        public async Task<Commodity> GetAsync(int id)
         {
-            base.OnCreating(model);
-            model._CreatedAgent = "masterplan-service";
-            model._CreatedBy = this.Username;
-            model._LastModifiedAgent = "masterplan-service";
-            model._LastModifiedBy = this.Username;
+            return await dbSet.FindAsync(id);
         }
 
-        public override void OnUpdating(int id, Commodity model)
+        public async Task<int> UpdateAsync(int id, Commodity model)
         {
-            base.OnUpdating(id, model);
-            model._LastModifiedAgent = "masterplan-service";
-            model._LastModifiedBy = this.Username;
+            EntityExtension.FlagForUpdate(model, this.Username, "masterplan-service");
+            dbContext.Update(model);
+            return await dbContext.SaveChangesAsync();
         }
 
-        public override void OnDeleting(Commodity model)
+        public bool IsExists(int id)
         {
-            base.OnDeleting(model);
-            model._DeletedAgent = "masterplan-service";
-            model._DeletedBy = this.Username;
+            var commodities = GetAsync(id);
+            var isExist = false;
+
+            if (commodities != null)
+            {
+                isExist = true;
+            }
+
+            return isExist;
+        }
+
+        public async Task<int> CreateAsync(Commodity model)
+        {
+            EntityExtension.FlagForCreate(model, this.Username, "masterplan-service");
+            dbContext.Add(model);
+            return await dbContext.SaveChangesAsync();
+        }
+
+        public async Task<int> DeleteAsync(int id)
+        {
+            var model = await GetAsync(id);
+            EntityExtension.FlagForDelete(model, this.Username, "masterplan-service", true);
+            dbContext.Update(model);
+            return await dbContext.SaveChangesAsync();
         }
     }
 }

@@ -1,11 +1,11 @@
 ﻿using Com.Bateeq.Service.Masterplan.Lib.ModelConfigs;
 using Com.Bateeq.Service.Masterplan.Lib.Models;
-using Com.Moonlay.EntityFrameworkCore;
+using Com.Moonlay.Data.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Com.Bateeq.Service.Masterplan.Lib
 {
-    public class MasterplanDbContext : BaseDbContext
+    public class MasterplanDbContext : StandardDbContext
     {
         public MasterplanDbContext(DbContextOptions<MasterplanDbContext> options) : base(options)
         {

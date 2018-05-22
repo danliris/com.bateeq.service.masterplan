@@ -17,5 +17,10 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic
         TModel MapToModel(TViewModel viewModel);
         void Validate(TModel model);
         void Validate(TViewModel viewModel);
+        Task<TModel> GetAsync(int id);
+        Task<int> UpdateAsync(int id, TModel model);
+        bool IsExists(int id);
+        Task<int> CreateAsync(TModel model);
+        Task<int> DeleteAsync(int id);
     }
 }
