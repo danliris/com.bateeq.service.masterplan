@@ -14,11 +14,12 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Facades
         private CommodityLogic commodityLogic;
         public string Username { get; set; }
         public string Token { get; set; }
+        private MasterplanDbContext dbContext;
 
-
-        public CommodityFacade(IServiceProvider provider)
+        public CommodityFacade(IServiceProvider provider, MasterplanDbContext dbContext)
         {
-            commodityLogic = new CommodityLogic(provider);
+            commodityLogic = new CommodityLogic(provider, dbContext);
+            this.dbContext = dbContext;
         }
 
         public Tuple<List<Commodity>, int, Dictionary<string, string>, List<string>> ReadModel(int Page, int Size, string Order, List<string> Select, string Keyword, string Filter)
@@ -53,7 +54,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Facades
 
         public IDbContextTransaction beginTransaction()
         {
-            return commodityLogic.DbContext.Database.BeginTransaction();
+            return dbContext.Database.BeginTransaction();
         }
 
         public async Task<int> UpdateModel(int id, Commodity model)

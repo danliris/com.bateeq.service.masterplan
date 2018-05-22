@@ -17,7 +17,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Models
             MasterplanDbContext dbContext = (MasterplanDbContext)validationContext.GetService(typeof(MasterplanDbContext));
 
 
-            if (dbContext.Sections.Count(p => p._IsDeleted.Equals(false) && p.Id != this.Id && p.Code.Equals(this.Code)) > 0)
+            if (dbContext.Sections.Count(p => p.IsDeleted.Equals(false) && p.Id != this.Id && p.Code.Equals(this.Code)) > 0)
             {
                 yield return new ValidationResult($"Section Code with {this.Code} is already exists", new List<string> { "Code" });
             }

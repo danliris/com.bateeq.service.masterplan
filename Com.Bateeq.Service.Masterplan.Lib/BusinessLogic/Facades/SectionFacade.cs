@@ -13,10 +13,12 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Facades
         private SectionLogic sectionLogic;
         public string Username { get; set; }
         public string Token { get; set; }
+        private MasterplanDbContext dbContext;
 
-        public SectionFacade(IServiceProvider provider)
+        public SectionFacade(IServiceProvider provider, MasterplanDbContext dbContext)
         {
-            sectionLogic = new SectionLogic(provider);
+            sectionLogic = new SectionLogic(provider, dbContext);
+            this.dbContext = dbContext;
         }
 
         public Tuple<List<Section>, int, Dictionary<string, string>, List<string>> ReadModel(int Page, int Size, string Order, List<string> Select, string Keyword, string Filter)
@@ -51,7 +53,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Facades
 
         public IDbContextTransaction beginTransaction()
         {
-            return sectionLogic.DbContext.Database.BeginTransaction();
+            return dbContext.Database.BeginTransaction();
         }
 
         public async Task<int> UpdateModel(int id, Section model)
