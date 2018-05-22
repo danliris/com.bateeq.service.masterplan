@@ -10,28 +10,28 @@ using Newtonsoft.Json;
 using Com.Moonlay.NetCore.Lib;
 using System.Linq.Dynamic.Core;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Com.Moonlay.Models;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation
 {
-    public class SectionLogic : IBusiness<Section, SectionViewModel>
+    public class CommodityLogic : IBusiness<Commodity, CommodityViewModel>
     {
         public string Username { get; set; }
         public string Token { get; set; }
-        private DbSet<Section> dbSet;
+        private DbSet<Commodity> dbSet;
         private MasterplanDbContext dbContext;
         private IServiceProvider provider;
 
-        public SectionLogic(IServiceProvider provider, MasterplanDbContext dbContext)
+        public CommodityLogic(IServiceProvider provider, MasterplanDbContext dbContext)
         {
             this.dbContext = dbContext;
-            this.dbSet = dbContext.Sections;
+            this.dbSet = dbContext.Commodities;
             this.provider = provider;
         }
 
-        public IQueryable<Section> ConfigureFilter(IQueryable<Section> Query, Dictionary<string, object> FilterDictionary)
+        public IQueryable<Commodity> ConfigureFilter(IQueryable<Commodity> Query, Dictionary<string, object> FilterDictionary)
         {
             if (FilterDictionary != null && !FilterDictionary.Count.Equals(0))
             {
@@ -47,7 +47,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation
             return Query;
         }
 
-        public IQueryable<Section> ConfigureOrder(IQueryable<Section> Query, Dictionary<string, string> OrderDictionary)
+        public IQueryable<Commodity> ConfigureOrder(IQueryable<Commodity> Query, Dictionary<string, string> OrderDictionary)
         {
             /* Default Order */
             if (OrderDictionary.Count.Equals(0))
@@ -72,7 +72,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation
             return Query;
         }
 
-        public IQueryable<Section> ConfigureSearch(IQueryable<Section> Query, List<string> SearchAttributes, string Keyword)
+        public IQueryable<Commodity> ConfigureSearch(IQueryable<Commodity> Query, List<string> SearchAttributes, string Keyword)
         {
             if (Keyword != null)
             {
@@ -81,23 +81,23 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation
             return Query;
         }
 
-        public Section MapToModel(SectionViewModel viewModel)
+        public Commodity MapToModel(CommodityViewModel viewModel)
         {
-            Section model = new Section();
-            PropertyCopier<SectionViewModel, Section>.Copy(viewModel, model);
+            Commodity model = new Commodity();
+            PropertyCopier<CommodityViewModel, Commodity>.Copy(viewModel, model);
             return model;
         }
 
-        public SectionViewModel MapToViewModel(Section model)
+        public CommodityViewModel MapToViewModel(Commodity model)
         {
-            SectionViewModel viewModel = new SectionViewModel();
-            PropertyCopier<Section, SectionViewModel>.Copy(model, viewModel);
+            CommodityViewModel viewModel = new CommodityViewModel();
+            PropertyCopier<Commodity, CommodityViewModel>.Copy(model, viewModel);
             return viewModel;
         }
 
-        public Tuple<List<Section>, int, Dictionary<string, string>, List<string>> ReadModel(int Page, int Size, string Order, List<string> Select, string Keyword, string Filter)
+        public Tuple<List<Commodity>, int, Dictionary<string, string>, List<string>> ReadModel(int Page, int Size, string Order, List<string> Select, string Keyword, string Filter)
         {
-            IQueryable<Section> Query = this.dbSet;
+            IQueryable<Commodity> Query = this.dbSet;
 
             List<string> SearchAttributes = new List<string>()
                 {
@@ -110,37 +110,36 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation
 
             List<string> SelectedFields = new List<string>()
                 {
-                    "Id", "Code", "Name", "Remark"
+                    "Id", "Code", "Name"
                 };
             Query = Query
-                .Select(field => new Section
+                .Select(field => new Commodity
                 {
                     Id = field.Id,
                     Code = field.Code,
-                    Name = field.Name,
-                    Remark = field.Remark
+                    Name = field.Name
                 });
 
             Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Order);
             Query = ConfigureOrder(Query, OrderDictionary);
 
-            Pageable<Section> pageable = new Pageable<Section>(Query, Page - 1, Size);
-            List<Section> Data = pageable.Data.ToList<Section>();
+            Pageable<Commodity> pageable = new Pageable<Commodity>(Query, Page - 1, Size);
+            List<Commodity> Data = pageable.Data.ToList<Commodity>();
             int TotalData = pageable.TotalCount;
 
             return Tuple.Create(Data, TotalData, OrderDictionary, SelectedFields);
         }
 
-        public void Validate(Section model)
+        public void Validate(Commodity model)
         {
             List<ValidationResult> validationResults = new List<ValidationResult>();
-            ValidationContext validationContext = new ValidationContext(model, this.provider, null);
+            ValidationContext validationContext = new ValidationContext(model, this.provider ,null);
 
             if (!Validator.TryValidateObject(model, validationContext, validationResults, true))
                 throw new ServiceValidationExeption(validationContext, validationResults);
         }
 
-        public void Validate(SectionViewModel viewModel)
+        public void Validate(CommodityViewModel viewModel)
         {
             List<ValidationResult> validationResults = new List<ValidationResult>();
             ValidationContext validationContext = new ValidationContext(viewModel, this.provider, null);
@@ -149,24 +148,24 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation
                 throw new ServiceValidationExeption(validationContext, validationResults);
         }
 
-        public async Task<Section> GetAsync(int id)
+        public async Task<Commodity> GetAsync(int id)
         {
             return await dbSet.FindAsync(id);
         }
 
-        public async Task<int> UpdateAsync(int id, Section model)
+        public async Task<int> UpdateAsync(int id, Commodity model)
         {
             EntityExtension.FlagForUpdate(model, this.Username, "masterplan-service");
             dbContext.Update(model);
             return await dbContext.SaveChangesAsync();
         }
 
-        public bool IsExists(int Id)
+        public bool IsExists(int id)
         {
-            var section = GetAsync(Id);
+            var commodities = GetAsync(id);
             var isExist = false;
 
-            if (section != null)
+            if (commodities != null)
             {
                 isExist = true;
             }
@@ -174,7 +173,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation
             return isExist;
         }
 
-        public async Task<int> CreateAsync(Section model)
+        public async Task<int> CreateAsync(Commodity model)
         {
             EntityExtension.FlagForCreate(model, this.Username, "masterplan-service");
             dbContext.Add(model);

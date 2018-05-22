@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Com.Bateeq.Service.Masterplan.Lib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
-using Com.Bateeq.Service.Masterplan.Lib.Services;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
@@ -39,7 +38,7 @@ namespace Com.Bateeq.Service.Masterplan.WebApi
                 });
 
             services
-               .AddTransient<CommodityService>()
+               .AddTransient<CommodityFacade>()
                .AddTransient<SectionFacade>();
 
             var Secret = Configuration.GetValue<string>("Secret") ?? Configuration["Secret"];

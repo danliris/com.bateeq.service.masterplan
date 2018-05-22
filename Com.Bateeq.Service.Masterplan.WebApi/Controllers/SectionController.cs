@@ -170,7 +170,6 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Controllers
             {
                 sectionFacade.Token = Request.Headers["Authorization"].First().Replace("Bearer ", "");
                 sectionFacade.Validate(ViewModel);
-
                 sectionFacade.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
 
                 Section model = sectionFacade.MapToModel(ViewModel);

@@ -7,13 +7,13 @@ namespace Com.Bateeq.Service.Masterplan.Lib.ViewModels
     public class BasicViewModel
     {
         public int Id { get; set; }
-        public bool _IsDeleted { get; set; }
+        public bool IsDeleted { get; set; }
         public bool Active { get; set; }
-        public DateTime _CreatedUtc { get; set; }
-        public string _CreatedBy { get; set; }
-        public string _CreatedAgent { get; set; }
-        public DateTime _LastModifiedUtc { get; set; }
-        public string _LastModifiedBy { get; set; }
-        public string _LastModifiedAgent { get; set; }
+        public DateTime CreatedUtc { get; set; }
+        public string CreatedBy { get; set; }
+        public string CreatedAgent { get; set; }
+        public DateTime LastModifiedUtc { get; set; }
+        public string LastModifiedBy { get; set; }
+        public string LastModifiedAgent { get; set; }
     }
 }
