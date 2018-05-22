@@ -1,13 +1,15 @@
-﻿using System;
+﻿using Com.Moonlay.Models;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic
 {
     public interface IBusiness<TModel, TViewModel>
-        where TModel : class
-        where TViewModel : class
+        where TModel : StandardEntity, IValidatableObject
+        where TViewModel : IValidatableObject
     {
         Tuple<List<TModel>, int, Dictionary<string, string>, List<string>> ReadModel(int Page, int Size, string Order, List<string> Select, string Keyword, string Filter);
         IQueryable<TModel> ConfigureSearch(IQueryable<TModel> Query, List<string> SearchAttributes, string Keyword);
