@@ -96,7 +96,14 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Controllers
                 sectionFacade.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
                 sectionFacade.Token = Request.Headers["Authorization"].First().Replace("Bearer ", "");
 
-                Section model = sectionFacade.MapToModel(ViewModel);
+                Mapper.Initialize(cfg =>
+                {
+                    cfg.CreateMap<StandardEntity, StandardEntity>()
+                       .Include<SectionViewModel, Section>();
+                    cfg.CreateMap<SectionViewModel, Section>();
+                });
+
+                Section model = (Section)Mapper.Map(ViewModel, ViewModel.GetType(), typeof(Commodity));
 
                 if (!ModelState.IsValid)
                 {
