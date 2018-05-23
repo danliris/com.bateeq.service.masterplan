@@ -95,7 +95,14 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Controllers
                 commodityFacade.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
                 commodityFacade.Token = Request.Headers["Authorization"].First().Replace("Bearer ", "");
 
-                Commodity model = commodityFacade.MapToModel(ViewModel);
+                Mapper.Initialize(cfg =>
+                {
+                    cfg.CreateMap<StandardEntity, StandardEntity>()
+                       .Include<CommodityViewModel, Commodity>();
+                    cfg.CreateMap<CommodityViewModel, Commodity>();
+                });
+
+                Commodity model = (Commodity)Mapper.Map(ViewModel, ViewModel.GetType(), typeof(Commodity));
 
                 if (!ModelState.IsValid)
                 {
