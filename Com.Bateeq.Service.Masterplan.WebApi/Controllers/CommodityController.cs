@@ -11,6 +11,8 @@ using System.Linq;
 using Com.Moonlay.NetCore.Lib.Service;
 using Microsoft.EntityFrameworkCore;
 using Com.Bateeq.Service.Masterplan.Lib.Exceptions;
+using AutoMapper;
+using Com.Moonlay.Models;
 
 namespace Com.Bateeq.Service.Masterplan.WebApi.Controllers
 {
@@ -171,7 +173,14 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Controllers
                 commodityFacade.Validate(ViewModel);
                 commodityFacade.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
 
-                Commodity model = commodityFacade.MapToModel(ViewModel);
+                Mapper.Initialize(cfg =>
+                {
+                    cfg.CreateMap<StandardEntity, StandardEntity>()
+                       .Include<CommodityViewModel, Commodity>();
+                    cfg.CreateMap<CommodityViewModel, Commodity>();
+                });
+
+                Commodity model = (Commodity) Mapper.Map(ViewModel, ViewModel.GetType(), typeof(Commodity));
 
                 using (var transaction = commodityFacade.beginTransaction())
                 {
