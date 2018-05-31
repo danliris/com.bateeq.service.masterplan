@@ -12,7 +12,7 @@ using Com.Moonlay.NetCore.Lib.Service;
 using Microsoft.EntityFrameworkCore;
 using Com.Bateeq.Service.Masterplan.Lib.Exceptions;
 using AutoMapper;
-using Com.Moonlay.Models;
+using Com.Bateeq.Service.Masterplan.Lib.Services;
 
 namespace Com.Bateeq.Service.Masterplan.WebApi.Controllers
 {
@@ -20,12 +20,12 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Controllers
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/commodities")]
     [Authorize]
-    public class CommodityController : Controller
+    public class CommodityController : BaseController
     {
         private CommodityFacade commodityFacade;
         private static readonly string ApiVersion = "1.0";
 
-        public CommodityController(CommodityFacade commodityFacade)
+        public CommodityController(IMapper mapper, IdentityService identityService, ValidateService validateService, CommodityFacade commodityFacade) : base(mapper, identityService, validateService)
         {
             this.commodityFacade = commodityFacade;
         }
@@ -95,14 +95,7 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Controllers
                 commodityFacade.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
                 commodityFacade.Token = Request.Headers["Authorization"].First().Replace("Bearer ", "");
 
-                Mapper.Initialize(cfg =>
-                {
-                    cfg.CreateMap<StandardEntity, StandardEntity>()
-                       .Include<CommodityViewModel, Commodity>();
-                    cfg.CreateMap<CommodityViewModel, Commodity>();
-                });
-
-                Commodity model = (Commodity)Mapper.Map(ViewModel, ViewModel.GetType(), typeof(Commodity));
+                Commodity model = mapper.Map<Commodity>(ViewModel);
 
                 if (!ModelState.IsValid)
                 {
@@ -180,14 +173,7 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Controllers
                 commodityFacade.Validate(ViewModel);
                 commodityFacade.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
 
-                Mapper.Initialize(cfg =>
-                {
-                    cfg.CreateMap<StandardEntity, StandardEntity>()
-                       .Include<CommodityViewModel, Commodity>();
-                    cfg.CreateMap<CommodityViewModel, Commodity>();
-                });
-
-                Commodity model = (Commodity) Mapper.Map(ViewModel, ViewModel.GetType(), typeof(Commodity));
+                Commodity model = mapper.Map<Commodity>(ViewModel);
 
                 using (var transaction = commodityFacade.beginTransaction())
                 {

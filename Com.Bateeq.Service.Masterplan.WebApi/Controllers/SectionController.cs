@@ -12,7 +12,7 @@ using Com.Moonlay.NetCore.Lib.Service;
 using Microsoft.EntityFrameworkCore;
 using Com.Bateeq.Service.Masterplan.Lib.Exceptions;
 using AutoMapper;
-using Com.Moonlay.Models;
+using Com.Bateeq.Service.Masterplan.Lib.Services;
 
 namespace Com.Bateeq.Service.Masterplan.WebApi.Controllers
 {
@@ -20,16 +20,15 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Controllers
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/sections")]
     [Authorize]
-    public class SectionController : Controller
+    public class SectionController : BaseController
     {
         private SectionFacade sectionFacade;
         private static readonly string ApiVersion = "1.0";
 
-        public SectionController(SectionFacade sectionFacade)
+        public SectionController(IMapper mapper, IdentityService identityService, ValidateService validateService, SectionFacade sectionFacade) : base(mapper, identityService, validateService)
         {
             this.sectionFacade = sectionFacade;
         }
-
 
         [HttpGet]
         public IActionResult Get(int Page = 1, int Size = 25, string Order = "{}", [Bind(Prefix = "Select[]")]List<string> Select = null, string Keyword = null, string Filter = "{}")
@@ -96,14 +95,7 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Controllers
                 sectionFacade.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
                 sectionFacade.Token = Request.Headers["Authorization"].First().Replace("Bearer ", "");
 
-                Mapper.Initialize(cfg =>
-                {
-                    cfg.CreateMap<StandardEntity, StandardEntity>()
-                       .Include<SectionViewModel, Section>();
-                    cfg.CreateMap<SectionViewModel, Section>();
-                });
-
-                Section model = (Section)Mapper.Map(ViewModel, ViewModel.GetType(), typeof(Commodity));
+                Section model = mapper.Map<Section>(ViewModel);
 
                 if (!ModelState.IsValid)
                 {
@@ -181,14 +173,7 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Controllers
                 sectionFacade.Validate(ViewModel);
                 sectionFacade.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
 
-                Mapper.Initialize(cfg =>
-                {
-                    cfg.CreateMap<StandardEntity, StandardEntity>()
-                       .Include<SectionViewModel, Section>();
-                    cfg.CreateMap<SectionViewModel, Section>();
-                });
-
-                Section model = (Section)Mapper.Map(ViewModel, ViewModel.GetType(), typeof(Commodity));
+                Section model = mapper.Map<Section>(ViewModel);
 
                 using (var transaction = sectionFacade.beginTransaction())
                 {

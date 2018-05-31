@@ -1,11 +1,11 @@
-﻿using Com.Moonlay.Models;
+﻿using Com.Bateeq.Service.Masterplan.Lib.Helpers;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.ViewModels
 {
-    public class CommodityViewModel : StandardEntity, IValidatableObject
+    public class CommodityViewModel : BaseViewModel, IValidatableObject
     {
         public string Code { get; set; }
         public string Name { get; set; }
