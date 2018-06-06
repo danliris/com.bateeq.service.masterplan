@@ -40,12 +40,10 @@ namespace Com.Bateeq.Service.Masterplan.WebApi
                 });
 
             services
-               .AddTransient<CommodityFacade>()
                .AddTransient<SectionFacade>()
                .AddTransient<BookingOrderFacade>();
 
             services
-                .AddTransient<CommodityLogic>()
                 .AddTransient<BookingOrderLogic>();
 
             services

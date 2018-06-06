@@ -10,17 +10,17 @@ namespace Com.Bateeq.Service.Masterplan.Lib
         public MasterplanDbContext(DbContextOptions<MasterplanDbContext> options) : base(options)
         {
         }
-
-        public DbSet<Commodity> Commodities { get; set; }
+        
         public DbSet<Section> Sections { get; set; }
+        public DbSet<WeeklyPlan> WeeklyPlans { get; set; }
+        public DbSet<WeeklyPlanItem> WeeklyPlanItems { get; set; }
         public DbSet<BookingOrder> BookingOrders { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new CommodityConfig());
             modelBuilder.ApplyConfiguration(new SectionConfig());
+            modelBuilder.ApplyConfiguration(new WeeklyPlanConfig());
             modelBuilder.ApplyConfiguration(new BookingOrderConfig());
-
             base.OnModelCreating(modelBuilder);
         }
     }
