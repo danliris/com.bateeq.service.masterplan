@@ -20,13 +20,15 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Controllers
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/sections")]
     [Authorize]
-    public class SectionController : BaseController
+    public class SectionController : Controller
     {
         private SectionFacade sectionFacade;
+        private IMapper mapper;
         private static readonly string ApiVersion = "1.0";
 
-        public SectionController(IMapper mapper, IdentityService identityService, ValidateService validateService, SectionFacade sectionFacade) : base(mapper, identityService, validateService)
+        public SectionController(IMapper mapper, IdentityService identityService, ValidateService validateService, SectionFacade sectionFacade)
         {
+            this.mapper = mapper;
             this.sectionFacade = sectionFacade;
         }
 
