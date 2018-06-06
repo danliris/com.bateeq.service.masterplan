@@ -13,11 +13,14 @@ namespace Com.Bateeq.Service.Masterplan.Lib
 
         public DbSet<Commodity> Commodities { get; set; }
         public DbSet<Section> Sections { get; set; }
+        public DbSet<WeeklyPlan> WeeklyPlans { get; set; }
+        public DbSet<WeeklyPlanItem> WeeklyPlanItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new CommodityConfig());
             modelBuilder.ApplyConfiguration(new SectionConfig());
+            modelBuilder.ApplyConfiguration(new WeeklyPlanConfig());
             base.OnModelCreating(modelBuilder);
         }
     }

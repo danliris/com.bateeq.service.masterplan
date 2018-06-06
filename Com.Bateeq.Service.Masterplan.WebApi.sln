@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2006
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Com.Bateeq.Service.Masterplan.WebApi", "Com.Bateeq.Service.Masterplan.WebApi\Com.Bateeq.Service.Masterplan.WebApi.csproj", "{BE75C8E3-AC26-4FE0-8042-4E760C85E5F4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Com.Bateeq.Service.Masterplan.WebApi", "Com.Bateeq.Service.Masterplan.WebApi\Com.Bateeq.Service.Masterplan.WebApi.csproj", "{BE75C8E3-AC26-4FE0-8042-4E760C85E5F4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Com.Bateeq.Service.Masterplan.Lib", "Com.Bateeq.Service.Masterplan.Lib\Com.Bateeq.Service.Masterplan.Lib.csproj", "{7770A25C-2AA2-427F-BF0F-D746F3E13B80}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Com.Bateeq.Service.Masterplan.Lib", "Com.Bateeq.Service.Masterplan.Lib\Com.Bateeq.Service.Masterplan.Lib.csproj", "{7770A25C-2AA2-427F-BF0F-D746F3E13B80}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

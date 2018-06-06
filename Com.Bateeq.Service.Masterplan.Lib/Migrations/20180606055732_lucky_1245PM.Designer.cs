@@ -11,9 +11,10 @@ using System;
 namespace Com.Bateeq.Service.Masterplan.Lib.Migrations
 {
     [DbContext(typeof(MasterplanDbContext))]
-    partial class MasterplanDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180606055732_lucky_1245PM")]
+    partial class lucky_1245PM
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
