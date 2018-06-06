@@ -1,4 +1,5 @@
-﻿using Com.Bateeq.Service.Masterplan.Lib.Exceptions;
+﻿using AutoMapper;
+using Com.Bateeq.Service.Masterplan.Lib.Exceptions;
 using Com.Moonlay.NetCore.Lib.Service;
 using Newtonsoft.Json;
 using System;
@@ -19,12 +20,8 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Helpers
             AddResponseInformation(Result, ApiVersion, StatusCode, Message);
         }
 
-        public Dictionary<string, object> Ok()
-        {
-            return Result;
-        }
-
-        public Dictionary<string, object> Ok<TModel>(List<TModel> Data, int Page, int Size, int TotalData, int TotalPageData, Dictionary<string, string> Order, List<string> Select)
+        // Version 2
+        public Dictionary<string, object> Ok<TViewModel>(IMapper mapper, List<TViewModel> Data, int Page, int Size, int TotalData, int TotalPageData, Dictionary<string, string> Order, List<string> Select)
         {
             Dictionary<string, object> Info = new Dictionary<string, object>
             {
@@ -44,6 +41,53 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Helpers
             else
             {
                 Result.Add("data", Data);
+            }
+
+            Result.Add("info", Info);
+
+            return Result;
+        }
+
+        public Dictionary<string, object> Ok<TViewModel>(IMapper mapper, TViewModel Data)
+        {
+            Result.Add("data", Data);
+
+            return Result;
+        }
+        //
+
+        public Dictionary<string, object> Ok()
+        {
+            return Result;
+        }
+
+        public Dictionary<string, object> Ok<TModel, TViewModel>(IMapper mapper, List<TModel> Data, int Page, int Size, int TotalData, int TotalPageData, Dictionary<string, string> Order, List<string> Select)
+        {
+            Dictionary<string, object> Info = new Dictionary<string, object>
+            {
+                { "count", TotalPageData },
+                { "page", Page },
+                { "size", Size },
+                { "total", TotalData },
+                { "order", Order }
+            };
+
+            List<TViewModel> DataVM = new List<TViewModel>();
+
+            foreach (TModel d in Data)
+            {
+                DataVM.Add(mapper.Map<TViewModel>(d));
+            }
+
+            if (Select.Count > 0)
+            {
+                var DataObj = DataVM.AsQueryable().Select(string.Concat("new(", string.Join(",", Select), ")"));
+                Result.Add("data", DataObj);
+                Info.Add("select", Select);
+            }
+            else
+            {
+                Result.Add("data", DataVM);
             }
 
             Result.Add("info", Info);
@@ -108,6 +152,13 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Helpers
         public Dictionary<string, object> Ok<TModel, TViewModel>(TModel Data, Func<TModel, TViewModel> MapToViewModel)
         {
             Result.Add("data", MapToViewModel(Data));
+
+            return Result;
+        }
+
+        public Dictionary<string, object> Ok<TModel, TViewModel>(IMapper mapper, TModel Data)
+        {
+            Result.Add("data", mapper.Map<TViewModel>(Data));
 
             return Result;
         }

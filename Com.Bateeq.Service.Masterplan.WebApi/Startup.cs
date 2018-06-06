@@ -12,6 +12,7 @@ using IdentityServer4.AccessTokenValidation;
 using Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Facades;
 using AutoMapper;
 using Com.Bateeq.Service.Masterplan.Lib.Services;
+using Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation;
 
 namespace Com.Bateeq.Service.Masterplan.WebApi
 {
@@ -40,7 +41,12 @@ namespace Com.Bateeq.Service.Masterplan.WebApi
 
             services
                .AddTransient<CommodityFacade>()
-               .AddTransient<SectionFacade>();
+               .AddTransient<SectionFacade>()
+               .AddTransient<BookingOrderFacade>();
+
+            services
+                .AddTransient<CommodityLogic>()
+                .AddTransient<BookingOrderLogic>();
 
             services
                 .AddScoped<IdentityService>()
