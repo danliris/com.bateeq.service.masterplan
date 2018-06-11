@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.Services
 {
-    public class ValidateService
+    public class ValidateService : IValidateService
     {
         private readonly IServiceProvider serviceProvider;
 

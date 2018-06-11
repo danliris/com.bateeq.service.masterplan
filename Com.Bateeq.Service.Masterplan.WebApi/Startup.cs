@@ -40,17 +40,18 @@ namespace Com.Bateeq.Service.Masterplan.WebApi
                 });
 
             services
-               .AddTransient<SectionFacade>()
-               .AddTransient<BookingOrderFacade>()
-               .AddTransient<WeeklyplanFacade>();
+                .AddTransient<ISectionFacade, SectionFacade>()
+                .AddTransient<IBookingOrderFacade, BookingOrderFacade>()
+                .AddTransient<WeeklyplanFacade>();
 
             services
+                .AddTransient<SectionLogic>()
                 .AddTransient<BookingOrderLogic>()
                 .AddTransient<WeeklyPlanLogic>();
 
             services
-                .AddScoped<IdentityService>()
-                .AddScoped<ValidateService>();
+                .AddScoped<IIdentityService, IdentityService>()
+                .AddScoped<IValidateService, ValidateService>();
 
             services.AddAutoMapper();
 
@@ -103,7 +104,7 @@ namespace Com.Bateeq.Service.Masterplan.WebApi
                 var context = serviceScope.ServiceProvider.GetService<MasterplanDbContext>();
                 context.Database.Migrate();
             }
-            
+
             app.UseAuthentication();
             app.UseCors("MasterplanPolicy");
             app.UseMvc();

@@ -6,28 +6,30 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
-using Newtonsoft.Json;
-using Com.Moonlay.NetCore.Lib;
 using System.Linq.Dynamic.Core;
-using Com.Bateeq.Service.Masterplan.Lib.Helpers;
-using Com.Bateeq.Service.Masterplan.Lib.Interfaces;
 using Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation;
+using Com.Bateeq.Service.Masterplan.Lib.Helpers;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Facades
 {
-    public class BookingOrderFacade : IBaseFacade<BookingOrder>
+    public class BookingOrderFacade : IBookingOrderFacade
     {
         private readonly MasterplanDbContext DbContext;
         private readonly DbSet<BookingOrder> DbSet;
-        private IdentityService IdentityService;
+        private IIdentityService IdentityService;
         private BookingOrderLogic BookingOrderLogic;
 
         public BookingOrderFacade(IServiceProvider serviceProvider, MasterplanDbContext dbContext)
         {
             this.DbContext = dbContext;
             this.DbSet = this.DbContext.Set<BookingOrder>();
-            this.IdentityService = serviceProvider.GetService<IdentityService>();
+            this.IdentityService = serviceProvider.GetService<IIdentityService>();
             this.BookingOrderLogic = serviceProvider.GetService<BookingOrderLogic>();
+        }
+
+        public ReadResponse<BookingOrder> Read(int page, int size, string order, List<string> select, string keyword, string filter)
+        {
+            return BookingOrderLogic.ReadModel(page, size, order, select, keyword, filter);
         }
 
         public async Task<int> Create(BookingOrder model)
@@ -41,11 +43,6 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Facades
 
             BookingOrderLogic.CreateModel(model);
             return await DbContext.SaveChangesAsync();
-        }
-        
-        public Tuple<List<BookingOrder>, int, Dictionary<string, string>, List<string>> Read(int page, int size, string order, List<string> select, string keyword, string filter)
-        {
-            return BookingOrderLogic.ReadModel(page, size, order, select, keyword, filter);
         }
 
         public async Task<BookingOrder> ReadById(int id)

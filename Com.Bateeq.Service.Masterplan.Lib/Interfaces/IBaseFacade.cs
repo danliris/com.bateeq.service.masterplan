@@ -1,13 +1,12 @@
-﻿using System;
+﻿using Com.Bateeq.Service.Masterplan.Lib.Helpers;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.Interfaces
 {
     public interface IBaseFacade<TModel>
     {
-        Tuple<List<TModel>, int, Dictionary<string, string>, List<string>> Read(int Page, int Size, string Order, List<string> Select, string Keyword, string Filter);
+        ReadResponse<TModel> Read(int page, int size, string order, List<string> select, string keyword, string filter);
         Task<int> Create(TModel model);
         Task<TModel> ReadById(int id);
         Task<int> Update(int id, TModel model);

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Com.Bateeq.Service.Masterplan.Lib.Exceptions;
+using Com.Bateeq.Service.Masterplan.Lib.Helpers;
 using Com.Bateeq.Service.Masterplan.Lib.Interfaces;
 using Com.Bateeq.Service.Masterplan.Lib.Services;
 using Com.Moonlay.Models;
@@ -10,33 +11,34 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Com.Bateeq.Service.Masterplan.WebApi.Helpers
 {
-    public abstract class BaseController<TModel, TViewModel, TFacade> : Controller
+    public abstract class BaseController<TModel, TViewModel, IFacade> : Controller
         where TModel : StandardEntity, IValidatableObject
-        where TFacade : IBaseFacade<TModel>
+        where IFacade : IBaseFacade<TModel>
     {
+        protected IIdentityService IdentityService;
+        protected readonly IValidateService ValidateService;
+        protected readonly IFacade Facade;
         protected readonly IMapper Mapper;
-        protected readonly IdentityService IdentityService;
-        protected readonly ValidateService ValidateService;
-        protected readonly TFacade Facade;
         protected readonly string ApiVersion;
 
-        public BaseController(IMapper mapper, IdentityService identityService, ValidateService validateService, TFacade facade, string apiVersion)
+        public BaseController(IIdentityService identityService, IValidateService validateService, IFacade facade, IMapper mapper, string apiVersion)
         {
-            this.Mapper = mapper;
             this.IdentityService = identityService;
             this.ValidateService = validateService;
             this.Facade = facade;
+            this.Mapper = mapper;
             this.ApiVersion = apiVersion;
         }
-
+        
         private void ValidateUser()
         {
-            IdentityService.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
-            IdentityService.Token = Request.Headers["Authorization"].First().Replace("Bearer ", "");
+            IdentityService.Username = User.Claims.ToArray().SingleOrDefault(p => p.Type.Equals("username")).Value;
+            IdentityService.Token = Request.Headers["Authorization"].FirstOrDefault().Replace("Bearer ", "");
         }
 
         private void ValidateViewModel(TViewModel viewModel)
@@ -47,24 +49,15 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Helpers
         [HttpGet]
         public IActionResult Get(int page = 1, int size = 25, string order = "{}", [Bind(Prefix = "Select[]")]List<string> select = null, string keyword = null, string filter = "{}")
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             try
             {
-                Tuple<List<TModel>, int, Dictionary<string, string>, List<string>> Data = Facade.Read(page, size, order, select, keyword, filter);
+                ReadResponse<TModel> read = Facade.Read(page, size, order, select, keyword, filter);
 
-                List<TViewModel> DataVM = new List<TViewModel>();
-                foreach (TModel d in Data.Item1)
-                {
-                    DataVM.Add(Mapper.Map<TViewModel>(d));
-                }
+                List<TViewModel> dataVM = this.Mapper.Map<List<TViewModel>>(read.Data);
 
                 Dictionary<string, object> Result =
                     new ResultFormatter(ApiVersion, General.OK_STATUS_CODE, General.OK_MESSAGE)
-                    .Ok<TViewModel>(Mapper, DataVM, page, size, Data.Item2, Data.Item1.Count, Data.Item3, Data.Item4);
+                    .Ok<TViewModel>(this.Mapper, dataVM, page, size, read.Count, dataVM.Count, read.Order, read.Selected);
                 return Ok(Result);
             }
             catch (Exception e)
@@ -79,11 +72,6 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Helpers
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] TViewModel viewModel)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             try
             {
                 ValidateUser();
@@ -116,11 +104,6 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Helpers
         [HttpGet("{Id}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            
             try
             {
                 TModel model = await Facade.ReadById(id);

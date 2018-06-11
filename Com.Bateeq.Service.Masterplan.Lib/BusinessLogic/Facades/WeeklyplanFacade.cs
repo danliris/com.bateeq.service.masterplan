@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 using Com.Moonlay.Models;
+using Com.Bateeq.Service.Masterplan.Lib.Helpers;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Facades
 {
@@ -40,7 +41,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Facades
             return await DbContext.SaveChangesAsync();
         }
 
-        public Tuple<List<WeeklyPlan>, int, Dictionary<string, string>, List<string>> Read(int Page, int Size, string Order, List<string> Select, string Keyword, string Filter)
+        public ReadResponse<WeeklyPlan> Read(int Page, int Size, string Order, List<string> Select, string Keyword, string Filter)
         {
             return WeeklyPlanLogic.ReadModel(Page, Size, Order, Select, Keyword, Filter);
         }

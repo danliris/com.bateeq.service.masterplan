@@ -14,36 +14,36 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Helpers
         where TModel : StandardEntity, IValidatableObject
     {
         protected DbSet<TModel> DbSet;
-        protected IdentityService IdentityService;
+        protected IIdentityService IdentityService;
         protected QueryHelper<TModel> QueryHelper;
 
         public BaseLogic(IServiceProvider serviceProvider, MasterplanDbContext dbContext)
         {
             this.DbSet = dbContext.Set<TModel>();
-            this.IdentityService = serviceProvider.GetService<IdentityService>();
+            this.IdentityService = serviceProvider.GetService<IIdentityService>();
             this.QueryHelper = new QueryHelper<TModel>();
         }
 
-        public abstract Tuple<List<TModel>, int, Dictionary<string, string>, List<string>> ReadModel(int page, int size, string order, List<string> select, string keyword, string filter);
+        public abstract ReadResponse<TModel> ReadModel(int page, int size, string order, List<string> select, string keyword, string filter);
 
-        virtual public void CreateModel(TModel model)
+        public virtual void CreateModel(TModel model)
         {
             EntityExtension.FlagForCreate(model, IdentityService.Username, "masterplan-service");
             DbSet.Add(model);
         }
 
-        virtual public Task<TModel> ReadModelById(int id)
+        public virtual Task<TModel> ReadModelById(int id)
         {
             return DbSet.FirstOrDefaultAsync(d => d.Id.Equals(id) && d.IsDeleted.Equals(false));
         }
 
-        virtual public void UpdateModel(int id, TModel model)
+        public virtual void UpdateModel(int id, TModel model)
         {
             EntityExtension.FlagForUpdate(model, IdentityService.Username, "masterplan-service");
             DbSet.Update(model);
         }
 
-        virtual public async Task DeleteModel(int id)
+        public virtual async Task DeleteModel(int id)
         {
             TModel model = await ReadModelById(id);
             EntityExtension.FlagForDelete(model, IdentityService.Username, "masterplan-service", true);
