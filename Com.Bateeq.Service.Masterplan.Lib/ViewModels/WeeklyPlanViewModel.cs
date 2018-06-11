@@ -14,7 +14,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.ViewModels
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if (this.Year != 0)
+            if (this.Year == 0)
             {
                 yield return new ValidationResult("Weekly-plan of year must be not equal to 0", new List<string> { "Year" });
             }
