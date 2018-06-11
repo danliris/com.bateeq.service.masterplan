@@ -23,7 +23,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Models
 
                     if (index > 0)
                     {
-                        yield return new ValidationResult($"Year {this.Year} & Unit Code with {this.UnitCode} is already exists", new List<string> { "Year" });
+                        yield return new ValidationResult($"Year {this.Year} & Unit Code with {this.UnitName} is already exists", new List<string> { "Year" });
                     }
                 }
 
