@@ -16,7 +16,7 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Controllers
     public class WeeklyPlanController : BaseController<WeeklyPlan, WeeklyPlanViewModel, WeeklyplanFacade>
     {
         private readonly static string apiVersion = "1.0";
-        public WeeklyPlanController(IMapper mapper, IdentityService identityService, ValidateService validateService, WeeklyplanFacade weeklyplanFacade) : base(mapper, identityService, validateService, weeklyplanFacade, apiVersion)
+        public WeeklyPlanController(IIdentityService identityService, IValidateService validateService, WeeklyplanFacade weeklyplanFacade, IMapper mapper) : base(identityService, validateService, weeklyplanFacade, mapper, apiVersion)
         {
         }
     }

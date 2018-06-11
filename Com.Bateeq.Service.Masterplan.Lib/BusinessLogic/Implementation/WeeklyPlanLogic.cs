@@ -18,7 +18,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation
         {
         }
 
-        public override Tuple<List<WeeklyPlan>, int, Dictionary<string, string>, List<string>> ReadModel(int page, int size, string order, List<string> select, string keyword, string filter)
+        public override ReadResponse<WeeklyPlan> ReadModel(int page, int size, string order, List<string> select, string keyword, string filter)
         {
             IQueryable<WeeklyPlan> Query = this.DbSet;
             List<string> SearchAttributes = new List<string>() { "Id", "Year", "UnitId", "UnitCode", "UnitName" };
@@ -43,7 +43,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation
             List<WeeklyPlan> Data = pageable.Data.ToList<WeeklyPlan>();
             int TotalData = pageable.TotalCount;
 
-            return Tuple.Create(Data, TotalData, OrderDictionary, SearchAttributes);
+            return new ReadResponse<WeeklyPlan>(Data, TotalData, OrderDictionary, SearchAttributes);
         }
 
         override public void CreateModel(WeeklyPlan model)

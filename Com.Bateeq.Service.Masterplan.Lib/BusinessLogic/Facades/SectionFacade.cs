@@ -1,82 +1,58 @@
 ﻿using Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation;
 using Com.Bateeq.Service.Masterplan.Lib.Models;
 using Com.Bateeq.Service.Masterplan.Lib.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Com.Bateeq.Service.Masterplan.Lib.Helpers;
+using Microsoft.EntityFrameworkCore;
+using Com.Bateeq.Service.Masterplan.Lib.Services;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Facades
 {
-    public class SectionFacade
+    public class SectionFacade : ISectionFacade
     {
-        private SectionLogic sectionLogic;
-        public string Username { get; set; }
-        public string Token { get; set; }
-        private MasterplanDbContext dbContext;
+        private readonly MasterplanDbContext DbContext;
+        private readonly DbSet<BookingOrder> DbSet;
+        private IIdentityService IdentityService;
+        private SectionLogic SectionLogic;
 
-        public SectionFacade(IServiceProvider provider, MasterplanDbContext dbContext)
+        public SectionFacade(IServiceProvider serviceProvider, MasterplanDbContext dbContext)
         {
-            sectionLogic = new SectionLogic(provider, dbContext);
-            this.dbContext = dbContext;
+            this.DbContext = dbContext;
+            this.DbSet = this.DbContext.Set<BookingOrder>();
+            this.IdentityService = serviceProvider.GetService<IIdentityService>();
+            this.SectionLogic = serviceProvider.GetService<SectionLogic>();
+        }
+        
+        public ReadResponse<Section> Read(int page, int size, string order, List<string> select, string keyword, string filter)
+        {
+            return SectionLogic.ReadModel(page, size, order, select, keyword, filter);
         }
 
-        public Tuple<List<Section>, int, Dictionary<string, string>, List<string>> ReadModel(int Page, int Size, string Order, List<string> Select, string Keyword, string Filter)
+        public async Task<int> Create(Section model)
         {
-            return sectionLogic.ReadModel(Page, Size, Order, Select, Keyword, Filter);
+            SectionLogic.CreateModel(model);
+            return await DbContext.SaveChangesAsync();
         }
 
-        public SectionViewModel MapToViewModel(Section model)
+        public async Task<Section> ReadById(int id)
         {
-            return sectionLogic.MapToViewModel(model);
+            return await SectionLogic.ReadModelById(id);
         }
 
-        public Section MapToModel(SectionViewModel viewModel)
+        public async Task<int> Update(int id, Section model)
         {
-            return sectionLogic.MapToModel(viewModel);
+            SectionLogic.UpdateModel(id, model);
+            return await DbContext.SaveChangesAsync();
         }
 
-        public async Task<Section> ReadModelById(int id)
+        public async Task<int> Delete(int id)
         {
-            return await sectionLogic.GetAsync(id);
-        }
-
-        public void Validate(Section model)
-        {
-            sectionLogic.Validate(model);
-        }
-
-        public void Validate(SectionViewModel viewModel)
-        {
-            sectionLogic.Validate(viewModel);
-        }
-
-        public IDbContextTransaction beginTransaction()
-        {
-            return dbContext.Database.BeginTransaction();
-        }
-
-        public async Task<int> UpdateModel(int id, Section model)
-        {
-            sectionLogic.Username = Username;
-            return await sectionLogic.UpdateAsync(id, model);
-        }
-
-        public bool IsExists(int Id)
-        {
-            return sectionLogic.IsExists(Id);
-        }
-
-        public async Task<int> CreateModel(Section model)
-        {
-            sectionLogic.Username = Username;
-            return await sectionLogic.CreateAsync(model);
-        }
-
-        public async Task<int> DeleteModel(int id)
-        {
-            sectionLogic.Username = Username;
-            return await sectionLogic.DeleteAsync(id);
+            await SectionLogic.DeleteModel(id);
+            return await DbContext.SaveChangesAsync();
         }
     }
 }
