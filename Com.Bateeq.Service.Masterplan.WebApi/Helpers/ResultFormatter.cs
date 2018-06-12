@@ -19,8 +19,7 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Helpers
             Result = new Dictionary<string, object>();
             AddResponseInformation(Result, ApiVersion, StatusCode, Message);
         }
-
-        // Version 2
+        
         public Dictionary<string, object> Ok<TViewModel>(IMapper mapper, List<TViewModel> Data, int Page, int Size, int TotalData, int TotalPageData, Dictionary<string, string> Order, List<string> Select)
         {
             Dictionary<string, object> Info = new Dictionary<string, object>
@@ -54,115 +53,12 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Helpers
 
             return Result;
         }
-        //
 
         public Dictionary<string, object> Ok()
         {
             return Result;
         }
-
-        public Dictionary<string, object> Ok<TModel, TViewModel>(IMapper mapper, List<TModel> Data, int Page, int Size, int TotalData, int TotalPageData, Dictionary<string, string> Order, List<string> Select)
-        {
-            Dictionary<string, object> Info = new Dictionary<string, object>
-            {
-                { "count", TotalPageData },
-                { "page", Page },
-                { "size", Size },
-                { "total", TotalData },
-                { "order", Order }
-            };
-
-            List<TViewModel> DataVM = new List<TViewModel>();
-
-            foreach (TModel d in Data)
-            {
-                DataVM.Add(mapper.Map<TViewModel>(d));
-            }
-
-            if (Select.Count > 0)
-            {
-                var DataObj = DataVM.AsQueryable().Select(string.Concat("new(", string.Join(",", Select), ")"));
-                Result.Add("data", DataObj);
-                Info.Add("select", Select);
-            }
-            else
-            {
-                Result.Add("data", DataVM);
-            }
-
-            Result.Add("info", Info);
-
-            return Result;
-        }
-
-        public Dictionary<string, object> Ok<TModel, TViewModel>(List<TModel> Data, Func<TModel, TViewModel> MapToViewModel)
-        {
-            List<TViewModel> DataVM = new List<TViewModel>();
-            foreach (TModel d in Data)
-            {
-                DataVM.Add(MapToViewModel(d));
-            }
-
-            Result.Add("data", DataVM);
-
-            return Result;
-        }
-
-        public Dictionary<string, object> Ok<TModel, TViewModel>(List<TModel> Data, Func<TModel, TViewModel> MapToViewModel, int Page, int Size, int TotalData, int TotalPageData, Dictionary<string, string> Order, List<string> Select)
-        {
-            Dictionary<string, object> Info = new Dictionary<string, object>
-            {
-                { "count", TotalPageData },
-                { "page", Page },
-                { "size", Size },
-                { "total", TotalData },
-                { "order", Order }
-            };
-
-            List<TViewModel> DataVM = new List<TViewModel>();
-
-            foreach (TModel d in Data)
-            {
-                DataVM.Add(MapToViewModel(d));
-            }
-
-            if (Select.Count > 0)
-            {
-                var DataObj = DataVM.AsQueryable().Select(string.Concat("new(", string.Join(",", Select), ")"));
-                Result.Add("data", DataObj);
-                Info.Add("select", Select);
-            }
-            else
-            {
-                Result.Add("data", DataVM);
-            }
-
-            Result.Add("info", Info);
-
-            return Result;
-        }
-
-        public Dictionary<string, object> Ok<TModel>(TModel Data)
-        {
-            Result.Add("data", Data);
-
-            return Result;
-        }
-
-        public Dictionary<string, object> Ok<TModel, TViewModel>(TModel Data, Func<TModel, TViewModel> MapToViewModel)
-        {
-            Result.Add("data", MapToViewModel(Data));
-
-            return Result;
-        }
-
-        public Dictionary<string, object> Ok<TModel, TViewModel>(IMapper mapper, TModel Data)
-        {
-            Result.Add("data", mapper.Map<TViewModel>(Data));
-
-            return Result;
-        }
-
+        
         public Dictionary<string, object> Fail()
         {
             return Result;
@@ -189,13 +85,7 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Helpers
             Result.Add("error", Errors);
             return Result;
         }
-
-        public Dictionary<string, object> Fail(DbReferenceNotNullException e)
-        {
-            Result.Add("error", e.Message);
-            return Result;
-        }
-
+        
         public void AddResponseInformation(Dictionary<string, object> Result, string ApiVersion, int StatusCode, string Message)
         {
             Result.Add("apiVersion", ApiVersion);
