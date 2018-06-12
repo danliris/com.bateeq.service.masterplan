@@ -9,6 +9,8 @@ using Com.Moonlay.Models;
 using Newtonsoft.Json;
 using Com.Moonlay.NetCore.Lib;
 using Com.Bateeq.Service.Masterplan.Lib.Services;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation
 {
@@ -38,7 +40,6 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation
 
             Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(order);
             Query = QueryHelper.Order(Query, OrderDictionary);
-
             Pageable<WeeklyPlan> pageable = new Pageable<WeeklyPlan>(Query, page - 1, size);
             List<WeeklyPlan> Data = pageable.Data.ToList<WeeklyPlan>();
             int TotalData = pageable.TotalCount;
@@ -52,7 +53,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation
             {
                 EntityExtension.FlagForCreate(item, IdentityService.Username, "masterplan-service");
             }
-            
+
             EntityExtension.FlagForCreate(model, IdentityService.Username, "masterplan-service");
             DbSet.Add(model);
         }
@@ -79,6 +80,20 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation
 
             EntityExtension.FlagForDelete(model, IdentityService.Username, "masterplan-service", true);
             DbSet.Update(model);
+        }
+
+        override public async Task<WeeklyPlan> ReadModelById(int id)
+        {
+            var weeklyPlan = await DbSet.Include(p => p.Items).FirstOrDefaultAsync(d => d.Id.Equals(id) && d.IsDeleted.Equals(false));
+            weeklyPlan.Items = weeklyPlan.Items.OrderBy(s => s.WeekNumber).ToArray();
+            return weeklyPlan;
+        }
+
+
+        public async Task<WeeklyPlan> GetByYearAndUnitCode(int year, string code)
+        {
+            var model = await DbSet.Include(p => p.Items).FirstOrDefaultAsync(item => item.Year == year && item.UnitCode == code && item.IsDeleted.Equals(false));
+            return model;
         }
     }
 }
