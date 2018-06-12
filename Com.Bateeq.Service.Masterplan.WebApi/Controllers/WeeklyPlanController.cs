@@ -6,6 +6,10 @@ using Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Facades;
 using Com.Bateeq.Service.Masterplan.WebApi.Helpers;
 using AutoMapper;
 using Com.Bateeq.Service.Masterplan.Lib.Services;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System;
+using Newtonsoft.Json;
 
 namespace Com.Bateeq.Service.Masterplan.WebApi.Controllers
 {
@@ -19,5 +23,43 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Controllers
         public WeeklyPlanController(IIdentityService identityService, IValidateService validateService, WeeklyplanFacade weeklyplanFacade, IMapper mapper) : base(identityService, validateService, weeklyplanFacade, mapper, apiVersion)
         {
         }
+
+        [HttpGet("is-exist/{year}/{code}")]
+        public async Task<IActionResult> GetByYearAndUnitCode(int year, string code)
+        {
+            try
+            {
+                WeeklyPlan model = await Facade.GetByYearAndUnitCode(year, code);
+
+                if (model == null)
+                {
+                    Dictionary<string, object> Result =
+                        new ResultFormatter(ApiVersion, General.NOT_FOUND_STATUS_CODE, General.NOT_FOUND_MESSAGE)
+                        .Fail();
+                    return NotFound(Result);
+                }
+                else
+                {
+                    WeeklyPlanViewModel viewModel = Mapper.Map<WeeklyPlanViewModel>(model);
+                    Dictionary<string, object> Result =
+                        new ResultFormatter(ApiVersion, General.OK_STATUS_CODE, General.OK_MESSAGE)
+                        .Ok<WeeklyPlanViewModel>(Mapper, viewModel);
+                    return Ok(Result);
+                }
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+    }
+
+    public class FilterObject
+    {
+        public int Year { get; set; }
+        public string Code { get; set; }
     }
 }

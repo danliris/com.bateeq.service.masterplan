@@ -48,7 +48,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Facades
 
         public async Task<WeeklyPlan> ReadById(int id)
         {
-            var weeklyPlan = await DbContext.WeeklyPlans.Include(p => p.Items).FirstOrDefaultAsync(d => d.Id.Equals(id) && d.IsDeleted.Equals(false));
+            var weeklyPlan = await WeeklyPlanLogic.ReadModelById(id);
             return weeklyPlan;
         }
 
@@ -56,6 +56,12 @@ namespace Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Facades
         {
             WeeklyPlanLogic.UpdateModel(id, model);
             return await DbContext.SaveChangesAsync();
+        }
+
+        public async Task<WeeklyPlan> GetByYearAndUnitCode(int year, string code)
+        {
+            var weeklyPlan = await WeeklyPlanLogic.GetByYearAndUnitCode(year, code);
+            return weeklyPlan;
         }
     }
 }
