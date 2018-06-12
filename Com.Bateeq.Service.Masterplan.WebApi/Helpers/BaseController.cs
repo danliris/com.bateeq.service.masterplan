@@ -1,23 +1,21 @@
 ﻿using AutoMapper;
-using Com.Bateeq.Service.Masterplan.Lib.Exceptions;
 using Com.Bateeq.Service.Masterplan.Lib.Helpers;
 using Com.Bateeq.Service.Masterplan.Lib.Interfaces;
 using Com.Bateeq.Service.Masterplan.Lib.Services;
 using Com.Moonlay.Models;
 using Com.Moonlay.NetCore.Lib.Service;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Com.Bateeq.Service.Masterplan.WebApi.Helpers
 {
     public abstract class BaseController<TModel, TViewModel, IFacade> : Controller
         where TModel : StandardEntity, IValidatableObject
+        where TViewModel : BaseViewModel, IValidatableObject
         where IFacade : IBaseFacade<TModel>
     {
         protected IIdentityService IdentityService;
@@ -35,15 +33,10 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Helpers
             this.ApiVersion = apiVersion;
         }
         
-        private void ValidateUser()
+        private void VerifyUser()
         {
             IdentityService.Username = User.Claims.ToArray().SingleOrDefault(p => p.Type.Equals("username")).Value;
             IdentityService.Token = Request.Headers["Authorization"].FirstOrDefault().Replace("Bearer ", "");
-        }
-
-        private void ValidateViewModel(TViewModel viewModel)
-        {
-            ValidateService.Validate(viewModel);
         }
 
         [HttpGet]
@@ -74,9 +67,9 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Helpers
         {
             try
             {
-                ValidateUser();
-                ValidateViewModel(viewModel);
-                
+                VerifyUser();
+                ValidateService.Validate(viewModel);
+
                 TModel model = Mapper.Map<TModel>(viewModel);
                 await Facade.Create(model);
 
@@ -136,19 +129,12 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Helpers
         [HttpPut("{Id}")]
         public async Task<IActionResult> Put([FromRoute] int id, [FromBody] TViewModel viewModel)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             try
             {
-                ValidateUser();
-                ValidateViewModel(viewModel);
+                VerifyUser();
+                ValidateService.Validate(viewModel);
 
-                TModel model = Mapper.Map<TModel>(viewModel);
-                
-                if (id != model.Id)
+                if (id != viewModel.Id)
                 {
                     Dictionary<string, object> Result =
                         new ResultFormatter(ApiVersion, General.BAD_REQUEST_STATUS_CODE, General.BAD_REQUEST_MESSAGE)
@@ -156,6 +142,8 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Helpers
                     return BadRequest(Result);
                 }
 
+                TModel model = Mapper.Map<TModel>(viewModel);
+                
                 await Facade.Update(id, model);
 
                 return NoContent();
@@ -166,13 +154,6 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Helpers
                     new ResultFormatter(ApiVersion, General.BAD_REQUEST_STATUS_CODE, General.BAD_REQUEST_MESSAGE)
                     .Fail(e);
                 return BadRequest(Result);
-            }
-            catch (DbUpdateConcurrencyException e)
-            {
-                Dictionary<string, object> Result =
-                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
-                    .Fail();
-                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
             }
             catch (Exception e)
             {
@@ -186,25 +167,13 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Helpers
         [HttpDelete("{Id}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             try
             {
-                ValidateUser();
+                VerifyUser();
 
                 await Facade.Delete(id);
 
                 return NoContent();
-            }
-            catch (DbReferenceNotNullException e)
-            {
-                Dictionary<string, object> Result =
-                    new ResultFormatter(ApiVersion, General.BAD_REQUEST_STATUS_CODE, General.BAD_REQUEST_MESSAGE)
-                    .Fail(e);
-                return BadRequest(Result);
             }
             catch (Exception e)
             {
