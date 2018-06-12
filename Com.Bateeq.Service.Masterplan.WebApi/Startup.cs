@@ -10,6 +10,9 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
 using IdentityServer4.AccessTokenValidation;
 using Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Facades;
+using AutoMapper;
+using Com.Bateeq.Service.Masterplan.Lib.Services;
+using Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation;
 
 namespace Com.Bateeq.Service.Masterplan.WebApi
 {
@@ -25,7 +28,6 @@ namespace Com.Bateeq.Service.Masterplan.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             string connectionString = Configuration.GetConnectionString("DefaultConnection") ?? Configuration["DefaultConnection"];
 
             services
@@ -38,8 +40,20 @@ namespace Com.Bateeq.Service.Masterplan.WebApi
                 });
 
             services
-               .AddTransient<CommodityFacade>()
-               .AddTransient<SectionFacade>();
+                .AddTransient<ISectionFacade, SectionFacade>()
+                .AddTransient<IBookingOrderFacade, BookingOrderFacade>()
+                .AddTransient<WeeklyplanFacade>();
+
+            services
+                .AddTransient<SectionLogic>()
+                .AddTransient<BookingOrderLogic>()
+                .AddTransient<WeeklyPlanLogic>();
+
+            services
+                .AddScoped<IIdentityService, IdentityService>()
+                .AddScoped<IValidateService, ValidateService>();
+
+            services.AddAutoMapper();
 
             var Secret = Configuration.GetValue<string>("Secret") ?? Configuration["Secret"];
             var Key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Secret));

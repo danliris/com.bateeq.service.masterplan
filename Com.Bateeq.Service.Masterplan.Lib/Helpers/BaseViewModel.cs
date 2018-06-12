@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Com.Bateeq.Service.Masterplan.Lib.ViewModels
+namespace Com.Bateeq.Service.Masterplan.Lib.Helpers
 {
-    public class BasicViewModel
+    public class BaseViewModel
     {
         public int Id { get; set; }
         public bool IsDeleted { get; set; }

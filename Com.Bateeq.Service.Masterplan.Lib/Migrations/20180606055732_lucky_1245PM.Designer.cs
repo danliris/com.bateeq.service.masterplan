@@ -11,28 +11,22 @@ using System;
 namespace Com.Bateeq.Service.Masterplan.Lib.Migrations
 {
     [DbContext(typeof(MasterplanDbContext))]
-    partial class MasterplanDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180606055732_lucky_1245PM")]
+    partial class lucky_1245PM
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.0.1-rtm-125")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Com.Bateeq.Service.Masterplan.Lib.Models.BookingOrder", b =>
+            modelBuilder.Entity("Com.Bateeq.Service.Masterplan.Lib.Models.Commodity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<bool>("Active");
-
-                    b.Property<DateTimeOffset>("BookingDate");
-
-                    b.Property<int>("BuyerId");
-
-                    b.Property<string>("BuyerName")
-                        .HasMaxLength(300);
 
                     b.Property<string>("Code")
                         .HasMaxLength(100);
@@ -57,8 +51,6 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Migrations
 
                     b.Property<DateTime>("DeletedUtc");
 
-                    b.Property<DateTimeOffset>("DeliveryDate");
-
                     b.Property<bool>("IsDeleted");
 
                     b.Property<string>("LastModifiedAgent")
@@ -71,20 +63,12 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Migrations
 
                     b.Property<DateTime>("LastModifiedUtc");
 
-                    b.Property<int>("OrderQuantity");
-
-                    b.Property<string>("Remark");
-
-                    b.Property<int>("SectionId");
-
-                    b.Property<string>("SectionName")
-                        .HasMaxLength(300);
-
-                    b.Property<int>("SerialNumber");
+                    b.Property<string>("Name")
+                        .HasMaxLength(255);
 
                     b.HasKey("Id");
 
-                    b.ToTable("BookingOrders");
+                    b.ToTable("Commodities");
                 });
 
             modelBuilder.Entity("Com.Bateeq.Service.Masterplan.Lib.Models.Section", b =>
