@@ -36,7 +36,7 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Controllers
                     Dictionary<string, object> Result =
                         new ResultFormatter(ApiVersion, General.NOT_FOUND_STATUS_CODE, General.NOT_FOUND_MESSAGE)
                         .Fail();
-                    return NotFound(Result);
+                    return Ok(Result);
                 }
                 else
                 {
