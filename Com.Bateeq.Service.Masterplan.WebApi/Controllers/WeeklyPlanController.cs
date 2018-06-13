@@ -17,10 +17,10 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Controllers
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/weekly-plans")]
     [Authorize]
-    public class WeeklyPlanController : BaseController<WeeklyPlan, WeeklyPlanViewModel, WeeklyplanFacade>
+    public class WeeklyPlanController : BaseController<WeeklyPlan, WeeklyPlanViewModel, WeeklyPlanFacade>
     {
         private readonly static string apiVersion = "1.0";
-        public WeeklyPlanController(IIdentityService identityService, IValidateService validateService, WeeklyplanFacade weeklyplanFacade, IMapper mapper) : base(identityService, validateService, weeklyplanFacade, mapper, apiVersion)
+        public WeeklyPlanController(IIdentityService identityService, IValidateService validateService, WeeklyPlanFacade weeklyplanFacade, IMapper mapper) : base(identityService, validateService, weeklyplanFacade, mapper, apiVersion)
         {
         }
 
