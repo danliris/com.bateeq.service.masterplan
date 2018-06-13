@@ -1,8 +1,5 @@
 ﻿using Com.Bateeq.Service.Masterplan.Lib.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.ModelConfigs
 {

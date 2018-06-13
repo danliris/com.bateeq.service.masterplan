@@ -9,10 +9,13 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
 using IdentityServer4.AccessTokenValidation;
-using Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Facades;
 using AutoMapper;
-using Com.Bateeq.Service.Masterplan.Lib.Services;
-using Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Implementation;
+using Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade;
+using Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.SectionFacade;
+using Com.Bateeq.Service.Masterplan.Lib.Modules.Facades;
+using Com.Bateeq.Service.Masterplan.Lib.Modules.Implementation;
+using Com.Bateeq.Service.Masterplan.Lib.Services.IdentityService;
+using Com.Bateeq.Service.Masterplan.Lib.Services.ValidateService;
 
 namespace Com.Bateeq.Service.Masterplan.WebApi
 {

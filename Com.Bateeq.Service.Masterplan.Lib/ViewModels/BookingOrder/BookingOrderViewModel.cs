@@ -1,4 +1,4 @@
-﻿using Com.Bateeq.Service.Masterplan.Lib.Helpers;
+﻿using Com.Bateeq.Service.Masterplan.Lib.Utils;
 using Com.Bateeq.Service.Masterplan.Lib.ViewModels.Integration;
 using System;
 using System.Collections.Generic;
@@ -26,7 +26,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.ViewModels.BookingOrder
                 yield return new ValidationResult("Tanggal Booking harus diisi", new List<string> { "BookingDate" });
 
             if (this.Buyer == null || this.Buyer.Id == 0)
-                yield return new ValidationResult("Seksi harus diisi", new List<string> { "Section" });
+                yield return new ValidationResult("Pembeli harus diisi", new List<string> { "Pembeli" });
 
             if (this.OrderQuantity == null)
                 yield return new ValidationResult("Jumlah Order harus diisi", new List<string> { "OrderQuantity" });
