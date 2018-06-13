@@ -23,10 +23,10 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Implementation
                 {
                     "Code"
                 };
-            query = QueryHelper.Search(query, searchAttributes, keyword);
+            query = QueryHelper<BookingOrder>.Search(query, searchAttributes, keyword);
 
             Dictionary<string, object> filterDictionary = JsonConvert.DeserializeObject<Dictionary<string, object>>(filter);
-            query = QueryHelper.Filter(query, filterDictionary);
+            query = QueryHelper<BookingOrder>.Filter(query, filterDictionary);
 
             List<string> selectedFields = new List<string>()
                 {
@@ -46,7 +46,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Implementation
                 });
 
             Dictionary<string, string> orderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(order);
-            query = QueryHelper.Order(query, orderDictionary);
+            query = QueryHelper<BookingOrder>.Order(query, orderDictionary);
 
             Pageable<BookingOrder> pageable = new Pageable<BookingOrder>(query, page - 1, size);
             List<BookingOrder> data = pageable.Data.ToList<BookingOrder>();

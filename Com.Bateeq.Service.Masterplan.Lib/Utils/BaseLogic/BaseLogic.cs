@@ -14,13 +14,11 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Utils.BaseLogic
     {
         protected DbSet<TModel> DbSet;
         protected IIdentityService IdentityService;
-        protected QueryHelper<TModel> QueryHelper;
 
         public BaseLogic(IServiceProvider serviceProvider, MasterplanDbContext dbContext)
         {
             this.DbSet = dbContext.Set<TModel>();
             this.IdentityService = serviceProvider.GetService<IIdentityService>();
-            this.QueryHelper = new QueryHelper<TModel>();
         }
 
         public abstract ReadResponse<TModel> ReadModel(int page, int size, string order, List<string> select, string keyword, string filter);
