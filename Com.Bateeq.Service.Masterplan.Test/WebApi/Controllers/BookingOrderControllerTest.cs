@@ -4,7 +4,7 @@ using Com.Bateeq.Service.Masterplan.Lib.ViewModels.BookingOrder;
 using Com.Bateeq.Service.Masterplan.Test.Controller.Utils;
 using Com.Bateeq.Service.Masterplan.WebApi.Controllers;
 
-namespace Com.Bateeq.Service.Masterplan.Test.Controller.Modules
+namespace Com.Bateeq.Service.Masterplan.Test.WebApi.Controllers
 {
     public class BookingOrderControllerTest : BaseControllerTest<BookingOrderController, BookingOrder, BookingOrderViewModel, IBookingOrderFacade>
     {
