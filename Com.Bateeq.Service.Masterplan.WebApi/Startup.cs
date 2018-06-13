@@ -45,7 +45,7 @@ namespace Com.Bateeq.Service.Masterplan.WebApi
             services
                 .AddTransient<ISectionFacade, SectionFacade>()
                 .AddTransient<IBookingOrderFacade, BookingOrderFacade>()
-                .AddTransient<WeeklyplanFacade>();
+                .AddTransient<WeeklyPlanFacade>();
 
             services
                 .AddTransient<SectionLogic>()

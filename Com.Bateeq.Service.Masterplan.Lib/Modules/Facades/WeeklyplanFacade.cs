@@ -11,7 +11,7 @@ using Com.Bateeq.Service.Masterplan.Lib.Services.ValidateService;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades
 {
-    public class WeeklyplanFacade : IBaseFacade<WeeklyPlan>
+    public class WeeklyPlanFacade : IBaseFacade<WeeklyPlan>
     {
         private readonly MasterplanDbContext DbContext;
         private readonly DbSet<WeeklyPlan> DbSet;
@@ -19,7 +19,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades
         private WeeklyPlanLogic WeeklyPlanLogic;
         private ValidateService ValidateService;
 
-        public WeeklyplanFacade(IServiceProvider serviceProvider, MasterplanDbContext dbContext)
+        public WeeklyPlanFacade(IServiceProvider serviceProvider, MasterplanDbContext dbContext)
         {
             this.DbContext = dbContext;
             this.DbSet = this.DbContext.Set<WeeklyPlan>();
