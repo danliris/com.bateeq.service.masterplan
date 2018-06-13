@@ -7,10 +7,10 @@ using System.Reflection;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.Utils
 {
-    public class QueryHelper<TModel>
+    public static class QueryHelper<TModel>
         where TModel : StandardEntity, IValidatableObject
     {
-        public IQueryable<TModel> Filter(IQueryable<TModel> query, Dictionary<string, object> filterDictionary)
+        public static IQueryable<TModel> Filter(IQueryable<TModel> query, Dictionary<string, object> filterDictionary)
         {
             if (filterDictionary != null && !filterDictionary.Count.Equals(0))
             {
@@ -26,7 +26,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Utils
             return query;
         }
 
-        public IQueryable<TModel> Order(IQueryable<TModel> query, Dictionary<string, string> orderDictionary)
+        public static IQueryable<TModel> Order(IQueryable<TModel> query, Dictionary<string, string> orderDictionary)
         {
             /* Default Order */
             if (orderDictionary.Count.Equals(0))
@@ -51,7 +51,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Utils
             return query;
         }
 
-        public IQueryable<TModel> Search(IQueryable<TModel> query, List<string> searchAttributes, string keyword)
+        public static IQueryable<TModel> Search(IQueryable<TModel> query, List<string> searchAttributes, string keyword)
         {
             if (keyword != null)
             {

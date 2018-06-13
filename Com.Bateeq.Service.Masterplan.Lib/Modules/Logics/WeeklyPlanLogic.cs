@@ -23,10 +23,10 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Implementation
         {
             IQueryable<WeeklyPlan> Query = this.DbSet;
             List<string> SearchAttributes = new List<string>() { "Id", "Year", "UnitId", "UnitCode", "UnitName" };
-            Query = QueryHelper.Search(Query, SearchAttributes, keyword);
+            Query = QueryHelper<WeeklyPlan>.Search(Query, SearchAttributes, keyword);
 
             Dictionary<string, object> FilterDictionary = JsonConvert.DeserializeObject<Dictionary<string, object>>(filter);
-            Query = QueryHelper.Filter(Query, FilterDictionary);
+            Query = QueryHelper<WeeklyPlan>.Filter(Query, FilterDictionary);
 
             Query = Query.Select(field => new WeeklyPlan
             {
@@ -38,7 +38,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Implementation
             });
 
             Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(order);
-            Query = QueryHelper.Order(Query, OrderDictionary);
+            Query = QueryHelper<WeeklyPlan>.Order(Query, OrderDictionary);
             Pageable<WeeklyPlan> pageable = new Pageable<WeeklyPlan>(Query, page - 1, size);
             List<WeeklyPlan> Data = pageable.Data.ToList<WeeklyPlan>();
             int TotalData = pageable.TotalCount;

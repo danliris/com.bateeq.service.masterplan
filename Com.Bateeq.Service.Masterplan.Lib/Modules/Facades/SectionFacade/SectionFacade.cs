@@ -3,25 +3,19 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using Com.Bateeq.Service.Masterplan.Lib.Modules.Implementation;
 using Com.Bateeq.Service.Masterplan.Lib.Utils;
-using Com.Bateeq.Service.Masterplan.Lib.Services.IdentityService;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.SectionFacade
 {
     public class SectionFacade : ISectionFacade
     {
         private readonly MasterplanDbContext DbContext;
-        private readonly DbSet<BookingOrder> DbSet;
-        private IIdentityService IdentityService;
         private SectionLogic SectionLogic;
 
         public SectionFacade(IServiceProvider serviceProvider, MasterplanDbContext dbContext)
         {
             this.DbContext = dbContext;
-            this.DbSet = this.DbContext.Set<BookingOrder>();
-            this.IdentityService = serviceProvider.GetService<IIdentityService>();
             this.SectionLogic = serviceProvider.GetService<SectionLogic>();
         }
         

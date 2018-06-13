@@ -16,14 +16,12 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
     {
         private readonly MasterplanDbContext DbContext;
         private readonly DbSet<BookingOrder> DbSet;
-        private IIdentityService IdentityService;
         private BookingOrderLogic BookingOrderLogic;
 
         public BookingOrderFacade(IServiceProvider serviceProvider, MasterplanDbContext dbContext)
         {
             this.DbContext = dbContext;
             this.DbSet = this.DbContext.Set<BookingOrder>();
-            this.IdentityService = serviceProvider.GetService<IIdentityService>();
             this.BookingOrderLogic = serviceProvider.GetService<BookingOrderLogic>();
         }
 
