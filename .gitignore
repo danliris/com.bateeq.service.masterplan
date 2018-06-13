@@ -260,5 +260,6 @@ paket-files/
 __pycache__/
 *.pyc
 
-# Launch Settings
-Com.Bateeq.Service.Merchandiser.WebApi/Properties/launchSettings.json
+# Settings
+Com.Bateeq.Service.Masterplan.WebApi/Properties/launchSettings.json
+Com.Bateeq.Service.Masterplan.WebApi/appsettings.json
