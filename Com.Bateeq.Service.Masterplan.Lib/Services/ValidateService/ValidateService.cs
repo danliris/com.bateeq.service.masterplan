@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Com.Bateeq.Service.Masterplan.Lib.Services
+namespace Com.Bateeq.Service.Masterplan.Lib.Services.ValidateService
 {
     public class ValidateService : IValidateService
     {

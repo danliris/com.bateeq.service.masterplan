@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-
-namespace Com.Bateeq.Service.Masterplan.Lib.ViewModels.Integration
+﻿namespace Com.Bateeq.Service.Masterplan.Lib.ViewModels.Integration
 {
     public class BuyerViewModel
     {

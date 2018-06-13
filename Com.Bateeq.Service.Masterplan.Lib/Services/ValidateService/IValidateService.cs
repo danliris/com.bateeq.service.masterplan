@@ -1,4 +1,4 @@
-﻿namespace Com.Bateeq.Service.Masterplan.Lib.Services
+﻿namespace Com.Bateeq.Service.Masterplan.Lib.Services.ValidateService
 {
     public interface IValidateService
     {
