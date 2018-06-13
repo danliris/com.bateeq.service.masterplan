@@ -1,7 +1,5 @@
-﻿using Com.Bateeq.Service.Masterplan.Lib.Helpers;
+﻿using Com.Bateeq.Service.Masterplan.Lib.Utils;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.ViewModels
 {
