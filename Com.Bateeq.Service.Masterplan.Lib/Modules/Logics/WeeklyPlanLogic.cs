@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Com.Bateeq.Service.Masterplan.Lib.Utils.BaseLogic;
 using Com.Bateeq.Service.Masterplan.Lib.Utils;
 
-namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Implementation
+namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
 {
     public class WeeklyPlanLogic : BaseLogic<WeeklyPlan>
     {

@@ -13,10 +13,10 @@ using AutoMapper;
 using Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade;
 using Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.SectionFacade;
 using Com.Bateeq.Service.Masterplan.Lib.Modules.Facades;
-using Com.Bateeq.Service.Masterplan.Lib.Modules.Implementation;
 using Com.Bateeq.Service.Masterplan.Lib.Services.IdentityService;
 using Com.Bateeq.Service.Masterplan.Lib.Services.ValidateService;
 using Com.Bateeq.Service.Masterplan.WebApi.Utils;
+using Com.Bateeq.Service.Masterplan.Lib.Modules.Logics;
 
 namespace Com.Bateeq.Service.Masterplan.WebApi
 {

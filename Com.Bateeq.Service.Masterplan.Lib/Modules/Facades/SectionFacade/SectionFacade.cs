@@ -3,8 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Com.Bateeq.Service.Masterplan.Lib.Modules.Implementation;
 using Com.Bateeq.Service.Masterplan.Lib.Utils;
+using Com.Bateeq.Service.Masterplan.Lib.Modules.Logics;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.SectionFacade
 {
