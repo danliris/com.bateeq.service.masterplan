@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Implementation
+namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
 {
     public class BookingOrderLogic : BaseLogic<BookingOrder>
     {
