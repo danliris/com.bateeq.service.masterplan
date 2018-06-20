@@ -10,12 +10,13 @@ using Com.Moonlay.NetCore.Lib;
 using Microsoft.EntityFrameworkCore;
 using Com.Bateeq.Service.Masterplan.Lib.Utils.BaseLogic;
 using Com.Bateeq.Service.Masterplan.Lib.Utils;
+using Com.Bateeq.Service.Masterplan.Lib.Services.IdentityService;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
 {
     public class WeeklyPlanLogic : BaseLogic<WeeklyPlan>
     {
-        public WeeklyPlanLogic(IServiceProvider serviceProvider, MasterplanDbContext dbContext) : base(serviceProvider, dbContext)
+        public WeeklyPlanLogic(IIdentityService identityService, MasterplanDbContext dbContext) : base(identityService, dbContext)
         {
         }
 

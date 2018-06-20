@@ -1,9 +1,9 @@
 ﻿using Com.Bateeq.Service.Masterplan.Lib.Models;
+using Com.Bateeq.Service.Masterplan.Lib.Services.IdentityService;
 using Com.Bateeq.Service.Masterplan.Lib.Utils;
 using Com.Bateeq.Service.Masterplan.Lib.Utils.BaseLogic;
 using Com.Moonlay.NetCore.Lib;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,7 +11,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
 {
     public class BookingOrderLogic : BaseLogic<BookingOrder>
     {
-        public BookingOrderLogic(IServiceProvider serviceProvider, MasterplanDbContext dbContext) : base(serviceProvider, dbContext)
+        public BookingOrderLogic(IIdentityService identityService, MasterplanDbContext dbContext) : base(identityService, dbContext)
         {
         }
 

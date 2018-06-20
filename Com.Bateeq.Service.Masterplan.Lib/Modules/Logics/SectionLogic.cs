@@ -7,12 +7,13 @@ using Com.Moonlay.NetCore.Lib;
 using System.Linq.Dynamic.Core;
 using Com.Bateeq.Service.Masterplan.Lib.Utils.BaseLogic;
 using Com.Bateeq.Service.Masterplan.Lib.Utils;
+using Com.Bateeq.Service.Masterplan.Lib.Services.IdentityService;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
 {
     public class SectionLogic : BaseLogic<Section>
     {
-        public SectionLogic(IServiceProvider serviceProvider, MasterplanDbContext dbContext) : base(serviceProvider, dbContext)
+        public SectionLogic(IIdentityService identityService, MasterplanDbContext dbContext) : base(identityService, dbContext)
         {
         }
 

@@ -15,10 +15,10 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Utils.BaseLogic
         protected DbSet<TModel> DbSet;
         protected IIdentityService IdentityService;
 
-        public BaseLogic(IServiceProvider serviceProvider, MasterplanDbContext dbContext)
+        public BaseLogic(IIdentityService identityService, MasterplanDbContext dbContext)
         {
             this.DbSet = dbContext.Set<TModel>();
-            this.IdentityService = serviceProvider.GetService<IIdentityService>();
+            this.IdentityService = identityService;
         }
 
         public abstract ReadResponse<TModel> ReadModel(int page, int size, string order, List<string> select, string keyword, string filter);
