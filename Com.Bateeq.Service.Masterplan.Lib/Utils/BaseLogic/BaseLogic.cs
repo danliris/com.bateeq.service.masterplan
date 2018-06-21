@@ -21,8 +21,6 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Utils.BaseLogic
             this.IdentityService = identityService;
         }
 
-        public abstract ReadResponse<TModel> ReadModel(int page, int size, string order, List<string> select, string keyword, string filter);
-
         public virtual void CreateModel(TModel model)
         {
             EntityExtension.FlagForCreate(model, IdentityService.Username, "masterplan-service");
