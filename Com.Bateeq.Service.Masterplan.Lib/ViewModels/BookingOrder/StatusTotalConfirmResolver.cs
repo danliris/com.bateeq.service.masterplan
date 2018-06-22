@@ -16,7 +16,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.ViewModels.BookingOrder
                 {
                     total += item.Total;
                 }
-                int diff = source.OrderQuantity - total;
+                int diff = total - source.OrderQuantity;
                 if (diff > 0)
                     return "+" + diff;
                 return diff.ToString();

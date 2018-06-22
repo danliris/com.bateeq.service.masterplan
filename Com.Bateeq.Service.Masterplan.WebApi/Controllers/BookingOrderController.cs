@@ -24,14 +24,14 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Controllers
         {
         }
 
-        [HttpPut("cancel-remaining/{Id}")]
-        public async Task<IActionResult> CancelRemaining([FromRoute] int id)
+        [HttpPut("set-remaining-order-quantity/{Id}")]
+        public async Task<IActionResult> SetRemainingOrderQuantity([FromRoute] int id)
         {
             try
             {
                 VerifyUser();
 
-                await Facade.CancelRemaining(id);
+                await Facade.SetRemainingOrderQuantity(id);
 
                 return NoContent();
             }

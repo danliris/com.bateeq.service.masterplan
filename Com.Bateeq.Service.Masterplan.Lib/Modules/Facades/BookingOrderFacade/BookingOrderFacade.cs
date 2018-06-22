@@ -78,7 +78,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
                         .DefaultIfEmpty()
                         .Max(d => d.SerialNumber);
             model.SerialNumber = latestSN != 0 ? latestSN + 1 : 1;
-            model.Code = String.Format("{0}-{1}-{2:D2}{3}", model.SectionCode, model.BuyerCode, model.BookingDate.Year, model.SerialNumber);
+            model.Code = String.Format("{0}-{1}-{2}{3:D5}", model.SectionCode, model.BuyerCode, model.BookingDate.Year % 100, model.SerialNumber);
 
             BookingOrderLogic.CreateModel(model);
             return await DbContext.SaveChangesAsync();
@@ -107,13 +107,14 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
             return await DbContext.SaveChangesAsync();
         }
 
-        public async Task<int> CancelRemaining(int id)
+        public async Task<int> SetRemainingOrderQuantity(int id)
         {
             BookingOrder model = await BookingOrderLogic.ReadModelById(id);
             int total = 0;
             foreach (BookingOrderDetail item in model.DetailConfirms)
                 total += item.Total;
-            model.InitialOrderQuantity = model.OrderQuantity;
+            if (model.InitialOrderQuantity == null)
+                model.InitialOrderQuantity = model.OrderQuantity;
             model.OrderQuantity = total;
             return await Update(id, model);
         }
