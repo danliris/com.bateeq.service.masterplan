@@ -7,6 +7,6 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
     public interface IBookingOrderFacade : IBaseFacade<BookingOrder>
     {
         Task<int> DeleteDetail(int id);
-        Task<int> CancelRemaining(int id);
+        Task<int> SetRemainingOrderQuantity(int id);
     }
 }

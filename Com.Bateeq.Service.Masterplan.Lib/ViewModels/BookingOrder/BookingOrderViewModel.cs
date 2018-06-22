@@ -13,7 +13,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.ViewModels.BookingOrder
         public SectionViewModel Section { get; set; }
         public DateTimeOffset BookingDate { get; set; }
         public BuyerViewModel Buyer { get; set; }
-        public int? InitialOrderQuantity { get;}
+        public int? InitialOrderQuantity { get; set; }
         public int? OrderQuantity { get; set; }
         public DateTimeOffset DeliveryDate { get; set; }
         public string Remark { get; set; }
@@ -42,9 +42,6 @@ namespace Com.Bateeq.Service.Masterplan.Lib.ViewModels.BookingOrder
                 yield return new ValidationResult("Tanggal Pengiriman harus diisi", new List<string> { "DeliveryDate" });
             else if (this.DeliveryDate <= this.BookingDate.AddDays(45))
                 yield return new ValidationResult("Tanggal pengiriman harus > 45 hari dari tanggal hari ini", new List<string> { "DeliveryDate" });
-
-            if (string.IsNullOrWhiteSpace(this.Remark))
-                yield return new ValidationResult("Keterangan harus diisi", new List<string> { "Remark" });
 
             if (this.DetailConfirms != null)
             {
