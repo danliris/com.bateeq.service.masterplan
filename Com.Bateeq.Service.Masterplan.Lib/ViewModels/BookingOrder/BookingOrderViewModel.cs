@@ -13,9 +13,14 @@ namespace Com.Bateeq.Service.Masterplan.Lib.ViewModels.BookingOrder
         public SectionViewModel Section { get; set; }
         public DateTimeOffset BookingDate { get; set; }
         public BuyerViewModel Buyer { get; set; }
+        public int? InitialOrderQuantity { get;}
         public int? OrderQuantity { get; set; }
         public DateTimeOffset DeliveryDate { get; set; }
         public string Remark { get; set; }
+        public List<BookingOrderDetailViewModel> DetailConfirms { get; set; }
+        public string StatusRemainingOrder { get; set; }
+        public string Status { get; set; }
+        public string StatusTotalConfirm { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
@@ -40,6 +45,54 @@ namespace Com.Bateeq.Service.Masterplan.Lib.ViewModels.BookingOrder
 
             if (string.IsNullOrWhiteSpace(this.Remark))
                 yield return new ValidationResult("Keterangan harus diisi", new List<string> { "Remark" });
+
+            if (this.DetailConfirms != null)
+            {
+                int Count = 0;
+                string detailConfirmError = "[";
+
+                foreach (BookingOrderDetailViewModel detailConfirm in this.DetailConfirms)
+                {
+                    detailConfirmError += "{";
+                    if (detailConfirm.RO == null)
+                    {
+                        Count++;
+                        detailConfirmError += "RO: 'RO harus diisi', ";
+                    }
+                    if (detailConfirm.Total == null)
+                    {
+                        Count++;
+                        detailConfirmError += "Total: 'Jumlah harus diisi', ";
+                    }
+                    else if (detailConfirm.Total <= 0)
+                    {
+                        Count++;
+                        detailConfirmError += "Total: 'Jumlah harus lebih besar dari 0', ";
+                    }
+                    if (detailConfirm.DeliveryDate == null || detailConfirm.DeliveryDate.UtcDateTime == DateTime.MinValue)
+                    {
+                        Count++;
+                        detailConfirmError += "DeliveryDate: 'Tanggal Pengiriman harus diisi', ";
+                    }
+                    else if (detailConfirm.DeliveryDate <= this.BookingDate)
+                    {
+                        Count++;
+                        detailConfirmError += "DeliveryDate: 'Tanggal Pengiriman harus lebih dari Tanggal Booking', ";
+                    }
+                    else if (detailConfirm.DeliveryDate > this.DeliveryDate)
+                    {
+                        Count++;
+                        detailConfirmError += "DeliveryDate: 'Tanggal Pengiriman tidak boleh lebih dari Tanggal Pengiriman di header', ";
+                    }
+                    detailConfirmError += "},";
+                }
+
+                detailConfirmError += "]";
+                if (Count > 0)
+                {
+                    yield return new ValidationResult(detailConfirmError, new List<string> { "DetailConfirms" });
+                }
+            }
         }
     }
 }

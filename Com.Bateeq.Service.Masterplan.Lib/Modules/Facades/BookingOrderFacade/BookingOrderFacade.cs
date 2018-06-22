@@ -18,12 +18,14 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
         private readonly MasterplanDbContext DbContext;
         private readonly DbSet<BookingOrder> DbSet;
         private BookingOrderLogic BookingOrderLogic;
+        private BookingOrderDetailLogic BookingOrderDetailLogic;
 
         public BookingOrderFacade(IServiceProvider serviceProvider, MasterplanDbContext dbContext)
         {
             this.DbContext = dbContext;
             this.DbSet = this.DbContext.Set<BookingOrder>();
             this.BookingOrderLogic = serviceProvider.GetService<BookingOrderLogic>();
+            this.BookingOrderDetailLogic = serviceProvider.GetService<BookingOrderDetailLogic>();
         }
 
         public ReadResponse<BookingOrder> Read(int page, int size, string order, List<string> select, string keyword, string filter)
@@ -41,7 +43,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
 
             List<string> selectedFields = new List<string>()
                 {
-                    "Id", "Code", "BookingDate", "Buyer", "OrderQuantity", "DeliveryDate", "Remark"
+                    "Id", "Code", "BookingDate", "Buyer", "OrderQuantity", "DeliveryDate", "Remark", "DetailConfirms", "Status", "StatusTotalConfirm", "StatusRemainingOrder"
                 };
             query = query
                 .Select(field => new BookingOrder
@@ -53,7 +55,10 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
                     BuyerName = field.BuyerName,
                     OrderQuantity = field.OrderQuantity,
                     DeliveryDate = field.DeliveryDate,
-                    Remark = field.Remark
+                    Remark = field.Remark,
+                    DetailConfirms = new List<BookingOrderDetail>(field.DetailConfirms.Select(d => new BookingOrderDetail {
+                        Total = d.Total
+                    }))
                 });
 
             Dictionary<string, string> orderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(order);
@@ -94,6 +99,23 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
         {
             await BookingOrderLogic.DeleteModel(id);
             return await DbContext.SaveChangesAsync();
+        }
+
+        public async Task<int> DeleteDetail(int id)
+        {
+            await BookingOrderDetailLogic.DeleteModel(id);
+            return await DbContext.SaveChangesAsync();
+        }
+
+        public async Task<int> CancelRemaining(int id)
+        {
+            BookingOrder model = await BookingOrderLogic.ReadModelById(id);
+            int total = 0;
+            foreach (BookingOrderDetail item in model.DetailConfirms)
+                total += item.Total;
+            model.InitialOrderQuantity = model.OrderQuantity;
+            model.OrderQuantity = total;
+            return await Update(id, model);
         }
     }
 }

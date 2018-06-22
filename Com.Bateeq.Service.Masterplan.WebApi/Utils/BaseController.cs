@@ -33,7 +33,7 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Utils
             this.ApiVersion = apiVersion;
         }
         
-        private void VerifyUser()
+        protected void VerifyUser()
         {
             IdentityService.Username = User.Claims.ToArray().SingleOrDefault(p => p.Type.Equals("username")).Value;
             IdentityService.Token = Request.Headers["Authorization"].FirstOrDefault().Replace("Bearer ", "");
