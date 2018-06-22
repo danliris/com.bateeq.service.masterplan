@@ -17,8 +17,10 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Models
         public string BuyerCode { get; set; }
         public string BuyerName { get; set; }
         public int OrderQuantity { get; set; }
+        public int? InitialOrderQuantity { get; set; }
         public DateTimeOffset DeliveryDate { get; set; }
         public string Remark { get; set; }
+        public virtual ICollection<BookingOrderDetail> DetailConfirms { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

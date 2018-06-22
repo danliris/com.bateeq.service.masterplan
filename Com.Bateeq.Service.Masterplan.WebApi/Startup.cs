@@ -52,6 +52,7 @@ namespace Com.Bateeq.Service.Masterplan.WebApi
             services
                 .AddTransient<SectionLogic>()
                 .AddTransient<BookingOrderLogic>()
+                .AddTransient<BookingOrderDetailLogic>()
                 .AddTransient<WeeklyPlanLogic>();
         }
 

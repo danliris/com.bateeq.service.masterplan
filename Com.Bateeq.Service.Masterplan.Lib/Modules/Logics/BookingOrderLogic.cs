@@ -1,58 +1,71 @@
 ﻿using Com.Bateeq.Service.Masterplan.Lib.Models;
-using Com.Bateeq.Service.Masterplan.Lib.Utils;
+using Com.Bateeq.Service.Masterplan.Lib.Services.IdentityService;
 using Com.Bateeq.Service.Masterplan.Lib.Utils.BaseLogic;
-using Com.Moonlay.NetCore.Lib;
-using Newtonsoft.Json;
-using System;
+using Com.Moonlay.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
 {
     public class BookingOrderLogic : BaseLogic<BookingOrder>
     {
-        public BookingOrderLogic(IServiceProvider serviceProvider, MasterplanDbContext dbContext) : base(serviceProvider, dbContext)
+        private BookingOrderDetailLogic BookingOrderDetailLogic;
+        public BookingOrderLogic(BookingOrderDetailLogic bookingOrderDetailLogic,IIdentityService identityService, MasterplanDbContext dbContext) : base(identityService, dbContext)
         {
+            this.BookingOrderDetailLogic = bookingOrderDetailLogic;
         }
 
-        public override ReadResponse<BookingOrder> ReadModel(int page, int size, string order, List<string> select, string keyword, string filter)
+        public override void CreateModel(BookingOrder model)
         {
-            IQueryable<BookingOrder> query = this.DbSet;
+            foreach (BookingOrderDetail item in model.DetailConfirms)
+            {
+                EntityExtension.FlagForCreate(item, IdentityService.Username, "masterplan-service");
+            }
+            base.CreateModel(model);
+        }
 
-            List<string> searchAttributes = new List<string>()
+        public override Task<BookingOrder> ReadModelById(int id)
+        {
+            return DbSet.Include(d => d.DetailConfirms).FirstOrDefaultAsync(d => d.Id.Equals(id) && d.IsDeleted.Equals(false));
+        }
+
+        public override async void UpdateModel(int id, BookingOrder model)
+        {
+            if (model.DetailConfirms != null)
+            {
+                HashSet<int> detailIds = BookingOrderDetailLogic.GetBookingOrderDetailIds(id);
+
+                foreach (int detailId in detailIds)
                 {
-                    "Code"
-                };
-            query = QueryHelper<BookingOrder>.Search(query, searchAttributes, keyword);
+                    BookingOrderDetail bod = model.DetailConfirms.FirstOrDefault(prop => prop.Id.Equals(detailId));
+                    if (bod == null)
+                        await BookingOrderDetailLogic.DeleteModel(detailId);
+                    else
+                        BookingOrderDetailLogic.UpdateModel(detailId, bod);
+                }
 
-            Dictionary<string, object> filterDictionary = JsonConvert.DeserializeObject<Dictionary<string, object>>(filter);
-            query = QueryHelper<BookingOrder>.Filter(query, filterDictionary);
-
-            List<string> selectedFields = new List<string>()
+                foreach (BookingOrderDetail item in model.DetailConfirms)
                 {
-                    "Id", "Code", "BookingDate", "Buyer", "OrderQuantity", "DeliveryDate", "Remark"
-                };
-            query = query
-                .Select(field => new BookingOrder
-                {
-                    Id = field.Id,
-                    Code = field.Code,
-                    BookingDate = field.BookingDate,
-                    BuyerId = field.BuyerId,
-                    BuyerName = field.BuyerName,
-                    OrderQuantity = field.OrderQuantity,
-                    DeliveryDate = field.DeliveryDate,
-                    Remark = field.Remark
-                });
+                    if (item.Id == 0)
+                        BookingOrderDetailLogic.CreateModel(item);
+                }
+            }
+            base.UpdateModel(id, model);
+        }
 
-            Dictionary<string, string> orderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(order);
-            query = QueryHelper<BookingOrder>.Order(query, orderDictionary);
+        public override async Task DeleteModel(int id)
+        {
+            BookingOrder model = await ReadModelById(id);
 
-            Pageable<BookingOrder> pageable = new Pageable<BookingOrder>(query, page - 1, size);
-            List<BookingOrder> data = pageable.Data.ToList<BookingOrder>();
-            int totalData = pageable.TotalCount;
+            foreach (var item in model.DetailConfirms)
+            {
+                EntityExtension.FlagForDelete(item, IdentityService.Username, "masterplan-service");
+            }
 
-            return new ReadResponse<BookingOrder>(data, totalData, orderDictionary, selectedFields);
+            EntityExtension.FlagForDelete(model, IdentityService.Username, "masterplan-service", true);
+            DbSet.Update(model);
         }
     }
 }

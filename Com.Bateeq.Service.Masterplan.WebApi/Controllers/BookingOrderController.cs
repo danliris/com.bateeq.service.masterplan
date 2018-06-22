@@ -7,6 +7,9 @@ using Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade;
 using Com.Bateeq.Service.Masterplan.WebApi.Utils;
 using Com.Bateeq.Service.Masterplan.Lib.Services.IdentityService;
 using Com.Bateeq.Service.Masterplan.Lib.Services.ValidateService;
+using System.Threading.Tasks;
+using System;
+using System.Collections.Generic;
 
 namespace Com.Bateeq.Service.Masterplan.WebApi.Controllers
 {
@@ -19,6 +22,26 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Controllers
         private readonly static string apiVersion = "1.0";
         public BookingOrderController(IIdentityService identityService, IValidateService validateService, IBookingOrderFacade bookingOrderFacade, IMapper mapper) : base(identityService, validateService, bookingOrderFacade, mapper, apiVersion)
         {
+        }
+
+        [HttpPut("cancel-remaining/{Id}")]
+        public async Task<IActionResult> CancelRemaining([FromRoute] int id)
+        {
+            try
+            {
+                VerifyUser();
+
+                await Facade.CancelRemaining(id);
+
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
         }
     }
 }

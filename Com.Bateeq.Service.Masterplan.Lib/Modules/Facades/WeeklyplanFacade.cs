@@ -8,6 +8,9 @@ using Com.Bateeq.Service.Masterplan.Lib.Utils;
 using Com.Bateeq.Service.Masterplan.Lib.Services.IdentityService;
 using Com.Bateeq.Service.Masterplan.Lib.Services.ValidateService;
 using Com.Bateeq.Service.Masterplan.Lib.Modules.Logics;
+using System.Linq;
+using Newtonsoft.Json;
+using Com.Moonlay.NetCore.Lib;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades
 {
@@ -40,9 +43,31 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades
             return await DbContext.SaveChangesAsync();
         }
 
-        public ReadResponse<WeeklyPlan> Read(int Page, int Size, string Order, List<string> Select, string Keyword, string Filter)
+        public ReadResponse<WeeklyPlan> Read(int page, int size, string order, List<string> select, string keyword, string filter)
         {
-            return WeeklyPlanLogic.ReadModel(Page, Size, Order, Select, Keyword, Filter);
+            IQueryable<WeeklyPlan> Query = this.DbSet;
+            List<string> SearchAttributes = new List<string>() { "Id", "Year", "UnitId", "UnitCode", "UnitName" };
+            Query = QueryHelper<WeeklyPlan>.Search(Query, SearchAttributes, keyword);
+
+            Dictionary<string, object> FilterDictionary = JsonConvert.DeserializeObject<Dictionary<string, object>>(filter);
+            Query = QueryHelper<WeeklyPlan>.Filter(Query, FilterDictionary);
+
+            Query = Query.Select(field => new WeeklyPlan
+            {
+                Id = field.Id,
+                Year = field.Year,
+                UnitId = field.UnitId,
+                UnitCode = field.UnitCode,
+                UnitName = field.UnitName
+            });
+
+            Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(order);
+            Query = QueryHelper<WeeklyPlan>.Order(Query, OrderDictionary);
+            Pageable<WeeklyPlan> pageable = new Pageable<WeeklyPlan>(Query, page - 1, size);
+            List<WeeklyPlan> Data = pageable.Data.ToList<WeeklyPlan>();
+            int TotalData = pageable.TotalCount;
+
+            return new ReadResponse<WeeklyPlan>(Data, TotalData, OrderDictionary, SearchAttributes);
         }
 
         public async Task<WeeklyPlan> ReadById(int id)

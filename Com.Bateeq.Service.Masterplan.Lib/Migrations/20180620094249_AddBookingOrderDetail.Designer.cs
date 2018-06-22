@@ -11,9 +11,10 @@ using System;
 namespace Com.Bateeq.Service.Masterplan.Lib.Migrations
 {
     [DbContext(typeof(MasterplanDbContext))]
-    partial class MasterplanDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180620094249_AddBookingOrderDetail")]
+    partial class AddBookingOrderDetail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -58,8 +59,6 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Migrations
                     b.Property<DateTime>("DeletedUtc");
 
                     b.Property<DateTimeOffset>("DeliveryDate");
-
-                    b.Property<int?>("InitialOrderQuantity");
 
                     b.Property<bool>("IsDeleted");
 
@@ -148,7 +147,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Migrations
                     b.Property<string>("Style")
                         .HasMaxLength(500);
 
-                    b.Property<int>("Total");
+                    b.Property<double>("Total");
 
                     b.HasKey("Id");
 
