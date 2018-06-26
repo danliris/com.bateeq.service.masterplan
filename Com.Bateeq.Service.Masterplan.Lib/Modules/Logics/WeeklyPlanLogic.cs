@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Com.Bateeq.Service.Masterplan.Lib.Models;
 using System.Linq.Dynamic.Core;
 using Com.Moonlay.Models;
-using Newtonsoft.Json;
-using Com.Moonlay.NetCore.Lib;
 using Microsoft.EntityFrameworkCore;
 using Com.Bateeq.Service.Masterplan.Lib.Utils.BaseLogic;
-using Com.Bateeq.Service.Masterplan.Lib.Utils;
 using Com.Bateeq.Service.Masterplan.Lib.Services.IdentityService;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
@@ -63,7 +58,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
         }
 
 
-        public async Task<WeeklyPlan> GetByYearAndUnitCode(int year, string code)
+        public async Task<WeeklyPlan> GetByYearAndUnitCode(string year, string code)
         {
             var model = await DbSet.Include(p => p.Items).FirstOrDefaultAsync(item => item.Year == year && item.UnitCode == code && item.IsDeleted.Equals(false));
             return model;

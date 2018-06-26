@@ -25,7 +25,7 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Controllers
         }
 
         [HttpGet("is-exist/{year}/{code}")]
-        public async Task<IActionResult> GetByYearAndUnitCode(int year, string code)
+        public async Task<IActionResult> GetByYearAndUnitCode(string year, string code)
         {
             try
             {
@@ -55,11 +55,5 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Controllers
                 return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
             }
         }
-    }
-
-    public class FilterObject
-    {
-        public int Year { get; set; }
-        public string Code { get; set; }
     }
 }

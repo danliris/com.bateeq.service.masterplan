@@ -82,7 +82,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades
             return await DbContext.SaveChangesAsync();
         }
 
-        public async Task<WeeklyPlan> GetByYearAndUnitCode(int year, string code)
+        public async Task<WeeklyPlan> GetByYearAndUnitCode(string year, string code)
         {
             var weeklyPlan = await WeeklyPlanLogic.GetByYearAndUnitCode(year, code);
             return weeklyPlan;
