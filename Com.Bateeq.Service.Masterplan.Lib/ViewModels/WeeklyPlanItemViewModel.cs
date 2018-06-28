@@ -5,7 +5,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.ViewModels
 {
     public class WeeklyPlanItemViewModel : BaseViewModel
     {
-        public int WeekNumber { get; set; }
+        public string WeekNumber { get; set; }
         public int Month { get; set; }
         public int Efficiency { get; set; }
         public int Operator { get; set; }
