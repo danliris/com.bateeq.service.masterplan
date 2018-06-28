@@ -10,7 +10,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Models
     {
         public int WeeklyPlanId { get; set; }
         public virtual WeeklyPlan WeeklyPlan { get; set; }
-        public int WeekNumber { get; set; }
+        public string WeekNumber { get; set; }
         public int Month { get; set; }
         public int Efficiency { get; set; }
         public int Operator { get; set; }
