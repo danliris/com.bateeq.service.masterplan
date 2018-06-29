@@ -1,9 +1,9 @@
 ﻿using Com.Moonlay.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Dynamic.Core;
-using System.Reflection;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.Utils
 {
@@ -31,31 +31,49 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Utils
             /* Default Order */
             if (orderDictionary.Count.Equals(0))
             {
-                orderDictionary.Add("LastModifiedUtc", General.DESCENDING);
+                orderDictionary.Add("LastModifiedUtc", "desc");
 
                 query = query.OrderByDescending(b => b.LastModifiedUtc);
             }
             /* Custom Order */
             else
             {
-                string key = orderDictionary.Keys.First();
-                string orderType = orderDictionary[key];
-                string transformKey = General.TransformOrderBy(key);
+                string Key = orderDictionary.Keys.First();
+                string OrderType = orderDictionary[Key];
 
-                BindingFlags IgnoreCase = BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance;
-
-                query = orderType.Equals(General.ASCENDING) ?
-                    query.OrderBy(b => b.GetType().GetProperty(transformKey, IgnoreCase).GetValue(b)) :
-                    query.OrderByDescending(b => b.GetType().GetProperty(transformKey, IgnoreCase).GetValue(b));
+                query = query.OrderBy(string.Concat(Key.Replace(".", ""), " ", OrderType));
             }
             return query;
         }
 
-        public static IQueryable<TModel> Search(IQueryable<TModel> query, List<string> searchAttributes, string keyword)
+        public static IQueryable<TModel> Search(IQueryable<TModel> query, List<string> searchAttributes, string keyword, bool ToLowerCase = false)
         {
+            /* Search with Keyword */
             if (keyword != null)
             {
-                query = query.Where(General.BuildSearch(searchAttributes), keyword);
+                string SearchQuery = String.Empty;
+                foreach (string Attribute in searchAttributes)
+                {
+                    if (Attribute.Contains("."))
+                    {
+                        var Key = Attribute.Split(".");
+                        SearchQuery = string.Concat(SearchQuery, Key[0], $".Any({Key[1]}.Contains(@0)) OR ");
+                    }
+                    else
+                    {
+                        SearchQuery = string.Concat(SearchQuery, Attribute, ".Contains(@0) OR ");
+                    }
+                }
+
+                SearchQuery = SearchQuery.Remove(SearchQuery.Length - 4);
+
+                if (ToLowerCase)
+                {
+                    SearchQuery = SearchQuery.Replace(".Contains(@0)", ".ToLower().Contains(@0)");
+                    keyword = keyword.ToLower();
+                }
+
+                query = query.Where(SearchQuery, keyword);
             }
             return query;
         }

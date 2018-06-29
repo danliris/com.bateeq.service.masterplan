@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using System;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.ViewModels.BookingOrder
 {
@@ -6,20 +7,26 @@ namespace Com.Bateeq.Service.Masterplan.Lib.ViewModels.BookingOrder
     {
         public string Resolve(Models.BookingOrder source, BookingOrderViewModel destination, string destMember, ResolutionContext context)
         {
-            
-            if (source.DetailConfirms.Count <= 0)
-                return StatusTotalConfirmConst.NOT_CONFIRMED;
-            else
+            try
             {
-                int total = 0;
-                foreach (Models.BookingOrderDetail item in source.DetailConfirms)
+                if (source.DetailConfirms.Count <= 0)
+                    return StatusTotalConfirmConst.NOT_CONFIRMED;
+                else
                 {
-                    total += item.Total;
+                    int total = 0;
+                    foreach (Models.BookingOrderDetail item in source.DetailConfirms)
+                    {
+                        total += item.Total;
+                    }
+                    int diff = total - source.OrderQuantity;
+                    if (diff > 0)
+                        return "+" + diff;
+                    return diff.ToString();
                 }
-                int diff = total - source.OrderQuantity;
-                if (diff > 0)
-                    return "+" + diff;
-                return diff.ToString();
+            }
+            catch (Exception)
+            {
+                return null;
             }
         }
     }

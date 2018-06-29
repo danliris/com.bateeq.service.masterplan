@@ -16,6 +16,8 @@ namespace Com.Bateeq.Service.Masterplan.Lib
         public virtual DbSet<WeeklyPlanItem> WeeklyPlanItems { get; set; }
         public virtual DbSet<BookingOrder> BookingOrders { get; set; }
         public virtual DbSet<BookingOrderDetail> BookingOrderDetails { get; set; }
+        public virtual DbSet<BlockingPlan> BlockingPlans { get; set; }
+        public virtual DbSet<BlockingPlanWorkSchedule> BlockingPlanWorkSchedules { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -23,6 +25,8 @@ namespace Com.Bateeq.Service.Masterplan.Lib
             modelBuilder.ApplyConfiguration(new WeeklyPlanConfig());
             modelBuilder.ApplyConfiguration(new BookingOrderConfig());
             modelBuilder.ApplyConfiguration(new BookingOrderDetailConfig());
+            modelBuilder.ApplyConfiguration(new BlockingPlanConfig());
+            modelBuilder.ApplyConfiguration(new BlockingPlanWorkScheduleConfig());
             base.OnModelCreating(modelBuilder);
         }
     }

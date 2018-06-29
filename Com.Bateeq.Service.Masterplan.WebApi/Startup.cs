@@ -17,6 +17,7 @@ using Com.Bateeq.Service.Masterplan.Lib.Services.IdentityService;
 using Com.Bateeq.Service.Masterplan.Lib.Services.ValidateService;
 using Com.Bateeq.Service.Masterplan.WebApi.Utils;
 using Com.Bateeq.Service.Masterplan.Lib.Modules.Logics;
+using Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade;
 
 namespace Com.Bateeq.Service.Masterplan.WebApi
 {
@@ -44,7 +45,9 @@ namespace Com.Bateeq.Service.Masterplan.WebApi
             services
                 .AddTransient<ISectionFacade, SectionFacade>()
                 .AddTransient<IBookingOrderFacade, BookingOrderFacade>()
-                .AddTransient<WeeklyPlanFacade>();
+                .AddTransient<WeeklyPlanFacade>()
+                .AddTransient<WeeklyPlanItemFacade>()
+                .AddTransient<IBlockingPlanFacade, BlockingPlanFacade>();
         }
 
         private void RegisterLogics(IServiceCollection services)
@@ -53,7 +56,9 @@ namespace Com.Bateeq.Service.Masterplan.WebApi
                 .AddTransient<SectionLogic>()
                 .AddTransient<BookingOrderLogic>()
                 .AddTransient<BookingOrderDetailLogic>()
-                .AddTransient<WeeklyPlanLogic>();
+                .AddTransient<WeeklyPlanLogic>()
+                .AddTransient<BlockingPlanLogic>()
+                .AddTransient<BlockingPlanWorkScheduleLogic>();
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
