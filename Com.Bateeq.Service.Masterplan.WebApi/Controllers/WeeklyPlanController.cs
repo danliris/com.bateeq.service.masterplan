@@ -55,5 +55,28 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Controllers
                 return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
             }
         }
+
+        [HttpGet("get-by-year/{year}")]
+        public async Task<IActionResult> GetWeeklyPlanByYear(string year)
+        {
+            try
+            {
+                List<WeeklyPlan> read = await Facade.ReadByYear(year);
+
+                List<WeeklyPlanViewModel> dataVM = this.Mapper.Map<List<WeeklyPlanViewModel>>(read);
+
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.OK_STATUS_CODE, General.OK_MESSAGE)
+                    .Ok<List<WeeklyPlanViewModel>>(this.Mapper, dataVM);
+                return Ok(Result);
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
     }
 }

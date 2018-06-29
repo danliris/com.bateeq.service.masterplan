@@ -46,12 +46,16 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades
         public ReadResponse<WeeklyPlan> Read(int page, int size, string order, List<string> select, string keyword, string filter)
         {
             IQueryable<WeeklyPlan> Query = this.DbSet;
-            List<string> SearchAttributes = new List<string>() { "Id", "Year", "UnitId", "UnitCode", "UnitName" };
+            List<string> SearchAttributes = new List<string>()
+                {
+                    "Year"
+                };
             Query = QueryHelper<WeeklyPlan>.Search(Query, SearchAttributes, keyword);
 
             Dictionary<string, object> FilterDictionary = JsonConvert.DeserializeObject<Dictionary<string, object>>(filter);
             Query = QueryHelper<WeeklyPlan>.Filter(Query, FilterDictionary);
 
+            List<string> SelectedFields = new List<string>() { "Id", "Year", "UnitId", "UnitCode", "UnitName" };
             Query = Query.Select(field => new WeeklyPlan
             {
                 Id = field.Id,
@@ -67,7 +71,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades
             List<WeeklyPlan> Data = pageable.Data.ToList<WeeklyPlan>();
             int TotalData = pageable.TotalCount;
 
-            return new ReadResponse<WeeklyPlan>(Data, TotalData, OrderDictionary, SearchAttributes);
+            return new ReadResponse<WeeklyPlan>(Data, TotalData, OrderDictionary, SelectedFields);
         }
 
         public async Task<WeeklyPlan> ReadById(int id)
@@ -86,6 +90,14 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades
         {
             var weeklyPlan = await WeeklyPlanLogic.GetByYearAndUnitCode(year, code);
             return weeklyPlan;
+        }
+
+        public async Task<List<WeeklyPlan>> ReadByYear(string year)
+        {
+            var weeklyPlans = await DbSet.Include(p => p.Items).Where(d => d.Year == year && d.IsDeleted == false).ToListAsync();
+            foreach(var weeklyPlan in weeklyPlans)
+                weeklyPlan.Items = weeklyPlan.Items.OrderBy(s => s.WeekNumber).ToArray();
+            return weeklyPlans;
         }
     }
 }
