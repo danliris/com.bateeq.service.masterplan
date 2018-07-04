@@ -12,7 +12,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.ViewModels.BlockingPlan
         public string Article { get; set; }
         public string Style { get; set; }
         public string Counter { get; set; }
-        public int SMV_Sewing { get; set; }
+        public double SMV_Sewing { get; set; }
         public UnitViewModel Unit { get; set; }
         public WeeklyPlanViewModel Year { get; set; }
         public WeeklyPlanItemViewModel Week { get; set; }
