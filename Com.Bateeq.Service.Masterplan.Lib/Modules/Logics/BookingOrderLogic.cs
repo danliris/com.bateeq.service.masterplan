@@ -55,6 +55,12 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
             base.UpdateModel(id, model);
         }
 
+        public void UpdateModelBlockingPlanId(int id, BookingOrder model, int? blockingPlanId)
+        {
+            model.BlockingPlanId = blockingPlanId;
+            base.UpdateModel(id, model);
+        }
+
         public override async Task DeleteModel(int id)
         {
             BookingOrder model = await ReadModelById(id);
