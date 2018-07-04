@@ -9,7 +9,9 @@ namespace Com.Bateeq.Service.Masterplan.Lib.ViewModels.BookingOrder
         {
             try
             {
-                if (source.DetailConfirms.Count <= 0)
+                if (source.BlockingPlanId != null)
+                    return StatusConst.BLOCKING_PLAN_IS_CREATED;
+                else if (source.DetailConfirms.Count <= 0)
                     return StatusConst.BOOKING;
                 else
                     return StatusConst.CONFIRMED;

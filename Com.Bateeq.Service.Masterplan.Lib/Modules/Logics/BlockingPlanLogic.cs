@@ -13,6 +13,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
 {
     public class BlockingPlanLogic : BaseLogic<BlockingPlan>
     {
+        private BookingOrderLogic BookingOrderLogic;
         private BlockingPlanWorkScheduleLogic BlockingPlanWorkScheduleLogic;
         public BlockingPlanLogic(BlockingPlanWorkScheduleLogic blockingPlanWorkScheduleLogic, IIdentityService identityService, MasterplanDbContext dbContext) : base(identityService, dbContext)
         {
@@ -65,6 +66,9 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
             {
                 EntityExtension.FlagForDelete(item, IdentityService.Username, "masterplan-service");
             }
+
+            BookingOrder bookingOrder = await BookingOrderLogic.ReadModelById(model.BookingOrderId);
+            BookingOrderLogic.UpdateModelBlockingPlanId(bookingOrder.Id, bookingOrder, null);
 
             EntityExtension.FlagForDelete(model, IdentityService.Username, "masterplan-service", true);
             DbSet.Update(model);

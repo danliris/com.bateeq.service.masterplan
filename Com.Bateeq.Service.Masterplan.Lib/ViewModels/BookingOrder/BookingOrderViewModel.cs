@@ -21,6 +21,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.ViewModels.BookingOrder
         public string StatusRemainingOrder { get; set; }
         public string Status { get; set; }
         public string StatusTotalConfirm { get; set; }
+        public int? BlockingPlanId { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

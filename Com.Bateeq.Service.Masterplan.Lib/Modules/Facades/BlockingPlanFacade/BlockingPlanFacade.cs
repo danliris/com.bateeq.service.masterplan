@@ -17,18 +17,24 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade
         private readonly MasterplanDbContext DbContext;
         private readonly DbSet<BlockingPlan> DbSet;
         private BlockingPlanLogic BlockingPlanLogic;
+        private BookingOrderLogic BookingOrderLogic;
 
         public BlockingPlanFacade(IServiceProvider serviceProvider, MasterplanDbContext dbContext)
         {
             this.DbContext = dbContext;
             this.DbSet = this.DbContext.Set<BlockingPlan>();
             this.BlockingPlanLogic = serviceProvider.GetService<BlockingPlanLogic>();
+            this.BookingOrderLogic = serviceProvider.GetService<BookingOrderLogic>();
         }
 
         public async Task<int> Create(BlockingPlan model)
         {
             BlockingPlanLogic.CreateModel(model);
-            return await DbContext.SaveChangesAsync();
+            int created = await DbContext.SaveChangesAsync();
+            BookingOrder bookingOrder = await BookingOrderLogic.ReadModelById(model.BookingOrderId);
+            BookingOrderLogic.UpdateModelBlockingPlanId(bookingOrder.Id, bookingOrder, model.Id);
+            await DbContext.SaveChangesAsync();
+            return created;
         }
 
         public async Task<int> Delete(int id)
@@ -55,16 +61,19 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade
                 .Select(field => new BlockingPlan
                 {
                     Id = field.Id,
-                    BookingOrder = new BookingOrder
-                    {
-                        Code = field.BookingOrder.Code,
-                        BookingDate = field.BookingOrder.BookingDate,
-                        BuyerId = field.BookingOrder.BuyerId,
-                        BuyerName = field.BookingOrder.BuyerName,
-                        OrderQuantity = field.BookingOrder.OrderQuantity,
-                        DeliveryDate = field.BookingOrder.DeliveryDate,
-                        Remark = field.BookingOrder.Remark
-                    }
+                    BookingOrder = DbContext.BookingOrders
+                        .Where(d => d.Id.Equals(field.BookingOrderId) && d.IsDeleted.Equals(false))
+                        .Select(d => new BookingOrder
+                        {
+                            Code = d.Code,
+                            BookingDate = d.BookingDate,
+                            BuyerId = d.BuyerId,
+                            BuyerName = d.BuyerName,
+                            OrderQuantity = d.OrderQuantity,
+                            DeliveryDate = d.DeliveryDate,
+                            Remark = d.Remark
+                        })
+                        .FirstOrDefault()
                 });
 
             Dictionary<string, string> orderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(order);
