@@ -43,7 +43,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
 
             List<string> selectedFields = new List<string>()
                 {
-                    "Id", "Code", "BookingDate", "Buyer", "OrderQuantity", "DeliveryDate", "Remark", "DetailConfirms", "Status", "StatusTotalConfirm", "StatusRemainingOrder"
+                    "Id", "Code", "BookingDate", "Buyer", "OrderQuantity", "DeliveryDate", "Remark", "DetailConfirms", "Status", "StatusTotalConfirm", "StatusRemainingOrder", "BlockingPlanId"
                 };
             query = query
                 .Select(field => new BookingOrder
@@ -58,7 +58,8 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
                     Remark = field.Remark,
                     DetailConfirms = new List<BookingOrderDetail>(field.DetailConfirms.Select(d => new BookingOrderDetail {
                         Total = d.Total
-                    }))
+                    })),
+                    BlockingPlanId = field.BlockingPlanId
                 });
 
             Dictionary<string, string> orderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(order);

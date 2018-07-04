@@ -20,9 +20,9 @@ namespace Com.Bateeq.Service.Masterplan.Lib.ModelConfigs
                 .IsRequired();
             builder
                 .HasOne(b => b.BlockingPlan)
-                .WithOne(d => d.BookingOrder)
-                .HasForeignKey<BlockingPlan>(d => d.BookingOrderId)
-                .IsRequired();
+                .WithOne()
+                .HasForeignKey<BookingOrder>(c => c.BlockingPlanId)
+                .IsRequired(false);
         }
     }
 }

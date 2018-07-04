@@ -8,6 +8,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.ModelConfigs
     {
         public void Configure(EntityTypeBuilder<BlockingPlan> builder)
         {
+            builder.Ignore(c => c.BookingOrder);
             builder
                 .HasMany(b => b.WorkSchedules)
                 .WithOne(d => d.BlockingPlan)
