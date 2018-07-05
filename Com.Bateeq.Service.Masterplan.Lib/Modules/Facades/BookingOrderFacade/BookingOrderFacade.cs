@@ -10,6 +10,7 @@ using Com.Bateeq.Service.Masterplan.Lib.Utils;
 using Com.Bateeq.Service.Masterplan.Lib.Modules.Logics;
 using Newtonsoft.Json;
 using Com.Moonlay.NetCore.Lib;
+using Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
 {
@@ -19,6 +20,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
         private readonly DbSet<BookingOrder> DbSet;
         private BookingOrderLogic BookingOrderLogic;
         private BookingOrderDetailLogic BookingOrderDetailLogic;
+        private BlockingPlanLogic BlockingPlanLogic;
 
         public BookingOrderFacade(IServiceProvider serviceProvider, MasterplanDbContext dbContext)
         {
@@ -26,6 +28,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
             this.DbSet = this.DbContext.Set<BookingOrder>();
             this.BookingOrderLogic = serviceProvider.GetService<BookingOrderLogic>();
             this.BookingOrderDetailLogic = serviceProvider.GetService<BookingOrderDetailLogic>();
+            this.BlockingPlanLogic = serviceProvider.GetService<BlockingPlanLogic>();
         }
 
         public ReadResponse<BookingOrder> Read(int page, int size, string order, List<string> select, string keyword, string filter)
@@ -99,12 +102,21 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
         public async Task<int> Delete(int id)
         {
             await BookingOrderLogic.DeleteModel(id);
+            var blockingPlan = await DbContext.BlockingPlans.FirstOrDefaultAsync(d => d.BookingOrderId.Equals(id) && d.IsDeleted.Equals(false));
+            BlockingPlanLogic.UpdateModelStatus(blockingPlan.Id, blockingPlan, BlockingPlanStatus.DELETED);
             return await DbContext.SaveChangesAsync();
         }
 
         public async Task<int> DeleteDetail(int id)
         {
             await BookingOrderDetailLogic.DeleteModel(id);
+            var bookingOrderDetail = await BookingOrderDetailLogic.ReadModelById(id);
+            var bookingOrder = await BookingOrderLogic.ReadModelById(bookingOrderDetail.BookingOrderId);
+            if (bookingOrder.BlockingPlanId != null)
+            {
+                var blockingPlan = await BlockingPlanLogic.ReadModelById((int)bookingOrder.BlockingPlanId);
+                BlockingPlanLogic.UpdateModelStatus(blockingPlan.Id, blockingPlan, BlockingPlanStatus.CHANGED);
+            }
             return await DbContext.SaveChangesAsync();
         }
 
@@ -117,6 +129,8 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
             if (model.InitialOrderQuantity == null)
                 model.InitialOrderQuantity = model.OrderQuantity;
             model.OrderQuantity = total;
+            var blockingPlan = await DbContext.BlockingPlans.FirstOrDefaultAsync(d => d.BookingOrderId.Equals(id) && d.IsDeleted.Equals(false));
+            BlockingPlanLogic.UpdateModelStatus(blockingPlan.Id, blockingPlan, BlockingPlanStatus.CANCELLED);
             return await Update(id, model);
         }
     }

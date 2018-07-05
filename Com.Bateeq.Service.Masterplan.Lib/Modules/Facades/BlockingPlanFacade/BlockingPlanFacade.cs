@@ -55,14 +55,14 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade
 
             List<string> selectedFields = new List<string>()
                 {
-                    "Id", "BookingOrder"
+                    "Id", "BookingOrder", "Status"
                 };
             query = query
                 .Select(field => new BlockingPlan
                 {
                     Id = field.Id,
                     BookingOrder = DbContext.BookingOrders
-                        .Where(d => d.Id.Equals(field.BookingOrderId) && d.IsDeleted.Equals(false))
+                        .Where(d => d.Id.Equals(field.BookingOrderId))
                         .Select(d => new BookingOrder
                         {
                             Code = d.Code,
@@ -73,7 +73,9 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade
                             DeliveryDate = d.DeliveryDate,
                             Remark = d.Remark
                         })
-                        .FirstOrDefault()
+                        .IgnoreQueryFilters()
+                        .FirstOrDefault(),
+                    Status = field.Status
                 });
 
             Dictionary<string, string> orderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(order);

@@ -13,11 +13,14 @@ namespace Com.Bateeq.Service.Masterplan.Lib.ViewModels.BlockingPlan
         public DateTimeOffset DeliveryDate { get; set; }
         public List<BlockingPlanWorkScheduleViewModel> WorkSchedules { get; set; }
         public BookingOrderViewModel BookingOrder { get; set; }
+        public string Status { get; set; }
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             if (this.BookingOrderId == null || this.BookingOrderId == 0)
                 yield return new ValidationResult("Booking Order harus diisi", new List<string> { "BookingOrder" });
-            if (this.WorkSchedules != null)
+            if (this.WorkSchedules == null)
+                yield return new ValidationResult("Tabel Jadwal Pengerjaan harus diisi", new List<string> { "WorkSchedules" });
+            else
             {
                 int count = 0;
                 string error = "[";

@@ -1,11 +1,10 @@
-﻿using Com.Bateeq.Service.Masterplan.Lib.ViewModels.Integration;
+﻿using Com.Bateeq.Service.Masterplan.Lib.Utils;
+using Com.Bateeq.Service.Masterplan.Lib.ViewModels.Integration;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.ViewModels.BlockingPlan
 {
-    public class BlockingPlanWorkScheduleViewModel
+    public class BlockingPlanWorkScheduleViewModel : BaseViewModel
     {
         public bool isConfirmed { get; set; }
         public string RO { get; set; }

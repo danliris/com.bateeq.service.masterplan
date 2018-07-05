@@ -1,12 +1,11 @@
 ﻿using Com.Bateeq.Service.Masterplan.Lib.Models;
+using Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade;
 using Com.Bateeq.Service.Masterplan.Lib.Services.IdentityService;
 using Com.Bateeq.Service.Masterplan.Lib.Utils.BaseLogic;
 using Com.Moonlay.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
@@ -15,23 +14,41 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
     {
         private BookingOrderLogic BookingOrderLogic;
         private BlockingPlanWorkScheduleLogic BlockingPlanWorkScheduleLogic;
-        public BlockingPlanLogic(BlockingPlanWorkScheduleLogic blockingPlanWorkScheduleLogic, IIdentityService identityService, MasterplanDbContext dbContext) : base(identityService, dbContext)
+        private MasterplanDbContext DbContext;
+        public BlockingPlanLogic(BookingOrderLogic bookingOrderLogic, BlockingPlanWorkScheduleLogic blockingPlanWorkScheduleLogic, IIdentityService identityService, MasterplanDbContext dbContext) : base(identityService, dbContext)
         {
             this.BlockingPlanWorkScheduleLogic = blockingPlanWorkScheduleLogic;
+            this.BookingOrderLogic = bookingOrderLogic;
+            this.DbContext = dbContext;
         }
 
         public override void CreateModel(BlockingPlan model)
         {
-            foreach (BlockingPlanWorkSchedule item in model.WorkSchedules)
+            if (model.WorkSchedules != null)
             {
-                BlockingPlanWorkScheduleLogic.CreateModel(item);
+                int count = 0;
+                foreach (BlockingPlanWorkSchedule item in model.WorkSchedules)
+                {
+                    if (item.isConfirmed)
+                        count++;
+                    BlockingPlanWorkScheduleLogic.CreateModel(item);
+                }
+                if (count == 0)
+                    model.Status = BlockingPlanStatus.BOOKING;
+                else if (count == model.WorkSchedules.Count)
+                    model.Status = BlockingPlanStatus.FULL_CONFIRMED;
+                else
+                    model.Status = BlockingPlanStatus.HALF_CONFIRMED;
             }
+
             base.CreateModel(model);
         }
 
-        public override Task<BlockingPlan> ReadModelById(int id)
+        public override async Task<BlockingPlan> ReadModelById(int id)
         {
-            return DbSet.Include(d => d.WorkSchedules).FirstOrDefaultAsync(d => d.Id.Equals(id) && d.IsDeleted.Equals(false));
+            BlockingPlan blockingPlan = await DbSet.Include(d => d.WorkSchedules).FirstOrDefaultAsync(d => d.Id.Equals(id) && d.IsDeleted.Equals(false));
+            blockingPlan.BookingOrder = await DbContext.BookingOrders.Include(d => d.DetailConfirms).IgnoreQueryFilters().FirstOrDefaultAsync(d => d.Id.Equals(blockingPlan.BookingOrderId));
+            return blockingPlan;
         }
 
         public override async void UpdateModel(int id, BlockingPlan model)
@@ -55,6 +72,12 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
                         BlockingPlanWorkScheduleLogic.CreateModel(item);
                 }
             }
+            base.UpdateModel(id, model);
+        }
+
+        public void UpdateModelStatus(int id, BlockingPlan model, string status)
+        {
+            model.Status = status;
             base.UpdateModel(id, model);
         }
 
