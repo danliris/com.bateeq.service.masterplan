@@ -15,7 +15,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Models
         public string Article { get; set; }
         public string Style { get; set; }
         public string Counter { get; set; }
-        public int SMV_Sewing { get; set; }
+        public double SMV_Sewing { get; set; }
         public string UnitId { get; set; }
         public string UnitText { get; set; }
         public int YearId { get; set; }
