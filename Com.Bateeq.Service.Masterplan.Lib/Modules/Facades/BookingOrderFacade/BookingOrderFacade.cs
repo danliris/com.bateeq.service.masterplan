@@ -103,7 +103,10 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
         {
             await BookingOrderLogic.DeleteModel(id);
             var blockingPlan = await DbContext.BlockingPlans.FirstOrDefaultAsync(d => d.BookingOrderId.Equals(id) && d.IsDeleted.Equals(false));
-            BlockingPlanLogic.UpdateModelStatus(blockingPlan.Id, blockingPlan, BlockingPlanStatus.DELETED);
+            if (blockingPlan != null)
+            {
+                BlockingPlanLogic.UpdateModelStatus(blockingPlan.Id, blockingPlan, BlockingPlanStatus.DELETED);
+            }
             return await DbContext.SaveChangesAsync();
         }
 
