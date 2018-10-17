@@ -17,9 +17,15 @@ namespace Com.Bateeq.Service.Masterplan.Lib.ViewModels.BlockingPlan
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             if (this.BookingOrderId == null || this.BookingOrderId == 0)
-                yield return new ValidationResult("Booking Order harus diisi", new List<string> { "BookingOrder" });
-            if (this.WorkSchedules == null)
-                yield return new ValidationResult("Tabel Jadwal Pengerjaan harus diisi", new List<string> { "WorkSchedules" });
+            {
+                yield return new ValidationResult("Booking Order harus diisi", new List<string> { "ValidateBookingOrder" });
+            }
+          
+
+            if (this.WorkSchedules.Count == 0)
+            {
+                yield return new ValidationResult("Tabel Jadwal Pengerjaan harus diisi", new List<string> { "ValidateWorkSchedules" });
+            }
             else
             {
                 int count = 0;

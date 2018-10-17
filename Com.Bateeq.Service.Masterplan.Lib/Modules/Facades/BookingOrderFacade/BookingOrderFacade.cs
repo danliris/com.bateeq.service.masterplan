@@ -34,12 +34,19 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
         public ReadResponse<BookingOrder> Read(int page, int size, string order, List<string> select, string keyword, string filter)
         {
             IQueryable<BookingOrder> query = this.DbSet;
-
+           
             List<string> searchAttributes = new List<string>()
                 {
                     "Code"
                 };
             query = QueryHelper<BookingOrder>.Search(query, searchAttributes, keyword);
+
+            // Filter not show Booking Expired to add Blocking Plan Sewing
+            if (filter.Contains("Expired"))
+            {
+                filter = "{}";
+                query = query.Where(p => p.BookingDate >= DateTime.Today);
+            }
 
             Dictionary<string, object> filterDictionary = JsonConvert.DeserializeObject<Dictionary<string, object>>(filter);
             query = QueryHelper<BookingOrder>.Filter(query, filterDictionary);
