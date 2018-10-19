@@ -56,20 +56,37 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
             if (model.WorkSchedules != null)
             {
                 HashSet<int> detailIds = BlockingPlanWorkScheduleLogic.GetBlockingPlanWorkScheduleIds(id);
-
+                var count = 0;
                 foreach (int detailId in detailIds)
                 {
                     BlockingPlanWorkSchedule detail = model.WorkSchedules.FirstOrDefault(prop => prop.Id.Equals(detailId));
                     if (detail == null)
                         await BlockingPlanWorkScheduleLogic.DeleteModel(detailId);
                     else
+                    {
+                        if (detail.isConfirmed == true)
+                        {
+                            count++;
+                        }
                         BlockingPlanWorkScheduleLogic.UpdateModel(detailId, detail);
+                    }                      
                 }
-
                 foreach (BlockingPlanWorkSchedule item in model.WorkSchedules)
                 {
                     if (item.Id == 0)
                         BlockingPlanWorkScheduleLogic.CreateModel(item);
+                }
+                //Check for Status Blocking Plan Sewing (Full COnfirmed, Booking, Half Confirmed)
+                if (count == detailIds.Count)
+                {
+                    model.Status = BlockingPlanStatus.FULL_CONFIRMED;
+                }
+                else if(count == 0) {
+                    model.Status = BlockingPlanStatus.BOOKING;
+                }
+                else
+                {
+                    model.Status = BlockingPlanStatus.HALF_CONFIRMED;
                 }
             }
             base.UpdateModel(id, model);
