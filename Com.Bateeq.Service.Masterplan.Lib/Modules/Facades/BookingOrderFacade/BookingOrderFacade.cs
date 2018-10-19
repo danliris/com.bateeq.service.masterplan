@@ -45,7 +45,9 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
             if (filter.Contains("Expired"))
             {
                 filter = "{}";
-                query = query.Where(p => p.BookingDate >= DateTime.Today);
+                var today = DateTime.Today;
+                var expiredDate = today.AddDays(45);
+                query = query.Where(p => p.DeliveryDate >= expiredDate);
             }
 
             Dictionary<string, object> filterDictionary = JsonConvert.DeserializeObject<Dictionary<string, object>>(filter);
