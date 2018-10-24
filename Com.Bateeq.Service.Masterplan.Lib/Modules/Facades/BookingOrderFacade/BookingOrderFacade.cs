@@ -11,6 +11,7 @@ using Com.Bateeq.Service.Masterplan.Lib.Modules.Logics;
 using Newtonsoft.Json;
 using Com.Moonlay.NetCore.Lib;
 using Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade;
+using Com.Bateeq.Service.Masterplan.Lib.ViewModels.BookingOrder;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
 {
@@ -130,19 +131,54 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
             return await DbContext.SaveChangesAsync();
         }
 
-        public async Task<int> SetRemainingOrderQuantity(int id)
+        public async Task<int> SetRemainingOrderQuantity(BookStatusViewModel bookStatus)
         {
-            BookingOrder model = await BookingOrderLogic.ReadModelById(id);
+            BookingOrder model = await BookingOrderLogic.ReadModelById(bookStatus.IdBookingOrder);
             int total = 0;
+
             foreach (BookingOrderDetail item in model.DetailConfirms)
+            {
                 total += item.Total;
+            }
+            
             if (model.InitialOrderQuantity == null)
+            {
                 model.InitialOrderQuantity = model.OrderQuantity;
+            }
+
             model.OrderQuantity = total;
-            var blockingPlan = await DbContext.BlockingPlans.FirstOrDefaultAsync(d => d.BookingOrderId.Equals(id) && d.IsDeleted.Equals(false));
+            var blockingPlan = await DbContext.BlockingPlans
+                                              .FirstOrDefaultAsync(d => d.BookingOrderId.Equals(bookStatus.IdBookingOrder) 
+                                                                        && d.IsDeleted.Equals(false));
             if (blockingPlan != null)
-                BlockingPlanLogic.UpdateModelStatus(blockingPlan.Id, blockingPlan, BlockingPlanStatus.CANCELLED);
-            return await Update(id, model);
+            {
+                if (bookStatus.StatusBooking == StatusConst.CANCEL_REMAINING)
+                {
+                    if (total == 0)
+                    {
+                        BlockingPlanLogic.UpdateModelStatus(blockingPlan.Id, blockingPlan, BlockingPlanStatus.CANCELLED);
+                    }
+                    else
+                    {
+                        BlockingPlanLogic.UpdateModelStatus(blockingPlan.Id, blockingPlan, BlockingPlanStatus.CHANGED);
+                    }
+                }
+                else if (bookStatus.StatusBooking == StatusConst.DELETE_REMAINING)
+                {
+                    if (total == 0)
+                    {
+                        BlockingPlanLogic.UpdateModelStatus(blockingPlan.Id, blockingPlan, BlockingPlanStatus.EXPIRED);
+                    }
+                    else
+                    {
+                        BlockingPlanLogic.UpdateModelStatus(blockingPlan.Id, blockingPlan, BlockingPlanStatus.CHANGED);
+                    }
+                    
+                }
+                
+            }
+
+            return await Update(bookStatus.IdBookingOrder, model);
         }
     }
 }
