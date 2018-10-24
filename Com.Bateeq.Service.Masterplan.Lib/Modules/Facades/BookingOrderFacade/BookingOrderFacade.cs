@@ -157,6 +157,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
                     if (total == 0)
                     {
                         BlockingPlanLogic.UpdateModelStatus(blockingPlan.Id, blockingPlan, BlockingPlanStatus.CANCELLED);
+                        model.IsDeleted = true;
                     }
                     else
                     {
