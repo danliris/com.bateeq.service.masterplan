@@ -24,14 +24,14 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Controllers
         {
         }
 
-        [HttpPut("set-remaining-order-quantity/{Id}")]
-        public async Task<IActionResult> SetRemainingOrderQuantity([FromRoute] int id)
+        [HttpPut("set-remaining-order-quantity")]
+        public async Task<IActionResult> SetRemainingOrderQuantity([FromBody] BookStatusViewModel bookStatus)
         {
             try
             {
                 VerifyUser();
 
-                await Facade.SetRemainingOrderQuantity(id);
+                await Facade.SetRemainingOrderQuantity(bookStatus);
 
                 return NoContent();
             }
