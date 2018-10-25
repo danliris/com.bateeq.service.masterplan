@@ -35,7 +35,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
         public ReadResponse<BookingOrder> Read(int page, int size, string order, List<string> select, string keyword, string filter)
         {
             IQueryable<BookingOrder> query = this.DbSet;
-           
+
             List<string> searchAttributes = new List<string>()
                 {
                     "Code"
@@ -69,7 +69,8 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
                     OrderQuantity = field.OrderQuantity,
                     DeliveryDate = field.DeliveryDate,
                     Remark = field.Remark,
-                    DetailConfirms = new List<BookingOrderDetail>(field.DetailConfirms.Select(d => new BookingOrderDetail {
+                    DetailConfirms = new List<BookingOrderDetail>(field.DetailConfirms.Select(d => new BookingOrderDetail
+                    {
                         Total = d.Total
                     })),
                     BlockingPlanId = field.BlockingPlanId
@@ -102,7 +103,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
         {
             return await BookingOrderLogic.ReadModelById(id);
         }
-        
+
         public async Task<int> Update(int id, BookingOrder model)
         {
             BookingOrderLogic.UpdateModel(id, model);
@@ -140,7 +141,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
             {
                 total += item.Total;
             }
-            
+
             if (model.InitialOrderQuantity == null)
             {
                 model.InitialOrderQuantity = model.OrderQuantity;
@@ -148,7 +149,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
 
             model.OrderQuantity = total;
             var blockingPlan = await DbContext.BlockingPlans
-                                              .FirstOrDefaultAsync(d => d.BookingOrderId.Equals(bookStatus.IdBookingOrder) 
+                                              .FirstOrDefaultAsync(d => d.BookingOrderId.Equals(bookStatus.IdBookingOrder)
                                                                         && d.IsDeleted.Equals(false));
             if (blockingPlan != null)
             {
@@ -173,9 +174,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
                     {
                         BlockingPlanLogic.UpdateModelStatus(blockingPlan.Id, blockingPlan, BlockingPlanStatus.CHANGED);
                     }
-                    
                 }
-                
             }
 
             return await Update(bookStatus.IdBookingOrder, model);
