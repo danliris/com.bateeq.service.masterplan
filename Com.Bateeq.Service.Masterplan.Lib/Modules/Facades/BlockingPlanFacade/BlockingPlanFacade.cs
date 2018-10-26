@@ -43,49 +43,50 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade
             return await DbContext.SaveChangesAsync();
         }
 
-        public ReadResponse<BlockingPlan> Read(int page, int size, string order, List<string> select, string keyword, string filter)
-        {
-            IQueryable<BlockingPlan> query = this.DbSet;
+        public ReadResponse<BlockingPlan> Read(int page, int size, string orderBY, List<string> select, string keyword, string filter)
+         {
+            IQueryable<BlockingPlan> queryBP = this.DbSet;          
 
             List<string> searchAttributes = new List<string>() { };
-            query = QueryHelper<BlockingPlan>.Search(query, searchAttributes, keyword);
+            queryBP = QueryHelper<BlockingPlan>.Search(queryBP, searchAttributes, keyword);
 
             Dictionary<string, object> filterDictionary = JsonConvert.DeserializeObject<Dictionary<string, object>>(filter);
-            query = QueryHelper<BlockingPlan>.Filter(query, filterDictionary);
+            queryBP = QueryHelper<BlockingPlan>.Filter(queryBP, filterDictionary);
 
             List<string> selectedFields = new List<string>()
                 {
                     "Id", "BookingOrder", "Status"
                 };
-            query = query
-                .Select(field => new BlockingPlan
-                {
-                    Id = field.Id,
-                    BookingOrder = DbContext.BookingOrders
-                        .Where(d => d.Id.Equals(field.BookingOrderId))
-                        .Select(d => new BookingOrder
+            queryBP = queryBP
+                .Select(bp => new BlockingPlan{
+                        Id = bp.Id,BookingOrder = DbContext.BookingOrders
+                        .Where(d => d.Id.Equals(bp.BookingOrderId))
+                        .Select(bo => new BookingOrder
                         {
-                            Code = d.Code,
-                            BookingDate = d.BookingDate,
-                            BuyerId = d.BuyerId,
-                            BuyerName = d.BuyerName,
-                            OrderQuantity = d.OrderQuantity,
-                            DeliveryDate = d.DeliveryDate,
-                            Remark = d.Remark
-                        })
-                        .IgnoreQueryFilters()
+                            Code = bo.Code,
+                            BookingDate = bo.BookingDate,
+                            BuyerId = bo.BuyerId,
+                            BuyerName = bo.BuyerName,
+                            OrderQuantity = bo.OrderQuantity,
+                            DeliveryDate = bo.DeliveryDate,
+                            Remark = bo.Remark,
+                            IsModified = bo.IsModified
+                        }).IgnoreQueryFilters()
                         .FirstOrDefault(),
-                    Status = field.Status
+                        Status = bp.Status,
                 });
 
-            Dictionary<string, string> orderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(order);
-            query = QueryHelper<BlockingPlan>.Order(query, orderDictionary);
+            Dictionary<string, string> orderBYDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(orderBY);
+            queryBP = QueryHelper<BlockingPlan>.Order(queryBP, orderBYDictionary);
 
-            Pageable<BlockingPlan> pageable = new Pageable<BlockingPlan>(query, page - 1, size);
+            Pageable<BlockingPlan> pageable = new Pageable<BlockingPlan>(queryBP, page - 1, size);
             List<BlockingPlan> data = pageable.Data.ToList<BlockingPlan>();
+            
+            
             int totalData = pageable.TotalCount;
 
-            return new ReadResponse<BlockingPlan>(data, totalData, orderDictionary, selectedFields);
+            return new ReadResponse<BlockingPlan>(data, totalData, orderBYDictionary, selectedFields);
+            
         }
 
         public async Task<BlockingPlan> ReadById(int id)

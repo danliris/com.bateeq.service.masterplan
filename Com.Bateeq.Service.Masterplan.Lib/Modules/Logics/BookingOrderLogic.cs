@@ -12,9 +12,12 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
     public class BookingOrderLogic : BaseLogic<BookingOrder>
     {
         private BookingOrderDetailLogic BookingOrderDetailLogic;
+        private MasterplanDbContext DbContext;
+
         public BookingOrderLogic(BookingOrderDetailLogic bookingOrderDetailLogic,IIdentityService identityService, MasterplanDbContext dbContext) : base(identityService, dbContext)
         {
             this.BookingOrderDetailLogic = bookingOrderDetailLogic;
+            DbContext = dbContext;
         }
 
         public override void CreateModel(BookingOrder model)
@@ -31,28 +34,27 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
             return DbSet.Include(d => d.DetailConfirms).FirstOrDefaultAsync(d => d.Id.Equals(id) && d.IsDeleted.Equals(false));
         }
 
-        public override async void UpdateModel(int id, BookingOrder model)
+        public override async void UpdateModel(int id, BookingOrder modelBO)
         {
-            if (model.DetailConfirms != null)
+            if (modelBO.DetailConfirms != null)
             {
                 HashSet<int> detailIds = BookingOrderDetailLogic.GetBookingOrderDetailIds(id);
 
                 foreach (int detailId in detailIds)
                 {
-                    BookingOrderDetail bod = model.DetailConfirms.FirstOrDefault(prop => prop.Id.Equals(detailId));
+                    BookingOrderDetail bod = modelBO.DetailConfirms.FirstOrDefault(prop => prop.Id.Equals(detailId));
                     if (bod == null)
                         await BookingOrderDetailLogic.DeleteModel(detailId);
                     else
                         BookingOrderDetailLogic.UpdateModel(detailId, bod);
                 }
-
-                foreach (BookingOrderDetail item in model.DetailConfirms)
+                foreach (BookingOrderDetail item in modelBO.DetailConfirms)
                 {
                     if (item.Id == 0)
                         BookingOrderDetailLogic.CreateModel(item);
                 }
             }
-            base.UpdateModel(id, model);
+            base.UpdateModel(id, modelBO);
         }
 
         public void UpdateModelBlockingPlanId(int id, BookingOrder model, int? blockingPlanId)

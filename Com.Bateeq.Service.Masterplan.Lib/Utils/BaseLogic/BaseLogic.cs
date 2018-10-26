@@ -35,7 +35,15 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Utils.BaseLogic
         public virtual void UpdateModel(int id, TModel model)
         {
             EntityExtension.FlagForUpdate(model, IdentityService.Username, "masterplan-service");
-            DbSet.Update(model);
+            try
+            {
+                DbSet.Update(model);
+            }
+            catch (Exception Ex)
+            {
+                throw new System.Exception($"Pesan Error Sebagai Berikut : {Ex}");
+            }
+           
         }
 
         public virtual async Task DeleteModel(int id)
