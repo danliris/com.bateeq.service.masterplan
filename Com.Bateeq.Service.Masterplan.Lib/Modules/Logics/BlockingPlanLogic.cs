@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
 {
@@ -127,6 +128,12 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
                 throw new System.Exception($"Pesan Error Sebagai Berikut : {Ex}");
             }
 
+        }
+
+        public Task<BlockingPlan> searchByBookingOrderId(int bookingOrderId)
+        {
+            var blockingPlanResult = base.DbSet.Where(blockingPlan => blockingPlan.BookingOrderId == bookingOrderId && blockingPlan.IsDeleted == false).FirstOrDefaultAsync();
+            return blockingPlanResult;
         }
 
         public override async Task DeleteModel(int id)

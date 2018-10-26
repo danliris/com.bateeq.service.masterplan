@@ -151,7 +151,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
 
         public async Task<int> SetRemainingOrderQuantity(BookStatusViewModel bookStatus)
         {
-            BookingOrder model = await BookingOrderLogic.ReadModelById(bookStatus.IdBookingOrder);
+            BookingOrder model = await BookingOrderLogic.ReadModelById(bookStatus.BookingOrderId);
             int total = 0;
 
             foreach (BookingOrderDetail item in model.DetailConfirms)
@@ -165,9 +165,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
             }
 
             model.OrderQuantity = total;
-            var blockingPlan = await DbContext.BlockingPlans
-                                              .FirstOrDefaultAsync(d => d.BookingOrderId.Equals(bookStatus.IdBookingOrder)
-                                                                        && d.IsDeleted.Equals(false));
+            var blockingPlan = await BlockingPlanLogic.searchByBookingOrderId(bookStatus.BookingOrderId);
             if (blockingPlan != null)
             {
                 if (bookStatus.StatusBooking == StatusConst.CANCEL_REMAINING)
@@ -183,6 +181,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
                 }
                 else if (bookStatus.StatusBooking == StatusConst.DELETE_REMAINING)
                 {
+                    DateTimeOffset expiredDate = new DateTimeOffset().ToLocalTime();
                     if (total == 0)
                     {
                         BlockingPlanLogic.UpdateModelStatus(blockingPlan.Id, blockingPlan, BlockingPlanStatus.EXPIRED);
@@ -194,7 +193,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
                 }
             }
 
-            return await Update(bookStatus.IdBookingOrder, model);
+            return await Update(bookStatus.BookingOrderId, model);
         }
     }
 }

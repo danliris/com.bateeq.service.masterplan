@@ -24,7 +24,12 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Models
         public int? BlockingPlanId { get; set; }
         public Boolean? IsModified { get; set; }
         public virtual BlockingPlan BlockingPlan { get; set; }
-        
+        public int CanceledBookingOrder { get; set; }
+        public DateTimeOffset CanceledDate { get; set; }
+        public int ExpiredBookingOrder { get; set; }
+        public DateTimeOffset ExpiredDeletedDate { get; set; }
+
+
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
