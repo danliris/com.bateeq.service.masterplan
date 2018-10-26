@@ -24,15 +24,15 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Utils
         protected readonly IMapper Mapper;
         protected readonly string ApiVersion;
 
-        public BaseController(IIdentityService identityService, IValidateService validateService, IFacade facade, IMapper mapper, string apiVersion)
+        public BaseController(IIdentityService _identityService, IValidateService _validateService, IFacade _facade, IMapper _mapper, string _apiVersion)
         {
-            this.IdentityService = identityService;
-            this.ValidateService = validateService;
-            this.Facade = facade;
-            this.Mapper = mapper;
-            this.ApiVersion = apiVersion;
+            this.IdentityService = _identityService;
+            this.ValidateService = _validateService;
+            this.Facade = _facade;
+            this.Mapper = _mapper;
+            this.ApiVersion = _apiVersion;
         }
-        
+
         protected void VerifyUser()
         {
             IdentityService.Username = User.Claims.ToArray().SingleOrDefault(p => p.Type.Equals("username")).Value;
@@ -41,7 +41,7 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Utils
 
         [HttpGet]
         public IActionResult Get(int page = 1, int size = 25, string order = "{}", [Bind(Prefix = "Select[]")]List<string> select = null, string keyword = null, string filter = "{}")
-        {
+         {
             try
             {
                 ReadResponse<TModel> read = Facade.Read(page, size, order, select, keyword, filter);

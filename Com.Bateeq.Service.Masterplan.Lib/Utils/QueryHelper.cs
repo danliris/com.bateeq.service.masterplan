@@ -28,20 +28,27 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Utils
 
         public static IQueryable<TModel> Order(IQueryable<TModel> query, Dictionary<string, string> orderDictionary)
         {
-            /* Default Order */
+            /* Default Query Order By */
             if (orderDictionary.Count.Equals(0))
             {
                 orderDictionary.Add("LastModifiedUtc", "desc");
-
                 query = query.OrderByDescending(b => b.LastModifiedUtc);
             }
-            /* Custom Order */
+            /* Custom Query Order BY */
             else
             {
                 string Key = orderDictionary.Keys.First();
-                string OrderType = orderDictionary[Key];
+                string OrderByType = orderDictionary[Key];
 
-                query = query.OrderBy(string.Concat(Key.Replace(".", ""), " ", OrderType));
+                try
+                {
+                    query = query.OrderBy(string.Concat(Key.Replace(".", ""), " ", OrderByType));
+                }
+                catch (Exception ex)
+                {
+                    ex.ToString();
+                }
+                
             }
             return query;
         }

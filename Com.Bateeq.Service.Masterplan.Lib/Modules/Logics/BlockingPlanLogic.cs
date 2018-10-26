@@ -100,10 +100,34 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
             base.UpdateModel(id, model);
         }
 
-        public void UpdateModelStatus(int id, BlockingPlan model, string status)
+        
+        public void UpdateModelStatus(int id, BlockingPlan modelBP, string status)
         {
-            model.Status = status;
-            base.UpdateModel(id, model);
+            modelBP.Status = status;
+            base.UpdateModel(id, modelBP);
+        }
+
+        public Task<bool> UpdateModelStatus(int bookingOrderId, string status)
+        {        
+            try
+            {
+                bool hasBlockingPlan = false;
+
+                // Check apakah Booking Order memiliki Blocking PLan 
+                BlockingPlan modelBP = DbContext.BlockingPlans.Where(queryBP => queryBP.BookingOrderId == bookingOrderId).FirstOrDefault();
+                // Jika Ada, return hasBlockingPlan = True else return hasBlockingPlan = False
+                if (modelBP != null){
+                   hasBlockingPlan = true;
+                   modelBP.Status = status;
+                   base.UpdateModel(bookingOrderId, modelBP);
+                }
+                return Task.FromResult(hasBlockingPlan);
+            }
+            catch (System.Exception Ex)
+            {
+                throw new System.Exception($"Pesan Error Sebagai Berikut : {Ex}");
+            }
+
         }
 
         public Task<BlockingPlan> searchByBookingOrderId(int bookingOrderId)
@@ -127,5 +151,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
             EntityExtension.FlagForDelete(model, IdentityService.Username, "masterplan-service", true);
             DbSet.Update(model);
         }
+
+        
     }
 }

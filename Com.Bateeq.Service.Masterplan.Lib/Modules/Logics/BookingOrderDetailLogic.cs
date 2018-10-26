@@ -14,7 +14,9 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
 
         public HashSet<int> GetBookingOrderDetailIds(int id)
         {
-            return new HashSet<int>(DbSet.Where(d => d.BookingOrderId == id).Select(d => d.Id));
+
+         return new HashSet<int>(DbSet.Where(queryBP => queryBP.BookingOrderId == id).Select(d => d.Id));
+
         }
     }
 }
