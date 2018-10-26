@@ -34,20 +34,20 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
         public ReadResponse<BookingOrder> Read(int page, int size, string order, List<string> select, string keyword, string filter)
         {
             IQueryable<BookingOrder> query = this.DbSet;
-           
+
             List<string> searchAttributes = new List<string>()
-                {
+                { 
                     "Code"
                 };
             query = QueryHelper<BookingOrder>.Search(query, searchAttributes, keyword);
 
-            // Filter not show Booking Expired to add Blocking Plan Sewing
+            // Filter not show Booking Order Expired and BlockingPlanId NULL to add Blocking Plan Sewing 
             if (filter.Contains("Expired"))
             {
                 filter = "{}";
                 var today = DateTime.Today;
                 var expiredDate = today.AddDays(45);
-                query = query.Where(p => p.DeliveryDate >= expiredDate);
+                query = query.Where(queryBO => queryBO.DeliveryDate >= expiredDate && queryBO.BlockingPlanId == null);
             }
 
             Dictionary<string, object> filterDictionary = JsonConvert.DeserializeObject<Dictionary<string, object>>(filter);
@@ -55,7 +55,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
 
             List<string> selectedFields = new List<string>()
                 {
-                    "Id", "Code", "BookingDate", "Buyer", "OrderQuantity", "DeliveryDate", "Remark", "DetailConfirms", "Status", "StatusTotalConfirm", "StatusRemainingOrder", "BlockingPlanId"
+                    "Id", "Code", "BookingDate", "Buyer", "OrderQuantity", "DeliveryDate", "Remark", "DetailConfirms", "Status", "StatusTotalConfirm", "StatusRemainingOrder", "BlockingPlanId","IsModified"
                 };
             query = query
                 .Select(field => new BookingOrder
@@ -71,7 +71,9 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
                     DetailConfirms = new List<BookingOrderDetail>(field.DetailConfirms.Select(d => new BookingOrderDetail {
                         Total = d.Total
                     })),
-                    BlockingPlanId = field.BlockingPlanId
+                    BlockingPlanId = field.BlockingPlanId,
+                    IsModified = field.IsModified
+
                 });
 
             Dictionary<string, string> orderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(order);
@@ -104,6 +106,21 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
         
         public async Task<int> Update(int id, BookingOrder model)
         {
+            Boolean hasBlockingPlan = false;
+            try
+            {
+                // Befaore do Update Check if Booking Order Have Blocking Plan
+                hasBlockingPlan = await BlockingPlanLogic.UpdateModelStatus(id, BlockingPlanStatus.CHANGED);
+                // IF hasBlockingPlan  = True
+                if (hasBlockingPlan)
+                {
+                    model.IsModified = true;
+                }
+            }
+            catch (Exception Ex)
+            {
+                throw new Exception($"Terjadi Kesalahan Update Booking Order, dengan Kesalahan Sebagai Berikut:  {Ex.ToString()}");
+            }
             BookingOrderLogic.UpdateModel(id, model);
             return await DbContext.SaveChangesAsync();
         }

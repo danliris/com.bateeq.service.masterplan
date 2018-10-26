@@ -22,7 +22,8 @@ namespace Com.Bateeq.Service.Masterplan.Lib.ViewModels.BookingOrder
         public string Status { get; set; }
         public string StatusTotalConfirm { get; set; }
         public int? BlockingPlanId { get; set; }
-
+        public Boolean? IsModified { get; set; }
+        
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             if (this.Section == null || this.Section.Id == 0)
