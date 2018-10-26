@@ -22,7 +22,9 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Models
         public string Remark { get; set; }
         public virtual ICollection<BookingOrderDetail> DetailConfirms { get; set; }
         public int? BlockingPlanId { get; set; }
+        public Boolean? IsModified { get; set; }
         public virtual BlockingPlan BlockingPlan { get; set; }
+        
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
