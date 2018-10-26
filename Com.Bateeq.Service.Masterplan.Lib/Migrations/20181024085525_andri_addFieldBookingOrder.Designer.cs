@@ -11,9 +11,10 @@ using System;
 namespace Com.Bateeq.Service.Masterplan.Lib.Migrations
 {
     [DbContext(typeof(MasterplanDbContext))]
-    partial class MasterplanDbContextModelSnapshot : ModelSnapshot
+    [Migration("20181024085525_andri_addFieldBookingOrder")]
+    partial class andri_addFieldBookingOrder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
