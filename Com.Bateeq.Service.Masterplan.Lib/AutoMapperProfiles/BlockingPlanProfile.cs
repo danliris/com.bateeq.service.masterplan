@@ -9,10 +9,6 @@ namespace Com.Bateeq.Service.Masterplan.Lib.AutoMapperProfiles
     {
         public BlockingPlanProfile()
         {
-            //CreateMap<BlockingPlan, BlockingPlanViewModel>()
-            //    .ForMember(d => d.Status, opt => opt.ResolveUsing<StatusResolver>())
-            //    .ReverseMap();
-
             CreateMap<BlockingPlan, BlockingPlanViewModel>()
                 .ReverseMap();
         }
