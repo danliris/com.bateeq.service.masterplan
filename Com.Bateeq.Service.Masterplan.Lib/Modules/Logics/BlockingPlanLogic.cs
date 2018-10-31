@@ -114,8 +114,11 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
                 bool hasBlockingPlan = false;
 
                 // Check apakah Booking Order memiliki Blocking PLan 
-                BlockingPlan modelBP = DbContext.BlockingPlans.Where(queryBP => queryBP.BookingOrderId == bookingOrderId).FirstOrDefault();
-                // Jika Ada, return hasBlockingPlan = True else return hasBlockingPlan = False
+                BlockingPlan modelBP = DbContext.BlockingPlans
+                                       .Where(queryBP => queryBP.BookingOrderId == bookingOrderId)
+                                       .FirstOrDefault();
+
+                // Jika Ada return hasBlockingPlan = True  else return hasBlockingPlan = False
                 if (modelBP != null){
                    hasBlockingPlan = true;
                    modelBP.Status = status;

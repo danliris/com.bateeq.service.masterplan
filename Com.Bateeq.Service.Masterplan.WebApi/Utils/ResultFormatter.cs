@@ -30,20 +30,28 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Utils
                 { "order", Order }
             };
 
-            if (Select.Count > 0)
+            try
             {
-                var DataObj = Data.AsQueryable().Select(string.Concat("new(", string.Join(",", Select), ")"));
-                Result.Add("data", DataObj);
-                Info.Add("select", Select);
+                if (Select.Count > 0)
+                {
+                    var DataObj = Data.AsQueryable().Select(string.Concat("new(", string.Join(",", Select), ")"));
+                    Result.Add("data", DataObj);
+                    Info.Add("select", Select);
+                }
+                else
+                {
+                    Result.Add("data", Data);
+                }
+
+                Result.Add("info", Info);
+
+                return Result;
             }
-            else
+            catch (Exception Ex)
             {
-                Result.Add("data", Data);
+                throw new Exception($"Terjadi Kesalahan sebagai berikut : {Ex.ToString()}");
             }
-
-            Result.Add("info", Info);
-
-            return Result;
+           
         }
 
         public Dictionary<string, object> Ok<TViewModel>(IMapper mapper, TViewModel Data)
