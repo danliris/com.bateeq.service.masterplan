@@ -199,7 +199,8 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
                         BlockingPlanLogic.UpdateModelStatus(blockingPlan.Id, blockingPlan, BlockingPlanStatus.CHANGED);
                     }
 
-                    model.CanceledBookingOrder = model.CanceledBookingOrder + 1;
+                    var orderCanceled = Math.Abs(total - model.OrderQuantity); 
+                    model.CanceledBookingOrder = orderCanceled;
                     model.CanceledDate = new DateTimeOffset().ToLocalTime();
                 }
                 else if (bookStatus.StatusBooking == StatusConst.DELETE_REMAINING)
@@ -214,6 +215,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
                         BlockingPlanLogic.UpdateModelStatus(blockingPlan.Id, blockingPlan, BlockingPlanStatus.CHANGED);
                     }
 
+                    var orderDeleted = Math.Abs(total - model.OrderQuantity);
                     model.ExpiredBookingOrder = model.ExpiredBookingOrder + 1;
                     model.ExpiredDeletedDate = new DateTimeOffset().ToLocalTime();
                 }
