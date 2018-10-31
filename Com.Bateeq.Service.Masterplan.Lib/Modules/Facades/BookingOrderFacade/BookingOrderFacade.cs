@@ -205,8 +205,9 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
                     {
                         BlockingPlanLogic.UpdateModelStatus(blockingPlan.Id, blockingPlan, BlockingPlanStatus.CHANGED);
                         model.CanceledBookingOrder = orderCanceledOrDeleted;
-                        model.CanceledDate = nowDateAndTime;
                     }
+
+                    model.CanceledDate = nowDateAndTime;
                 }
                 else if (bookStatus.StatusBooking == StatusConst.DELETE_REMAINING)
                 {
@@ -219,8 +220,9 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
                     {
                         BlockingPlanLogic.UpdateModelStatus(blockingPlan.Id, blockingPlan, BlockingPlanStatus.CHANGED);
                         model.ExpiredBookingOrder = orderCanceledOrDeleted;
-                        model.ExpiredDeletedDate = nowDateAndTime;
                     }
+
+                    model.ExpiredDeletedDate = nowDateAndTime;
                 }
             }
 
