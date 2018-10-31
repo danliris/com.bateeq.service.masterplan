@@ -36,22 +36,34 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
 
         public override async void UpdateModel(int id, BookingOrder modelBO)
         {
+            bool isAddNew = false;
+            bool isDellDetail = false;
+
+            // Check apakah Booking Order memiliki Blocking PLan 
             if (modelBO.DetailConfirms != null)
             {
+                    if (modelBO.IsModified == true)
+                    {
+                        isAddNew = true;
+                    }
                 HashSet<int> detailIds = BookingOrderDetailLogic.GetBookingOrderDetailIds(id);
 
                 foreach (int detailId in detailIds)
                 {
-                    BookingOrderDetail bod = modelBO.DetailConfirms.FirstOrDefault(prop => prop.Id.Equals(detailId));
-                    if (bod == null)
+                    BookingOrderDetail modelbod = modelBO.DetailConfirms.FirstOrDefault(prop => prop.Id.Equals(detailId));
+                    if (modelbod == null)
                         await BookingOrderDetailLogic.DeleteModel(detailId);
                     else
-                        BookingOrderDetailLogic.UpdateModel(detailId, bod);
+                        BookingOrderDetailLogic.UpdateModel(detailId, modelbod);
                 }
-                foreach (BookingOrderDetail item in modelBO.DetailConfirms)
+
+                foreach (BookingOrderDetail bodItem in modelBO.DetailConfirms)
                 {
-                    if (item.Id == 0)
-                        BookingOrderDetailLogic.CreateModel(item);
+                    if (bodItem.Id == 0)
+                    {
+                        bodItem.isAddNew = isAddNew;
+                        BookingOrderDetailLogic.CreateModel(bodItem);
+                    }
                 }
             }
             base.UpdateModel(id, modelBO);

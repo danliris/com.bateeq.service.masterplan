@@ -54,10 +54,15 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
             Dictionary<string, object> filterDictionary = JsonConvert.DeserializeObject<Dictionary<string, object>>(filter);
             query = QueryHelper<BookingOrder>.Filter(query, filterDictionary);
 
-            List<string> selectedFields = new List<string>()
+            try
+            {
+                List<string> selectedFields = new List<string>()
                 {
-                    "Id", "Code", "BookingDate", "Buyer", "OrderQuantity", "DeliveryDate", "Remark", "DetailConfirms", "Status", "StatusTotalConfirm", "StatusRemainingOrder", "BlockingPlanId","IsModified"
+                    "Id", "Code", "BookingDate", "Buyer", "OrderQuantity", "DeliveryDate", "Remark","DetailConfirms", "Status",
+                    "StatusTotalConfirm", "StatusRemainingOrder", "BlockingPlanId","IsModified","CanceledBookingOrder",
+                    "ExpiredBookingOrder","ExpiredDeletedDate"
                 };
+
             query = query
                 .Select(field => new BookingOrder
                 {
@@ -74,7 +79,10 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
                         Total = d.Total
                     })),
                     BlockingPlanId = field.BlockingPlanId,
-                    IsModified = field.IsModified
+                    IsModified = field.IsModified,
+                    CanceledBookingOrder = field.CanceledBookingOrder,
+                    ExpiredBookingOrder = field.ExpiredBookingOrder,
+                    ExpiredDeletedDate = field.ExpiredDeletedDate
 
                 });
 
@@ -86,6 +94,12 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
             int totalData = pageable.TotalCount;
 
             return new ReadResponse<BookingOrder>(data, totalData, orderDictionary, selectedFields);
+            }
+            catch (Exception Ex)
+            {
+                throw new Exception($"Terjadi Kesalahan Query Booking Order : {Ex.ToString()}");
+            }
+
         }
 
         public async Task<int> Create(BookingOrder model)
@@ -111,12 +125,18 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
             Boolean hasBlockingPlan = false;
             try
             {
-                // Befaore do Update Check if Booking Order Have Blocking Plan
+                // Before Update Check if Booking Order Have Blocking Plan ?
                 hasBlockingPlan = await BlockingPlanLogic.UpdateModelStatus(id, BlockingPlanStatus.CHANGED);
+
                 // IF hasBlockingPlan  = True
                 if (hasBlockingPlan)
                 {
                     model.IsModified = true;
+                    
+                    if (model.IsModified == true)
+                    {
+
+                    }
                 }
             }
             catch (Exception Ex)

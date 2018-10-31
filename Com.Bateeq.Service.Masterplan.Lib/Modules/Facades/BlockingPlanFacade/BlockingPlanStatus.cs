@@ -13,5 +13,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade
         public const string CANCELLED = "Booking Dibatalkan";
         public const string DELETED = "Booking Dihapus";
         public const string EXPIRED = "Booking Expired";
+        public const string CHANGED_addItem = "MD Telah menambah detail ini";
+        public const string CHANGED_delItem = "MD Telah menghapus detail ini";
     }
 }

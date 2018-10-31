@@ -70,7 +70,11 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade
                             OrderQuantity = bo.OrderQuantity,
                             DeliveryDate = bo.DeliveryDate,
                             Remark = bo.Remark,
-                            IsModified = bo.IsModified
+                            IsModified = bo.IsModified,
+                            CanceledBookingOrder = bo.CanceledBookingOrder,
+                            CanceledDate = bo.CanceledDate,
+                            ExpiredBookingOrder = bo.ExpiredBookingOrder,
+                            ExpiredDeletedDate = bo.ExpiredDeletedDate
                         }).IgnoreQueryFilters()
                         .FirstOrDefault(),
                         Status = bp.Status,
