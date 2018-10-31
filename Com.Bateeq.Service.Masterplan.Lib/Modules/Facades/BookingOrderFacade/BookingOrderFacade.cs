@@ -211,7 +211,6 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
                 }
                 else if (bookStatus.StatusBooking == StatusConst.DELETE_REMAINING)
                 {
-                    DateTimeOffset expiredDate = new DateTimeOffset().ToLocalTime();
                     if (total == 0)
                     {
                         BlockingPlanLogic.UpdateModelStatus(blockingPlan.Id, blockingPlan, BlockingPlanStatus.EXPIRED);
