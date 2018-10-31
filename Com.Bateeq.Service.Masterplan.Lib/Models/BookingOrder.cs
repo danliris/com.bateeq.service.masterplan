@@ -28,6 +28,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Models
         public DateTimeOffset CanceledDate { get; set; }
         public int ExpiredBookingOrder { get; set; }
         public DateTimeOffset ExpiredDeletedDate { get; set; }
+        public int canceledItem { get; set; }
 
 
 
