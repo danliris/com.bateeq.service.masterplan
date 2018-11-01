@@ -15,8 +15,6 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
     {
         private BookingOrderLogic BookingOrderLogic;
         private BookingOrderDetailLogic BookingOrderDetailLogic;
-        private DbSet<BookingOrderDetail> BookingOrderDetail;
-        private DbSet<BookingOrder> BookingOrders;
         private BlockingPlanWorkScheduleLogic BlockingPlanWorkScheduleLogic;
         private MasterplanDbContext DbContext;
         
@@ -64,7 +62,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
 
                 blockingPlan.BookingOrder.DetailConfirms =  DbContext
                                                             .BookingOrderDetails
-                                                            .Where(bod =>bod.BookingOrderId == blockingPlan.BookingOrder.Id && bod.IsDeleted == false).ToList();
+                                                            .Where(bod =>bod.BookingOrderId == blockingPlan.BookingOrder.Id && bod.IsConfirmDelete == false).ToList();
             }
             else
             {
@@ -130,7 +128,6 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
             {
                 base.UpdateModel(id, model);
                 BookingOrderDetailLogic.UpdateBookingOrderDetailConfirm(model.BookingOrderId);
-                
             }
             catch (Exception Ex)
             {

@@ -1,6 +1,7 @@
 ﻿using Com.Bateeq.Service.Masterplan.Lib.Models;
 using Com.Bateeq.Service.Masterplan.Lib.Services.IdentityService;
 using Com.Bateeq.Service.Masterplan.Lib.Utils.BaseLogic;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,10 +10,12 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
     public class BookingOrderDetailLogic : BaseLogic<BookingOrderDetail>
     {
         private MasterplanDbContext DbContext;
+        private BookingOrderDetail BookingOrderDetail;
 
-        public BookingOrderDetailLogic(IIdentityService identityService, MasterplanDbContext dbContext) : base(identityService, dbContext)
+        public BookingOrderDetailLogic( IIdentityService identityService, MasterplanDbContext dbContext, BookingOrderDetail bookingOrderDetail) : base(identityService, dbContext)
         {
             DbContext = dbContext;
+            BookingOrderDetail = bookingOrderDetail;
         }
 
         public HashSet<int> GetBookingOrderDetailIds(int id)
@@ -22,27 +25,27 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
 
         }
 
-        public void UpdateBookingOrderDetailConfirm(int id)
+        public async void UpdateBookingOrderDetailConfirm(int id)
         {
-            var isAddNewDetail = false;
             try
             {
-
                 List<BookingOrderDetail> modelBOD = DbContext.BookingOrderDetails
-                                           .Where(queryBP => queryBP.BookingOrderId == id).ToList();
-
-                //BookingOrderDetail bod = DbContext.BookingOrderDetails.Where(querybod => querybod.BookingOrderId == id).
-
-                foreach (var item in modelBOD)
+                                                    .Where(Querybod => Querybod.BookingOrderId == id)
+                                                    
+                                                    .ToList();
+                foreach (var itemBOD in modelBOD)
                 {
-                    if (item.isAddNew == true)
+                    if (itemBOD.IsAddNew == true)
                     {
-                        item.isAddNew = isAddNewDetail;
-                        base.UpdateModel(id, item);
+                        if (itemBOD.IsDeleted == true)
+                        {
+                            itemBOD.IsConfirmDelete = false;
+                        }
+                        itemBOD.IsAddNew = false;
+                        base.UpdateModel(id, itemBOD);
                     }
-
                 }
-               DbContext.SaveChangesAsync();
+              await DbContext.SaveChangesAsync();
             }
 
             catch (System.Exception Ex)

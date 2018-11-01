@@ -62,7 +62,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
                 {
                     if (bodItem.Id == 0)
                     {
-                        bodItem.isAddNew = isAddNew;
+                        bodItem.IsAddNew = isAddNew;
                         BookingOrderDetailLogic.CreateModel(bodItem);
                     }
                 }

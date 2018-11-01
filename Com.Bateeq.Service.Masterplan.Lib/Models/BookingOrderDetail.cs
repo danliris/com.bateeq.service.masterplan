@@ -17,7 +17,8 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Models
         public DateTimeOffset DeliveryDate { get; set; }
         public DateTimeOffset ConfirmDate { get; set; }
         public string Remark { get; set; }
-        public bool isAddNew { get; set; }
+        public bool IsAddNew { get; set; }
+        public bool IsConfirmDelete { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
