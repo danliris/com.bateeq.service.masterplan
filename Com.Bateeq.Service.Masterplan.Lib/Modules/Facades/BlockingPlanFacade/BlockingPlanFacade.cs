@@ -38,9 +38,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade
             
             foreach(var workschedule in model.WorkSchedules)
             {
-                await _weeklyPlanLogic.UpdateByWeeklyplanItemByIdAndWeekId(workschedule.YearId,
-                                                                           workschedule.WeekId,
-                                                                           workschedule.EH_Booking);
+                await _weeklyPlanLogic.UpdateByWeeklyplanItemByIdAndWeekId(workschedule);
             }
             
             await DbContext.SaveChangesAsync();
@@ -115,9 +113,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade
 
             foreach (var workschedule in model.WorkSchedules)
             {
-                await _weeklyPlanLogic.UpdateByWeeklyplanItemByIdAndWeekId(workschedule.YearId,
-                                                                     workschedule.WeekId,
-                                                                     workschedule.EH_Booking);
+                await _weeklyPlanLogic.UpdateByWeeklyplanItemByIdAndWeekId(workschedule);
             }
 
             return await DbContext.SaveChangesAsync();
