@@ -14,13 +14,19 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
     public class BlockingPlanLogic : BaseLogic<BlockingPlan>
     {
         private BookingOrderLogic BookingOrderLogic;
+        private BookingOrderDetailLogic BookingOrderDetailLogic;
+        private DbSet<BookingOrderDetail> BookingOrderDetail;
+        private DbSet<BookingOrder> BookingOrders;
         private BlockingPlanWorkScheduleLogic BlockingPlanWorkScheduleLogic;
         private MasterplanDbContext DbContext;
-        public BlockingPlanLogic(BookingOrderLogic bookingOrderLogic, BlockingPlanWorkScheduleLogic blockingPlanWorkScheduleLogic, IIdentityService identityService, MasterplanDbContext dbContext) : base(identityService, dbContext)
+        
+
+        public BlockingPlanLogic(BookingOrderLogic bookingOrderLogic, BookingOrderDetailLogic bookingOrderDetailLogic, BlockingPlanWorkScheduleLogic blockingPlanWorkScheduleLogic, IIdentityService identityService, MasterplanDbContext dbContext) : base(identityService, dbContext)
         {
             this.BlockingPlanWorkScheduleLogic = blockingPlanWorkScheduleLogic;
             this.BookingOrderLogic = bookingOrderLogic;
             this.DbContext = dbContext;
+            this.BookingOrderDetailLogic = bookingOrderDetailLogic;
         }
 
         public override void CreateModel(BlockingPlan model)
@@ -48,24 +54,43 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
         public override async Task<BlockingPlan> ReadModelById(int id)
         {
             BlockingPlan blockingPlan = await DbSet.Include(d => d.WorkSchedules).FirstOrDefaultAsync(d => d.Id.Equals(id) && d.IsDeleted.Equals(false));
-            blockingPlan.BookingOrder = await DbContext.BookingOrders.Include(d => d.DetailConfirms).IgnoreQueryFilters().FirstOrDefaultAsync(d => d.Id.Equals(blockingPlan.BookingOrderId));
+
+            if (blockingPlan.IsModified==true)
+            {
+                blockingPlan.BookingOrder = await DbContext
+                                                 .BookingOrders.Include(bo => bo.DetailConfirms)
+                                                 .IgnoreQueryFilters()
+                                                 .FirstOrDefaultAsync(d => d.Id.Equals(blockingPlan.BookingOrderId));
+
+                blockingPlan.BookingOrder.DetailConfirms =  DbContext
+                                                            .BookingOrderDetails
+                                                            .Where(bod =>bod.BookingOrderId == blockingPlan.BookingOrder.Id && bod.IsDeleted == false).ToList();
+            }
+            else
+            {
+                blockingPlan.BookingOrder = await DbContext.BookingOrders.Include(d => d.DetailConfirms).IgnoreQueryFilters().FirstOrDefaultAsync(d => d.Id.Equals(blockingPlan.BookingOrderId));
+            }
+           
             return blockingPlan;
         }
 
+
         public override async void UpdateModel(int id, BlockingPlan model)
-        {
+       {
             if (model.WorkSchedules != null)
             {
+
                 HashSet<int> detailIds = BlockingPlanWorkScheduleLogic.GetBlockingPlanWorkScheduleIds(id);
                 int countConfirmed = 0;
 
+                #region Looping Detail Blocking Plan Work Schedule Logic
                 foreach (int detailId in detailIds)
                 {
                     BlockingPlanWorkSchedule detail = model.WorkSchedules.FirstOrDefault(prop => prop.Id.Equals(detailId));
                     if (detail == null)
                     {
                         await BlockingPlanWorkScheduleLogic.DeleteModel(detailId);
-                    }     
+                    }
                     else
                     {
                         if (detail.isConfirmed == true)
@@ -75,13 +100,17 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
                         BlockingPlanWorkScheduleLogic.UpdateModel(detailId, detail);
                     }
                 }
+                #endregion
+
+                #region  Looping Item in Model WorkSchedules
                 foreach (BlockingPlanWorkSchedule item in model.WorkSchedules)
                 {
                     if (item.Id == 0)
                         BlockingPlanWorkScheduleLogic.CreateModel(item);
                 }
+                #endregion
 
-                #region Set Status Blocking Plan Sewing
+                #region Set Status Blocking Plan Sewing (FULL CONFIRMED, BOOKING, HALF_CONFIRMED)
                 if (countConfirmed == model.WorkSchedules.Count)
                 {
                     model.Status = BlockingPlanStatus.FULL_CONFIRMED;
@@ -97,7 +126,18 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
                 #endregion
 
             }
-            base.UpdateModel(id, model);
+            try
+            {
+                base.UpdateModel(id, model);
+                BookingOrderDetailLogic.UpdateBookingOrderDetailConfirm(model.BookingOrderId);
+                
+            }
+            catch (Exception Ex)
+            {
+
+                throw new Exception(Ex.ToString());
+            }
+
         }
 
         
