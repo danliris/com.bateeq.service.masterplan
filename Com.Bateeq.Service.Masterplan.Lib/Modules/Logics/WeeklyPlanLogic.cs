@@ -54,7 +54,9 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
 
         override public async Task<WeeklyPlan> ReadModelById(int id)
         {
-            var weeklyPlan = await DbSet.Include(p => p.Items).FirstOrDefaultAsync(d => d.Id.Equals(id) && d.IsDeleted.Equals(false));
+            var weeklyPlan = await DbSet.Include(p => p.Items)
+                                        .FirstOrDefaultAsync(d => d.Id.Equals(id) && 
+                                                                  d.IsDeleted.Equals(false));
             weeklyPlan.Items = weeklyPlan.Items.OrderBy(s => s.WeekNumber, new WeekComparer()).ToArray();
             return weeklyPlan;
         }
@@ -62,8 +64,29 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
 
         public async Task<WeeklyPlan> GetByYearAndUnitCode(string year, string code)
         {
-            var model = await DbSet.Include(p => p.Items).FirstOrDefaultAsync(item => item.Year == year && item.UnitCode == code && item.IsDeleted.Equals(false));
+            var model = await DbSet.Include(p => p.Items)
+                                   .FirstOrDefaultAsync(item => item.Year == year && 
+                                                                item.UnitCode == code && 
+                                                                item.IsDeleted.Equals(false));
             return model;
+        }
+
+        public async Task UpdateByWeeklyplanItemByIdAndWeekId(BlockingPlanWorkSchedule workSchedule)
+        {
+            var query = await DbSet.Include(weeklyplanItem => weeklyplanItem.Items)
+                             .Where(weeklyplan => weeklyplan.Id == workSchedule.YearId)
+                             .FirstOrDefaultAsync();
+            
+            foreach(var weeklyplanItem in query.Items)
+            {
+                if (weeklyplanItem.Id == workSchedule.WeekId)
+                {
+                    weeklyplanItem.UsedEh = weeklyplanItem.UsedEh + workSchedule.EH_Booking;
+                    weeklyplanItem.RemainingEh = weeklyplanItem.EhTotal - weeklyplanItem.UsedEh;
+                }
+            }
+
+            UpdateModel(query.Id, query);
         }
     }
 

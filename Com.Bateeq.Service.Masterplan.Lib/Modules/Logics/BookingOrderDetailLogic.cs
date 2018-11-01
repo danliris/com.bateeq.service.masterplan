@@ -4,13 +4,14 @@ using Com.Bateeq.Service.Masterplan.Lib.Utils.BaseLogic;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
 {
     public class BookingOrderDetailLogic : BaseLogic<BookingOrderDetail>
     {
-        private MasterplanDbContext DbContext;
         private BookingOrderDetail BookingOrderDetail;
+        private readonly MasterplanDbContext DbContext;
 
         public BookingOrderDetailLogic( IIdentityService identityService, MasterplanDbContext dbContext, BookingOrderDetail bookingOrderDetail) : base(identityService, dbContext)
         {
@@ -29,10 +30,8 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
         {
             try
             {
-                List<BookingOrderDetail> modelBOD = DbContext.BookingOrderDetails
-                                                    .Where(Querybod => Querybod.BookingOrderId == id)
-                                                    
-                                                    .ToList();
+                List<BookingOrderDetail> modelBOD = DbContext.BookingOrderDetails.Where(Querybod => Querybod.BookingOrderId == id).ToList();
+
                 foreach (var itemBOD in modelBOD)
                 {
                     if (itemBOD.IsAddNew == true)
@@ -46,6 +45,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
                     }
                 }
               await DbContext.SaveChangesAsync();
+
             }
 
             catch (System.Exception Ex)

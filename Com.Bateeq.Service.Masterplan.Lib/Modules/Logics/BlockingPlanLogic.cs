@@ -13,10 +13,11 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
 {
     public class BlockingPlanLogic : BaseLogic<BlockingPlan>
     {
-        private BookingOrderLogic BookingOrderLogic;
-        private BookingOrderDetailLogic BookingOrderDetailLogic;
-        private BlockingPlanWorkScheduleLogic BlockingPlanWorkScheduleLogic;
-        private MasterplanDbContext DbContext;
+        private readonly BookingOrderLogic BookingOrderLogic;
+        private readonly BookingOrderDetailLogic BookingOrderDetailLogic;
+        private readonly BlockingPlanWorkScheduleLogic BlockingPlanWorkScheduleLogic;
+        private readonly MasterplanDbContext DbContext;
+
         
 
         public BlockingPlanLogic(BookingOrderLogic bookingOrderLogic, BookingOrderDetailLogic bookingOrderDetailLogic, BlockingPlanWorkScheduleLogic blockingPlanWorkScheduleLogic, IIdentityService identityService, MasterplanDbContext dbContext) : base(identityService, dbContext)
@@ -126,12 +127,12 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
             }
             try
             {
-                base.UpdateModel(id, model);
                 BookingOrderDetailLogic.UpdateBookingOrderDetailConfirm(model.BookingOrderId);
+
+                base.UpdateModel(id, model);
             }
             catch (Exception Ex)
             {
-
                 throw new Exception(Ex.ToString());
             }
 

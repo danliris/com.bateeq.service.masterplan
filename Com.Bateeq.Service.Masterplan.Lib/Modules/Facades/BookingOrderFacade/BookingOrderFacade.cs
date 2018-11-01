@@ -167,6 +167,9 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
                 var blockingPlan = await BlockingPlanLogic.ReadModelById((int)bookingOrder.BlockingPlanId);
                 BlockingPlanLogic.UpdateModelStatus(blockingPlan.Id, blockingPlan, BlockingPlanStatus.CHANGED);
             }
+            bookingOrder.canceledItem = bookingOrder.canceledItem + 1;
+            BookingOrderLogic.UpdateModel(bookingOrder.Id, bookingOrder);
+
             return await DbContext.SaveChangesAsync();
         }
 
@@ -185,8 +188,12 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
                 model.InitialOrderQuantity = model.OrderQuantity;
             }
 
+            var orderQuantity = model.OrderQuantity;
+            var orderCanceledOrDeleted = Math.Abs(total - orderQuantity);
+            var nowDateAndTime = DateTimeOffset.Now;
             model.OrderQuantity = total;
             var blockingPlan = await BlockingPlanLogic.searchByBookingOrderId(bookStatus.BookingOrderId);
+
             if (blockingPlan != null)
             {
                 if (bookStatus.StatusBooking == StatusConst.CANCEL_REMAINING)
@@ -198,15 +205,13 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
                     else
                     {
                         BlockingPlanLogic.UpdateModelStatus(blockingPlan.Id, blockingPlan, BlockingPlanStatus.CHANGED);
+                        model.CanceledBookingOrder = orderCanceledOrDeleted;
                     }
 
-                    var orderCanceled = Math.Abs(total - model.OrderQuantity); 
-                    model.CanceledBookingOrder = orderCanceled;
-                    model.CanceledDate = new DateTimeOffset().ToLocalTime();
+                    model.CanceledDate = nowDateAndTime;
                 }
                 else if (bookStatus.StatusBooking == StatusConst.DELETE_REMAINING)
                 {
-                    DateTimeOffset expiredDate = new DateTimeOffset().ToLocalTime();
                     if (total == 0)
                     {
                         BlockingPlanLogic.UpdateModelStatus(blockingPlan.Id, blockingPlan, BlockingPlanStatus.EXPIRED);
@@ -214,11 +219,10 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
                     else
                     {
                         BlockingPlanLogic.UpdateModelStatus(blockingPlan.Id, blockingPlan, BlockingPlanStatus.CHANGED);
+                        model.ExpiredBookingOrder = orderCanceledOrDeleted;
                     }
 
-                    var orderDeleted = Math.Abs(total - model.OrderQuantity);
-                    model.ExpiredBookingOrder = model.ExpiredBookingOrder + 1;
-                    model.ExpiredDeletedDate = new DateTimeOffset().ToLocalTime();
+                    model.ExpiredDeletedDate = nowDateAndTime;
                 }
             }
 

@@ -11,9 +11,10 @@ using System;
 namespace Com.Bateeq.Service.Masterplan.Lib.Migrations
 {
     [DbContext(typeof(MasterplanDbContext))]
-    partial class MasterplanDbContextModelSnapshot : ModelSnapshot
+    [Migration("20181101013656_updateFieldWeeklyplanItem")]
+    partial class updateFieldWeeklyplanItem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,8 +51,6 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Migrations
                     b.Property<DateTime>("DeletedUtc");
 
                     b.Property<bool>("IsDeleted");
-
-                    b.Property<bool?>("IsModified");
 
                     b.Property<string>("LastModifiedAgent")
                         .IsRequired()
@@ -283,10 +282,6 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Migrations
 
                     b.Property<DateTimeOffset>("DeliveryDate");
 
-                    b.Property<bool>("IsAddNew");
-
-                    b.Property<bool>("IsConfirmDelete");
-
                     b.Property<bool>("IsDeleted");
 
                     b.Property<string>("LastModifiedAgent")
@@ -308,6 +303,8 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Migrations
                         .HasMaxLength(500);
 
                     b.Property<int>("Total");
+
+                    b.Property<bool>("isAddNew");
 
                     b.HasKey("Id");
 
