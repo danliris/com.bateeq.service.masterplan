@@ -37,7 +37,6 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
         public override async void UpdateModel(int id, BookingOrder modelBO)
         {
             bool isAddNew = false;
-            bool isDellDetail = false;
 
             // Check apakah Booking Order memiliki Blocking PLan 
             if (modelBO.DetailConfirms != null)
