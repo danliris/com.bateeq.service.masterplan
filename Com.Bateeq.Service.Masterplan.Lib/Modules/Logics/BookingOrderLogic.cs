@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Com.Bateeq.Service.Masterplan.Lib.ViewModels.BookingOrder;
+using System;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
 {
@@ -14,7 +16,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
         private BookingOrderDetailLogic BookingOrderDetailLogic;
         private MasterplanDbContext DbContext;
 
-        public BookingOrderLogic(BookingOrderDetailLogic bookingOrderDetailLogic,IIdentityService identityService, MasterplanDbContext dbContext) : base(identityService, dbContext)
+        public BookingOrderLogic(BookingOrderDetailLogic bookingOrderDetailLogic, IIdentityService identityService, MasterplanDbContext dbContext) : base(identityService, dbContext)
         {
             this.BookingOrderDetailLogic = bookingOrderDetailLogic;
             DbContext = dbContext;
@@ -41,10 +43,10 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
             // Check apakah Booking Order memiliki Blocking PLan 
             if (modelBO.DetailConfirms != null)
             {
-                    if (modelBO.IsModified == true)
-                    {
-                        isAddNew = true;
-                    }
+                if (modelBO.IsModified == true)
+                {
+                    isAddNew = true;
+                }
                 HashSet<int> detailIds = BookingOrderDetailLogic.GetBookingOrderDetailIds(id);
 
                 foreach (int detailId in detailIds)
@@ -86,5 +88,6 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
             EntityExtension.FlagForDelete(model, IdentityService.Username, "masterplan-service", true);
             DbSet.Update(model);
         }
+
     }
 }

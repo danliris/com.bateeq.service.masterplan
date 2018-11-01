@@ -160,6 +160,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
         {
             await BookingOrderDetailLogic.DeleteModel(id);
             var bookingOrderDetail = await BookingOrderDetailLogic.ReadModelById(id);
+            bookingOrderDetail.isAddNew = false;
             var bookingOrder = await BookingOrderLogic.ReadModelById(bookingOrderDetail.BookingOrderId);
             if (bookingOrder.BlockingPlanId != null)
             {

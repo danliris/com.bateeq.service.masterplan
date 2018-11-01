@@ -12,6 +12,8 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Models
         public virtual BookingOrder BookingOrder { get; set; }
         public virtual ICollection<BlockingPlanWorkSchedule> WorkSchedules { get; set; }
         public string Status { get; set; }
+        public Boolean? IsModified { get; set; }
+
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             return new List<ValidationResult>();
