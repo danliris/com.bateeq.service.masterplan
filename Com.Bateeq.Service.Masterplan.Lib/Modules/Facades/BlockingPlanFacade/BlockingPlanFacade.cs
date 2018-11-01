@@ -18,6 +18,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade
         private readonly DbSet<BlockingPlan> DbSet;
         private BlockingPlanLogic BlockingPlanLogic;
         private BookingOrderLogic BookingOrderLogic;
+        private readonly WeeklyPlanFacade _weeklyPlanFacade;
 
         public BlockingPlanFacade(IServiceProvider serviceProvider, MasterplanDbContext dbContext)
         {
@@ -25,6 +26,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade
             this.DbSet = this.DbContext.Set<BlockingPlan>();
             this.BlockingPlanLogic = serviceProvider.GetService<BlockingPlanLogic>();
             this.BookingOrderLogic = serviceProvider.GetService<BookingOrderLogic>();
+            this._weeklyPlanFacade = serviceProvider.GetService<WeeklyPlanFacade>();
         }
 
         public async Task<int> Create(BlockingPlan model)
@@ -33,7 +35,9 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade
             int created = await DbContext.SaveChangesAsync();
             BookingOrder bookingOrder = await BookingOrderLogic.ReadModelById(model.BookingOrderId);
             BookingOrderLogic.UpdateModelBlockingPlanId(bookingOrder.Id, bookingOrder, model.Id);
+            _weeklyPlanFacade.UpdateWeeklyplanItem(model.WorkSchedules);
             await DbContext.SaveChangesAsync();
+
             return created;
         }
 
@@ -101,6 +105,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade
         public async Task<int> Update(int id, BlockingPlan model)
         {
             BlockingPlanLogic.UpdateModel(id, model);
+            _weeklyPlanFacade.UpdateWeeklyplanItem(model.WorkSchedules);
             return await DbContext.SaveChangesAsync();
         }
     }

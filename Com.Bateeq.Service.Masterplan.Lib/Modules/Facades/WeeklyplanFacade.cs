@@ -99,5 +99,22 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades
                 weeklyPlan.Items = weeklyPlan.Items.OrderBy(s => s.WeekNumber).ToArray();
             return weeklyPlans;
         }
+
+        public async void UpdateWeeklyplanItem(ICollection<BlockingPlanWorkSchedule> model)
+        {
+            foreach (var workSchedule in model)
+            {
+                var ehBooking = workSchedule.EH_Booking;
+                var weeklyPlan = await WeeklyPlanLogic.GetByYearAndUnitCode(workSchedule.YearText, workSchedule.UnitId);
+
+                foreach(var weeklyplanItem in weeklyPlan.Items)
+                {
+                    weeklyplanItem.UsedEh = weeklyplanItem.UsedEh + ehBooking;
+                    weeklyplanItem.RemainingEh = weeklyplanItem.EhTotal - weeklyplanItem.UsedEh;
+                }
+
+                WeeklyPlanLogic.UpdateModel(weeklyPlan.Id, weeklyPlan);
+            }
+        }
     }
 }
