@@ -3,12 +3,13 @@ using Com.Bateeq.Service.Masterplan.Lib.Services.IdentityService;
 using Com.Bateeq.Service.Masterplan.Lib.Utils.BaseLogic;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
 {
     public class BookingOrderDetailLogic : BaseLogic<BookingOrderDetail>
     {
-        private MasterplanDbContext DbContext;
+        private readonly MasterplanDbContext DbContext;
 
         public BookingOrderDetailLogic(IIdentityService identityService, MasterplanDbContext dbContext) : base(identityService, dbContext)
         {
@@ -29,9 +30,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
             {
 
                 List<BookingOrderDetail> modelBOD = DbContext.BookingOrderDetails
-                                           .Where(queryBP => queryBP.BookingOrderId == id).ToList();
-
-                //BookingOrderDetail bod = DbContext.BookingOrderDetails.Where(querybod => querybod.BookingOrderId == id).
+                                                             .Where(queryBP => queryBP.BookingOrderId == id).ToList();
 
                 foreach (var item in modelBOD)
                 {
@@ -40,9 +39,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
                         item.isAddNew = isAddNewDetail;
                         base.UpdateModel(id, item);
                     }
-
                 }
-               DbContext.SaveChangesAsync();
             }
 
             catch (System.Exception Ex)

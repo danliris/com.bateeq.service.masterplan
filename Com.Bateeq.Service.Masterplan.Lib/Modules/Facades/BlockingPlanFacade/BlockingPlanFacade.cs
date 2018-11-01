@@ -111,6 +111,8 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade
         {
             BlockingPlanLogic.UpdateModel(id, model);
 
+            await DbContext.SaveChangesAsync();
+
             foreach (var workschedule in model.WorkSchedules)
             {
                 await _weeklyPlanLogic.UpdateByWeeklyplanItemByIdAndWeekId(workschedule);
