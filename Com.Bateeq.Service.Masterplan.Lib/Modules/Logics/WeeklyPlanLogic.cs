@@ -71,19 +71,17 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
             return model;
         }
 
-        public async Task UpdateByWeeklyplanItemByIdAndWeekId(int yearId, int weekId, double ehBooking)
+        public async Task UpdateByWeeklyplanItemByIdAndWeekId(BlockingPlanWorkSchedule workSchedule)
         {
-            WeeklyPlanItem weeklyPlanItem = new WeeklyPlanItem();
             var query = await DbSet.Include(weeklyplanItem => weeklyplanItem.Items)
-                             .Where(weeklyplan => weeklyplan.Id == yearId)
+                             .Where(weeklyplan => weeklyplan.Id == workSchedule.YearId)
                              .FirstOrDefaultAsync();
             
             foreach(var weeklyplanItem in query.Items)
             {
-                if (weeklyplanItem.Id == weekId)
+                if (weeklyplanItem.Id == workSchedule.WeekId)
                 {
-                    weeklyPlanItem = weeklyplanItem;
-                    weeklyplanItem.UsedEh = weeklyplanItem.UsedEh + ehBooking;
+                    weeklyplanItem.UsedEh = weeklyplanItem.UsedEh + workSchedule.EH_Booking;
                     weeklyplanItem.RemainingEh = weeklyplanItem.EhTotal - weeklyplanItem.UsedEh;
                 }
             }
