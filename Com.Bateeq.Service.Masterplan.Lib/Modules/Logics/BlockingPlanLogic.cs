@@ -17,6 +17,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
         private readonly BookingOrderDetailLogic BookingOrderDetailLogic;
         private readonly BlockingPlanWorkScheduleLogic BlockingPlanWorkScheduleLogic;
         private readonly MasterplanDbContext DbContext;
+
         
 
         public BlockingPlanLogic(BookingOrderLogic bookingOrderLogic, BookingOrderDetailLogic bookingOrderDetailLogic, BlockingPlanWorkScheduleLogic blockingPlanWorkScheduleLogic, IIdentityService identityService, MasterplanDbContext dbContext) : base(identityService, dbContext)
@@ -62,11 +63,12 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
 
                 blockingPlan.BookingOrder.DetailConfirms =  DbContext
                                                             .BookingOrderDetails
-                                                            .Where(bod =>bod.BookingOrderId == blockingPlan.BookingOrder.Id && bod.IsDeleted == false).ToList();
+                                                            .Where(bod =>bod.BookingOrderId == blockingPlan.BookingOrder.Id && bod.IsConfirmDelete == false)
+                                                            .ToList();
             }
             else
             {
-                blockingPlan.BookingOrder = await DbContext.BookingOrders.Include(d => d.DetailConfirms).IgnoreQueryFilters().FirstOrDefaultAsync(d => d.Id.Equals(blockingPlan.BookingOrderId));
+                blockingPlan.BookingOrder = await DbContext.BookingOrders.Include(d => d.DetailConfirms).FirstOrDefaultAsync(d => d.Id.Equals(blockingPlan.BookingOrderId));
             }
            
             return blockingPlan;
@@ -127,6 +129,10 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
             try
             {
                 BookingOrderDetailLogic.UpdateBookingOrderDetailConfirm(model.BookingOrderId);
+                if (model.IsModified == false || model.IsModified == null)
+                {
+                    model.IsModified = true;
+                }
                 base.UpdateModel(id, model);
             }
             catch (Exception Ex)

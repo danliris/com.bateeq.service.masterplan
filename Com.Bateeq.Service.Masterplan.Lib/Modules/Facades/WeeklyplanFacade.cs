@@ -95,7 +95,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades
         public async Task<List<WeeklyPlan>> ReadByYear(string year)
         {
             var weeklyPlans = await DbSet.Include(p => p.Items).Where(d => d.Year == year && d.IsDeleted == false).ToListAsync();
-            foreach (var weeklyPlan in weeklyPlans)
+            foreach(var weeklyPlan in weeklyPlans)
                 weeklyPlan.Items = weeklyPlan.Items.OrderBy(s => s.WeekNumber).ToArray();
             return weeklyPlans;
         }

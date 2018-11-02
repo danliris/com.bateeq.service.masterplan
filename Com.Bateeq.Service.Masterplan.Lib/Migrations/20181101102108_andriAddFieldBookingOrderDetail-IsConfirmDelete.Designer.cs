@@ -11,9 +11,10 @@ using System;
 namespace Com.Bateeq.Service.Masterplan.Lib.Migrations
 {
     [DbContext(typeof(MasterplanDbContext))]
-    partial class MasterplanDbContextModelSnapshot : ModelSnapshot
+    [Migration("20181101102108_andriAddFieldBookingOrderDetail-IsConfirmDelete")]
+    partial class andriAddFieldBookingOrderDetailIsConfirmDelete
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -429,7 +430,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Migrations
 
                     b.Property<bool>("Active");
 
-                    b.Property<double>("AhTotal");
+                    b.Property<int>("AhTotal");
 
                     b.Property<string>("CreatedAgent")
                         .IsRequired()
@@ -453,7 +454,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Migrations
 
                     b.Property<int>("Efficiency");
 
-                    b.Property<double>("EhTotal");
+                    b.Property<int>("EhTotal");
 
                     b.Property<DateTimeOffset>("EndDate");
 
@@ -473,11 +474,11 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Migrations
 
                     b.Property<int>("Operator");
 
-                    b.Property<double>("RemainingEh");
+                    b.Property<int>("RemainingEh");
 
                     b.Property<DateTimeOffset>("StartDate");
 
-                    b.Property<double>("UsedEh");
+                    b.Property<int>("UsedEh");
 
                     b.Property<string>("WeekNumber");
 
