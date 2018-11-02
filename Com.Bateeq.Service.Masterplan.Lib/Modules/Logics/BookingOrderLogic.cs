@@ -38,6 +38,18 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
                   .FirstOrDefaultAsync(d => d.Id.Equals(id) && d.IsDeleted.Equals(false));
         }
 
+        public async Task<BookingOrder> ReadModelBookingOrderDetailById(int id)
+        {
+            var query = await DbSet
+                  .Include(d => d.DetailConfirms)
+                  .FirstOrDefaultAsync(d => d.Id.Equals(id) && d.IsDeleted.Equals(false));
+
+            query.DetailConfirms =await  DbContext.BookingOrderDetails
+                                        .Where(b => b.BookingOrderId == query.Id && b.IsConfirmDelete==false).ToListAsync();
+            return query;
+        }
+
+
         public override async void UpdateModel(int id, BookingOrder modelBO)
         {
             bool isAddNew = false;
