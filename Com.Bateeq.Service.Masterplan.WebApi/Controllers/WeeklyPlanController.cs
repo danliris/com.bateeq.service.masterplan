@@ -2,14 +2,14 @@
 using Microsoft.AspNetCore.Authorization;
 using Com.Bateeq.Service.Masterplan.Lib.Models;
 using Com.Bateeq.Service.Masterplan.Lib.ViewModels;
-using Com.Bateeq.Service.Masterplan.Lib.BusinessLogic.Facades;
-using Com.Bateeq.Service.Masterplan.WebApi.Helpers;
 using AutoMapper;
-using Com.Bateeq.Service.Masterplan.Lib.Services;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System;
-using Newtonsoft.Json;
+using Com.Bateeq.Service.Masterplan.Lib.Modules.Facades;
+using Com.Bateeq.Service.Masterplan.WebApi.Utils;
+using Com.Bateeq.Service.Masterplan.Lib.Services.IdentityService;
+using Com.Bateeq.Service.Masterplan.Lib.Services.ValidateService;
 
 namespace Com.Bateeq.Service.Masterplan.WebApi.Controllers
 {
@@ -17,15 +17,15 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Controllers
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/weekly-plans")]
     [Authorize]
-    public class WeeklyPlanController : BaseController<WeeklyPlan, WeeklyPlanViewModel, WeeklyplanFacade>
+    public class WeeklyPlanController : BaseController<WeeklyPlan, WeeklyPlanViewModel, WeeklyPlanFacade>
     {
         private readonly static string apiVersion = "1.0";
-        public WeeklyPlanController(IIdentityService identityService, IValidateService validateService, WeeklyplanFacade weeklyplanFacade, IMapper mapper) : base(identityService, validateService, weeklyplanFacade, mapper, apiVersion)
+        public WeeklyPlanController(IIdentityService identityService, IValidateService validateService, WeeklyPlanFacade weeklyplanFacade, IMapper mapper) : base(identityService, validateService, weeklyplanFacade, mapper, apiVersion)
         {
         }
 
         [HttpGet("is-exist/{year}/{code}")]
-        public async Task<IActionResult> GetByYearAndUnitCode(int year, string code)
+        public async Task<IActionResult> GetByYearAndUnitCode(string year, string code)
         {
             try
             {
@@ -55,11 +55,28 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Controllers
                 return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
             }
         }
-    }
 
-    public class FilterObject
-    {
-        public int Year { get; set; }
-        public string Code { get; set; }
+        [HttpGet("get-by-year/{year}")]
+        public async Task<IActionResult> GetWeeklyPlanByYear(string year)
+        {
+            try
+            {
+                List<WeeklyPlan> read = await Facade.ReadByYear(year);
+
+                List<WeeklyPlanViewModel> dataVM = this.Mapper.Map<List<WeeklyPlanViewModel>>(read);
+
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.OK_STATUS_CODE, General.OK_MESSAGE)
+                    .Ok<List<WeeklyPlanViewModel>>(this.Mapper, dataVM);
+                return Ok(Result);
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
     }
 }

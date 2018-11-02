@@ -1,4 +1,4 @@
-﻿using Com.Bateeq.Service.Masterplan.Lib.Helpers;
+﻿using Com.Bateeq.Service.Masterplan.Lib.Utils;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -6,7 +6,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.ViewModels
 {
     public class WeeklyPlanViewModel : BaseViewModel, IValidatableObject
     {
-        public int Year { get; set; }
+        public string Year { get; set; }
         public string UnitId { get; set; }
         public string UnitCode { get; set; }
         public string UnitName { get; set; }
@@ -14,7 +14,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.ViewModels
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if (this.Year == 0)
+            if (string.IsNullOrWhiteSpace(this.Year))
             {
                 yield return new ValidationResult("Weekly-plan of year must be not equal to 0", new List<string> { "Year" });
             }

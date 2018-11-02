@@ -17,8 +17,20 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Models
         public string BuyerCode { get; set; }
         public string BuyerName { get; set; }
         public int OrderQuantity { get; set; }
+        public int? InitialOrderQuantity { get; set; }
         public DateTimeOffset DeliveryDate { get; set; }
         public string Remark { get; set; }
+        public virtual ICollection<BookingOrderDetail> DetailConfirms { get; set; }
+        public int? BlockingPlanId { get; set; }
+        public Boolean? IsModified { get; set; }
+        public virtual BlockingPlan BlockingPlan { get; set; }
+        public int CanceledBookingOrder { get; set; }
+        public DateTimeOffset CanceledDate { get; set; }
+        public int ExpiredBookingOrder { get; set; }
+        public DateTimeOffset ExpiredDeletedDate { get; set; }
+        public int canceledItem { get; set; }
+
+
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
