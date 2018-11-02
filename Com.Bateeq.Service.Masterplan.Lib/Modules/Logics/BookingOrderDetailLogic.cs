@@ -22,7 +22,9 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
         public HashSet<int> GetBookingOrderDetailIds(int id)
         {
 
-            return new HashSet<int>(DbSet.Where(queryBP => queryBP.BookingOrderId == id).Select(d => d.Id));
+            return new HashSet<int>(DbSet
+                                    .Where(queryBP => queryBP.BookingOrderId == id && queryBP.IsConfirmDelete == false)
+                                    .Select(d => d.Id));
 
         }
 
@@ -30,27 +32,36 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
         {
             try
             {
-                List<BookingOrderDetail> modelBOD = DbContext.BookingOrderDetails.Where(Querybod => Querybod.BookingOrderId == id).ToList();
+                List<BookingOrderDetail> modelBOD = DbContext
+                                                   .BookingOrderDetails
+                                                   .Where(Querybod => Querybod.BookingOrderId == id && Querybod.IsDeleted == false)
+                                                   .ToList();
 
+                #region Looping Item on model Booking Order Detail
                 foreach (var itemBOD in modelBOD)
                 {
-                    if (itemBOD.IsAddNew == true)
+                    if (itemBOD.IsConfirmDelete == true)
                     {
-                        if (itemBOD.IsDeleted == true)
+                        itemBOD.IsDeleted = true;
+                        await base.DeleteModel(itemBOD.Id);
+                    }
+                    else
+                    {
+                        if (itemBOD.IsAddNew == true)
                         {
-                            itemBOD.IsConfirmDelete = false;
+                            itemBOD.IsAddNew = false;
                         }
-                        itemBOD.IsAddNew = false;
                         base.UpdateModel(id, itemBOD);
                     }
+                   
                 }
-              await DbContext.SaveChangesAsync();
+                #endregion
 
             }
 
             catch (System.Exception Ex)
             {
-                throw new System.Exception($"Pesan Error Sebagai Berikut : {Ex}");
+                throw new System.Exception($"Terjadi kesalaha saat melakukan update ,Pesan Error Sebagai Berikut : {Ex}");
             }
         }
     }

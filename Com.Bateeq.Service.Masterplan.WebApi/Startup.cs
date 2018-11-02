@@ -18,6 +18,7 @@ using Com.Bateeq.Service.Masterplan.Lib.Services.ValidateService;
 using Com.Bateeq.Service.Masterplan.WebApi.Utils;
 using Com.Bateeq.Service.Masterplan.Lib.Modules.Logics;
 using Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade;
+using Com.Bateeq.Service.Masterplan.Lib.Models;
 
 namespace Com.Bateeq.Service.Masterplan.WebApi
 {
@@ -55,6 +56,7 @@ namespace Com.Bateeq.Service.Masterplan.WebApi
             services
                 .AddTransient<SectionLogic>()
                 .AddTransient<BookingOrderLogic>()
+                .AddTransient<BookingOrderDetail>()
                 .AddTransient<BookingOrderDetailLogic>()
                 .AddTransient<WeeklyPlanLogic>()
                 .AddTransient<BlockingPlanLogic>()

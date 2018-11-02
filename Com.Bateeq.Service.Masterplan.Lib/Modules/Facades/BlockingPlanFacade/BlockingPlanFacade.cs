@@ -16,8 +16,8 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade
     {
         private readonly MasterplanDbContext DbContext;
         private readonly DbSet<BlockingPlan> DbSet;
-        private BlockingPlanLogic BlockingPlanLogic;
-        private BookingOrderLogic BookingOrderLogic;
+        private readonly BlockingPlanLogic BlockingPlanLogic;
+        private readonly BookingOrderLogic BookingOrderLogic;
         private readonly WeeklyPlanLogic _weeklyPlanLogic;
 
         public BlockingPlanFacade(IServiceProvider serviceProvider, MasterplanDbContext dbContext)
@@ -83,7 +83,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade
                             CanceledBookingOrder = bo.CanceledBookingOrder,
                             CanceledDate = bo.CanceledDate,
                             ExpiredBookingOrder = bo.ExpiredBookingOrder,
-                            ExpiredDeletedDate = bo.ExpiredDeletedDate
+                            ExpiredDeletedDate = bo.ExpiredDeletedDate   
                         }).IgnoreQueryFilters()
                         .FirstOrDefault(),
                         Status = bp.Status,

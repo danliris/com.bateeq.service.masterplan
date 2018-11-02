@@ -33,7 +33,9 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
 
         public override Task<BookingOrder> ReadModelById(int id)
         {
-            return DbSet.Include(d => d.DetailConfirms).FirstOrDefaultAsync(d => d.Id.Equals(id) && d.IsDeleted.Equals(false));
+            return DbSet
+                  .Include(d => d.DetailConfirms)
+                  .FirstOrDefaultAsync(d => d.Id.Equals(id) && d.IsDeleted.Equals(false));
         }
 
         public override async void UpdateModel(int id, BookingOrder modelBO)
@@ -53,9 +55,19 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
                 {
                     BookingOrderDetail modelbod = modelBO.DetailConfirms.FirstOrDefault(prop => prop.Id.Equals(detailId));
                     if (modelbod == null)
+                    {
                         await BookingOrderDetailLogic.DeleteModel(detailId);
+                    }  
                     else
-                        BookingOrderDetailLogic.UpdateModel(detailId, modelbod);
+                    {
+                        if (modelbod.IsDeleted)
+                        {
+                            modelbod.IsConfirmDelete = true;
+                            BookingOrderDetailLogic.UpdateModel(detailId, modelbod);
+                        }
+                        
+                    }
+                        
                 }
 
                 foreach (BookingOrderDetail bodItem in modelBO.DetailConfirms)
