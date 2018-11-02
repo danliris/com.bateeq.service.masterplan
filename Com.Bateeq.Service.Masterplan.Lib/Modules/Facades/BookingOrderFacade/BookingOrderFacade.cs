@@ -37,7 +37,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
             IQueryable<BookingOrder> query = this.DbSet;
 
             List<string> searchAttributes = new List<string>()
-                { 
+                {
                     "Code"
                 };
             query = QueryHelper<BookingOrder>.Search(query, searchAttributes, keyword);
@@ -63,37 +63,37 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
                     "ExpiredBookingOrder","ExpiredDeletedDate"
                 };
 
-            query = query
-                .Select(field => new BookingOrder
-                {
-                    Id = field.Id,
-                    Code = field.Code,
-                    BookingDate = field.BookingDate,
-                    BuyerId = field.BuyerId,
-                    BuyerName = field.BuyerName,
-                    OrderQuantity = field.OrderQuantity,
-                    DeliveryDate = field.DeliveryDate,
-                    Remark = field.Remark,
-                    DetailConfirms = new List<BookingOrderDetail>(field.DetailConfirms.Select(d => new BookingOrderDetail
+                query = query
+                    .Select(field => new BookingOrder
                     {
-                        Total = d.Total
-                    })),
-                    BlockingPlanId = field.BlockingPlanId,
-                    IsModified = field.IsModified,
-                    CanceledBookingOrder = field.CanceledBookingOrder,
-                    ExpiredBookingOrder = field.ExpiredBookingOrder,
-                    ExpiredDeletedDate = field.ExpiredDeletedDate
+                        Id = field.Id,
+                        Code = field.Code,
+                        BookingDate = field.BookingDate,
+                        BuyerId = field.BuyerId,
+                        BuyerName = field.BuyerName,
+                        OrderQuantity = field.OrderQuantity,
+                        DeliveryDate = field.DeliveryDate,
+                        Remark = field.Remark,
+                        DetailConfirms = new List<BookingOrderDetail>(field.DetailConfirms.Select(d => new BookingOrderDetail
+                        {
+                            Total = d.Total
+                        })),
+                        BlockingPlanId = field.BlockingPlanId,
+                        IsModified = field.IsModified,
+                        CanceledBookingOrder = field.CanceledBookingOrder,
+                        ExpiredBookingOrder = field.ExpiredBookingOrder,
+                        ExpiredDeletedDate = field.ExpiredDeletedDate
 
-                });
+                    });
 
-            Dictionary<string, string> orderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(order);
-            query = QueryHelper<BookingOrder>.Order(query, orderDictionary);
+                Dictionary<string, string> orderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(order);
+                query = QueryHelper<BookingOrder>.Order(query, orderDictionary);
 
-            Pageable<BookingOrder> pageable = new Pageable<BookingOrder>(query, page - 1, size);
-            List<BookingOrder> data = pageable.Data.ToList<BookingOrder>();
-            int totalData = pageable.TotalCount;
+                Pageable<BookingOrder> pageable = new Pageable<BookingOrder>(query, page - 1, size);
+                List<BookingOrder> data = pageable.Data.ToList<BookingOrder>();
+                int totalData = pageable.TotalCount;
 
-            return new ReadResponse<BookingOrder>(data, totalData, orderDictionary, selectedFields);
+                return new ReadResponse<BookingOrder>(data, totalData, orderDictionary, selectedFields);
             }
             catch (Exception Ex)
             {
@@ -132,7 +132,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
                 if (hasBlockingPlan)
                 {
                     model.IsModified = true;
-                    
+
                     if (model.IsModified == true)
                     {
 
@@ -162,12 +162,14 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
             var bookingOrderDetail = await BookingOrderDetailLogic.ReadModelById(id);
             bookingOrderDetail.isAddNew = false;
             var bookingOrder = await BookingOrderLogic.ReadModelById(bookingOrderDetail.BookingOrderId);
+            bookingOrder.canceledItem = bookingOrder.canceledItem + 1;
+
             if (bookingOrder.BlockingPlanId != null)
             {
                 var blockingPlan = await BlockingPlanLogic.ReadModelById((int)bookingOrder.BlockingPlanId);
                 BlockingPlanLogic.UpdateModelStatus(blockingPlan.Id, blockingPlan, BlockingPlanStatus.CHANGED);
             }
-            bookingOrder.canceledItem = bookingOrder.canceledItem + 1;
+            
             BookingOrderLogic.UpdateModel(bookingOrder.Id, bookingOrder);
 
             return await DbContext.SaveChangesAsync();
@@ -194,9 +196,9 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
             model.OrderQuantity = total;
             var blockingPlan = await BlockingPlanLogic.searchByBookingOrderId(bookStatus.BookingOrderId);
 
-            if (blockingPlan != null)
+            if (bookStatus.StatusBooking == StatusConst.CANCEL_REMAINING)
             {
-                if (bookStatus.StatusBooking == StatusConst.CANCEL_REMAINING)
+                if (blockingPlan != null)
                 {
                     if (total == 0)
                     {
@@ -205,12 +207,16 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
                     else
                     {
                         BlockingPlanLogic.UpdateModelStatus(blockingPlan.Id, blockingPlan, BlockingPlanStatus.CHANGED);
-                        model.CanceledBookingOrder = orderCanceledOrDeleted;
-                    }
 
-                    model.CanceledDate = nowDateAndTime;
+                    }
                 }
-                else if (bookStatus.StatusBooking == StatusConst.DELETE_REMAINING)
+
+                model.CanceledBookingOrder = orderCanceledOrDeleted;
+                model.CanceledDate = nowDateAndTime;
+            }
+            else if (bookStatus.StatusBooking == StatusConst.DELETE_REMAINING)
+            {
+                if (blockingPlan != null)
                 {
                     if (total == 0)
                     {
@@ -219,11 +225,12 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
                     else
                     {
                         BlockingPlanLogic.UpdateModelStatus(blockingPlan.Id, blockingPlan, BlockingPlanStatus.CHANGED);
-                        model.ExpiredBookingOrder = orderCanceledOrDeleted;
-                    }
 
-                    model.ExpiredDeletedDate = nowDateAndTime;
+                    }
                 }
+
+                model.ExpiredBookingOrder = orderCanceledOrDeleted;
+                model.ExpiredDeletedDate = nowDateAndTime;
             }
 
             return await Update(bookStatus.BookingOrderId, model);
