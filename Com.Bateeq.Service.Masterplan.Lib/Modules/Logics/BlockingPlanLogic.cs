@@ -146,6 +146,11 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
         public void UpdateModelStatus(int id, BlockingPlan modelBP, string status)
         {
             modelBP.Status = status;
+            if (modelBP.IsModified == true)
+            {
+                modelBP.IsModified = false;
+            }
+            
             base.UpdateModel(id, modelBP);
         }
 

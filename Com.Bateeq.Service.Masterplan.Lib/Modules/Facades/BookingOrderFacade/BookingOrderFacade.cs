@@ -117,7 +117,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
 
         public async Task<BookingOrder> ReadById(int id)
         {
-            return await BookingOrderLogic.ReadModelById(id);
+            return await BookingOrderLogic.ReadModelBookingOrderDetailById(id);
         }
 
         public async Task<int> Update(int id, BookingOrder model)
