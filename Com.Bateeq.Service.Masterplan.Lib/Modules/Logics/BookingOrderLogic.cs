@@ -54,6 +54,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
                 foreach (int detailId in detailIds)
                 {
                     BookingOrderDetail modelbod = modelBO.DetailConfirms.FirstOrDefault(prop => prop.Id.Equals(detailId));
+
                     if (modelbod == null)
                     {
                         await BookingOrderDetailLogic.DeleteModel(detailId);
@@ -63,11 +64,9 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
                         if (modelbod.IsDeleted)
                         {
                             modelbod.IsConfirmDelete = true;
-                            BookingOrderDetailLogic.UpdateModel(detailId, modelbod);
                         }
-                        
+                        BookingOrderDetailLogic.UpdateModel(detailId, modelbod);
                     }
-                        
                 }
 
                 foreach (BookingOrderDetail bodItem in modelBO.DetailConfirms)

@@ -125,26 +125,25 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
             Boolean hasBlockingPlan = false;
             try
             {
-                // Before Update Check if Booking Order Have Blocking Plan ?
-                hasBlockingPlan = await BlockingPlanLogic.UpdateModelStatus(id, BlockingPlanStatus.CHANGED);
-
-                // IF hasBlockingPlan  = True
-                if (hasBlockingPlan)
+                if (model.DetailConfirms.Count != 0)
                 {
-                    model.IsModified = true;
+                    // Before Update Check if Booking Order Have Blocking Plan ?
+                    hasBlockingPlan = await BlockingPlanLogic.UpdateModelStatus(id, BlockingPlanStatus.CHANGED);
 
-                    if (model.IsModified == true)
+                    // IF hasBlockingPlan  = True
+                    if (hasBlockingPlan)
                     {
-
+                        model.IsModified = true;
                     }
                 }
+
+                BookingOrderLogic.UpdateModel(id, model);
+                return await DbContext.SaveChangesAsync();
             }
             catch (Exception Ex)
             {
                 throw new Exception($"Terjadi Kesalahan Update Booking Order, dengan Kesalahan Sebagai Berikut:  {Ex.ToString()}");
             }
-            BookingOrderLogic.UpdateModel(id, model);
-            return await DbContext.SaveChangesAsync();
         }
 
         public async Task<int> Delete(int id)
@@ -169,7 +168,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
                 var blockingPlan = await BlockingPlanLogic.ReadModelById((int)bookingOrder.BlockingPlanId);
                 BlockingPlanLogic.UpdateModelStatus(blockingPlan.Id, blockingPlan, BlockingPlanStatus.CHANGED);
             }
-            
+
             BookingOrderLogic.UpdateModel(bookingOrder.Id, bookingOrder);
 
             return await DbContext.SaveChangesAsync();
