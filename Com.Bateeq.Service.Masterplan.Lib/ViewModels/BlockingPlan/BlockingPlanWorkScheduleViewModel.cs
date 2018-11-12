@@ -15,7 +15,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.ViewModels.BlockingPlan
         public UnitViewModel Unit { get; set; }
         public WeeklyPlanViewModel Year { get; set; }
         public WeeklyPlanItemViewModel Week { get; set; }
-        public int RemainingEh { get; set; }
+        public double RemainingEh { get; set; }
         public int? TotalOrder { get; set; }
         public string Remark { get; set; }
         public DateTimeOffset DeliveryDate { get; set; }
