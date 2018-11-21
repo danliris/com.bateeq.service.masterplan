@@ -11,6 +11,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Models
         public int BlockingPlanId { get; set; }
         public virtual BlockingPlan BlockingPlan { get; set; }
         public bool isConfirmed { get; set; }
+        public bool isHasRoViewing { get; set; }
         public string RO { get; set; }
         public string Article { get; set; }
         public string Style { get; set; }
@@ -22,7 +23,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Models
         public string YearText { get; set; }
         public int WeekId { get; set; }
         public string WeekText { get; set; }
-        public int RemainingEh { get; set; }
+        public double RemainingEh { get; set; }
         public int TotalOrder { get; set; }
         public string Remark { get; set; }
         public DateTimeOffset DeliveryDate { get; set; }

@@ -18,13 +18,13 @@ namespace Com.Bateeq.Service.Masterplan.Lib.ViewModels.BlockingPlan
         {
             if (this.BookingOrderId == null || this.BookingOrderId == 0)
             {
-                yield return new ValidationResult("Booking Order harus diisi", new List<string> { "ValidateBookingOrder" });
+                yield return new ValidationResult("NB: Booking Order harus diisi", new List<string> { "ValidateBookingOrder" });
             }
           
 
             if (this.WorkSchedules.Count == 0)
             {
-                yield return new ValidationResult("Tabel Jadwal Pengerjaan harus diisi", new List<string> { "ValidateWorkSchedules" });
+                yield return new ValidationResult("NB : Tabel Jadwal Pengerjaan harus diisi", new List<string> { "ValidateWorkSchedules" });
             }
             else
             {
@@ -34,6 +34,14 @@ namespace Com.Bateeq.Service.Masterplan.Lib.ViewModels.BlockingPlan
                 foreach (var workSchedule in this.WorkSchedules)
                 {
                     error += "{";
+                    if (workSchedule.RO != null)
+                    {
+                        if (workSchedule.RO.Length > 8)
+                        {
+                            error += "RO : 'RO Maksimal 8 Karakter', ";
+                            count++;
+                        }
+                    }
                     if (workSchedule.RO == null)
                     {
                         count++;
