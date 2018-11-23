@@ -36,6 +36,8 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Utils.BaseLogic
         {
             EntityExtension.FlagForUpdate(model, IdentityService.Username, "masterplan-service");
             DbSet.Update(model);
+            
+           
         }
 
         public virtual async Task DeleteModel(int id)
@@ -43,6 +45,11 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Utils.BaseLogic
             TModel model = await ReadModelById(id);
             EntityExtension.FlagForDelete(model, IdentityService.Username, "masterplan-service", true);
             DbSet.Update(model);
+        }
+
+        internal void UpdateModel(int id, BookingOrderDetail itemBOD)
+        {
+            throw new NotImplementedException();
         }
     }
 }

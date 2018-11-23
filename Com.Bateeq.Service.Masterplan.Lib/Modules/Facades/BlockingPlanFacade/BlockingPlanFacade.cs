@@ -9,21 +9,28 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using Newtonsoft.Json;
 using Com.Moonlay.NetCore.Lib;
+using Com.Moonlay.Models;
+using Com.Bateeq.Service.Masterplan.Lib.Services.IdentityService;
+using Com.Bateeq.Service.Masterplan.Lib.Utils.BaseLogic;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade
 {
-    public class BlockingPlanFacade : IBlockingPlanFacade
+    public class BlockingPlanFacade : BaseLogic<BlockingPlan>, IBlockingPlanFacade
     {
         private readonly MasterplanDbContext DbContext;
         private readonly DbSet<BlockingPlan> DbSet;
+        private readonly DbSet<BookingOrder> _BookingOrderDbSet;
+        private readonly DbSet<BlockingPlanWorkSchedule> _BPWorkSchedulesDbSet;
         private readonly BlockingPlanLogic BlockingPlanLogic;
         private readonly BookingOrderLogic BookingOrderLogic;
         private readonly WeeklyPlanLogic _weeklyPlanLogic;
 
-        public BlockingPlanFacade(IServiceProvider serviceProvider, MasterplanDbContext dbContext)
+        public BlockingPlanFacade(IServiceProvider serviceProvider, IIdentityService identityService, MasterplanDbContext dbContext) : base(identityService, dbContext)
         {
             this.DbContext = dbContext;
             this.DbSet = this.DbContext.Set<BlockingPlan>();
+            this._BookingOrderDbSet = this.DbContext.Set<BookingOrder>();
+            this._BPWorkSchedulesDbSet = this.DbContext.Set<BlockingPlanWorkSchedule>();
             this.BlockingPlanLogic = serviceProvider.GetService<BlockingPlanLogic>();
             this.BookingOrderLogic = serviceProvider.GetService<BookingOrderLogic>();
             this._weeklyPlanLogic = serviceProvider.GetService<WeeklyPlanLogic>();
@@ -109,14 +116,46 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade
 
         public async Task<int> Update(int id, BlockingPlan model)
         {
-            BlockingPlanLogic.UpdateModel(id, model);
+            //BlockingPlanLogic.UpdateModel(id, model);
 
-            await DbContext.SaveChangesAsync();
+            EntityExtension.FlagForUpdate(model, IdentityService.Username, "masterplan-service");
+            DbSet.Update(model);
 
-            foreach (var workschedule in model.WorkSchedules)
+            EntityExtension.FlagForUpdate(model.BookingOrder, IdentityService.Username, "masterplan-service");
+            _BookingOrderDbSet.Update(model.BookingOrder);
+
+            List<int> itemIds = await _BPWorkSchedulesDbSet.Where(w => w.BlockingPlanId.Equals(id) && !w.IsDeleted).Select(s => s.Id).ToListAsync();
+            foreach (var itemId in itemIds)
             {
-                await _weeklyPlanLogic.UpdateByWeeklyplanItemByIdAndWeekId(workschedule);
+                var item = model.WorkSchedules.FirstOrDefault(f => f.Id.Equals(itemId));
+                if (item == null)
+                {
+                    var itemToDelete = await _BPWorkSchedulesDbSet.FirstOrDefaultAsync(f => f.Id.Equals(itemId));
+                    EntityExtension.FlagForDelete(itemToDelete, IdentityService.Username, "masterplan-service");
+                    _BPWorkSchedulesDbSet.Update(itemToDelete);
+                }
+                else
+                {
+                    EntityExtension.FlagForUpdate(item, IdentityService.Username, "masterplan-service");
+                    _BPWorkSchedulesDbSet.Update(item);
+                }
             }
+
+            foreach (var item in model.WorkSchedules)
+            {
+                if (item.Id <= 0)
+                {
+                    EntityExtension.FlagForCreate(item, "user", "agent");
+                    _BPWorkSchedulesDbSet.Add(item);
+                }
+            }
+
+            //await DbContext.SaveChangesAsync();
+
+            //foreach (var workschedule in model.WorkSchedules)
+            //{
+            //    await _weeklyPlanLogic.UpdateByWeeklyplanItemByIdAndWeekId(workschedule);
+            //}
 
             return await DbContext.SaveChangesAsync();
         }
