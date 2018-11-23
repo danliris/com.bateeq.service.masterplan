@@ -22,7 +22,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.ViewModels.BlockingPlan
             }
           
 
-            if (this.WorkSchedules.Count == 0)
+            if (this.WorkSchedules.Count == 0 && this.BookingOrderId == 0)
             {
                 yield return new ValidationResult("NB : Tabel Jadwal Pengerjaan harus diisi", new List<string> { "ValidateWorkSchedules" });
             }

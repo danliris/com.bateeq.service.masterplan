@@ -11,11 +11,11 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
     public class BookingOrderDetailLogic : BaseLogic<BookingOrderDetail>
     {
         private BookingOrderDetail BookingOrderDetail;
-        private readonly MasterplanDbContext DbContext;
+        private readonly MasterplanDbContext _dbContext;
 
-        public BookingOrderDetailLogic( IIdentityService identityService, MasterplanDbContext dbContext, BookingOrderDetail bookingOrderDetail) : base(identityService, dbContext)
+        public BookingOrderDetailLogic(IIdentityService identityService, MasterplanDbContext dbContext, BookingOrderDetail bookingOrderDetail) : base(identityService, dbContext)
         {
-            DbContext = dbContext;
+            _dbContext = dbContext;
             BookingOrderDetail = bookingOrderDetail;
         }
 
@@ -32,7 +32,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
         {
             try
             {
-                List<BookingOrderDetail> modelBOD = DbContext
+                List<BookingOrderDetail> modelBOD = _dbContext
                                                    .BookingOrderDetails
                                                    .Where(Querybod => Querybod.BookingOrderId == id && Querybod.IsDeleted == false)
                                                    .ToList();
@@ -53,12 +53,10 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
                         }
                         base.UpdateModel(id, itemBOD);
                     }
-                   
                 }
                 #endregion
 
             }
-
             catch (System.Exception Ex)
             {
                 throw new System.Exception($"Terjadi kesalaha saat melakukan update ,Pesan Error Sebagai Berikut : {Ex}");
