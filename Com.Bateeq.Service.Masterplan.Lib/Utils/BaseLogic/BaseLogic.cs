@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Com.Bateeq.Service.Masterplan.Lib.Services.IdentityService;
+using Com.Bateeq.Service.Masterplan.Lib.Models;
 
 namespace Com.Bateeq.Service.Masterplan.Lib.Utils.BaseLogic
 {
