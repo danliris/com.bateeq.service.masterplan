@@ -13,8 +13,12 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
 {
     public class WeeklyPlanLogic : BaseLogic<WeeklyPlan>
     {
+        private BlockingPlanWorkSchedule blockingPlanWorkSchedule;
+        private readonly MasterplanDbContext _dbContext;
+
         public WeeklyPlanLogic(IIdentityService identityService, MasterplanDbContext dbContext) : base(identityService, dbContext)
         {
+            _dbContext = dbContext;
         }
 
         override public void CreateModel(WeeklyPlan model)
@@ -99,8 +103,16 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
             {
                 if (weeklyplanItem.Id == workSchedule.WeekId)
                 {
-                    weeklyplanItem.UsedEh = (weeklyplanItem.UsedEh) + workSchedule.EH_Booking;
-                    weeklyplanItem.RemainingEh = weeklyplanItem.EhTotal - weeklyplanItem.UsedEh;
+                    var wsID = workSchedule.Id;
+                    if (wsID > 0)
+                    {
+                       weeklyplanItem.UsedEh = weeklyplanItem.UsedEh;
+                    }
+                    else
+                    {
+                        weeklyplanItem.UsedEh = weeklyplanItem.UsedEh + workSchedule.EH_Booking;
+                        weeklyplanItem.RemainingEh = weeklyplanItem.EhTotal - weeklyplanItem.UsedEh;
+                    }
                 }
             }
 
