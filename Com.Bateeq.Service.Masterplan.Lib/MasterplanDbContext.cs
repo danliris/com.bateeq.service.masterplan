@@ -1,5 +1,6 @@
 ﻿using Com.Bateeq.Service.Masterplan.Lib.ModelConfigs;
 using Com.Bateeq.Service.Masterplan.Lib.Models;
+using Com.Bateeq.Service.Masterplan.Lib.Modules.Logics;
 using Com.Moonlay.Data.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
