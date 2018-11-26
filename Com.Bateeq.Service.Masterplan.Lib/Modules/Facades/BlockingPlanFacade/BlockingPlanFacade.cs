@@ -195,15 +195,14 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade
             #region WeeklyPlanUpdate
             //await _weeklyPlanLogic.DeleteByWeeklyplanItemByIdAndWeekId(workschedule);
 
-            var WeeklyPlanBefore = _BlockingPlanWorkScheduleLogic.GetBlockingPlanWorkScheduleIds(id);
-            var WeeklyPlanAfter = model.WorkSchedules;
-          //  var getWeek = DbSet.Where(x => x.WorkSchedules.Select(b => b.BlockingPlanId == id).FirstOrDefault());
+            var WeeklyPlanBeforeDetele = _BlockingPlanWorkScheduleLogic.GetBlockingPlanWorkScheduleIds(id);
+            var WeeklyPlanAfterDelete = model.WorkSchedules;
 
             #region Hapus Weekly
-           
-            if (WeeklyPlanBefore.Count > WeeklyPlanAfter.Count())
+
+            if (WeeklyPlanBeforeDetele.Count > WeeklyPlanAfterDelete.Count())
             {
-                if (WeeklyPlanAfter.Count == 0)
+                if (WeeklyPlanAfterDelete.Count == 0)
                 {
                     var workscheduleHapus = _BPWorkSchedulesDbSet.Where(c => c.BlockingPlanId == id).ToList();
                     foreach (var item in workscheduleHapus)
@@ -213,11 +212,24 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade
                 }
                 else
                 {
-                    var workscheduleHapus = _BPWorkSchedulesDbSet.Where(c => c.BlockingPlanId == id).ToList();
-                    foreach (var item in workscheduleHapus)
+                    var workscheduleAll = _BPWorkSchedulesDbSet.Where(c => c.BlockingPlanId == id).ToList();
+                    foreach (var beforeDelete in workscheduleAll)
                     {
-                        await _weeklyPlanLogic.DeleteByWeeklyplanItemByIdAndWeekId(item);
+                        foreach (var afterDelete in WeeklyPlanAfterDelete)
+                        {
+                            if (beforeDelete.Id == afterDelete.Id)
+                            {
+
+                            }
+                            else
+                            {
+                                await _weeklyPlanLogic.DeleteByWeeklyplanItemByIdAndWeekId(beforeDelete);
+                            }
+                        }
+                       
+
                     }
+
                 }
 
             }
