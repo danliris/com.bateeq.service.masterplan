@@ -50,7 +50,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade
 
             foreach (var workschedule in model.WorkSchedules)
             {
-                await _weeklyPlanLogic.UpdateByWeeklyplanItemByIdAndWeekId(workschedule);
+                await _weeklyPlanLogic.CreateByWeeklyplanItemByIdAndWeekId(workschedule);
             }
 
             await DbContext.SaveChangesAsync();
