@@ -103,16 +103,18 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
             {
                 if (weeklyplanItem.Id == workSchedule.WeekId)
                 {
-                    var wsID = workSchedule.Id;
-                    if (wsID > 0)
-                    {
-                       weeklyplanItem.UsedEh = weeklyplanItem.UsedEh;
-                    }
-                    else
-                    {
-                        weeklyplanItem.UsedEh = weeklyplanItem.UsedEh + workSchedule.EH_Booking;
-                        weeklyplanItem.RemainingEh = weeklyplanItem.EhTotal - weeklyplanItem.UsedEh;
-                    }
+                    weeklyplanItem.UsedEh = weeklyplanItem.UsedEh + workSchedule.EH_Booking;
+                    weeklyplanItem.RemainingEh = weeklyplanItem.EhTotal - weeklyplanItem.UsedEh;
+                    //var wsID = workSchedule.Id;
+                    //if (wsID > 0)
+                    //{
+                    //   weeklyplanItem.UsedEh = weeklyplanItem.UsedEh;
+                    //}
+                    //else
+                    //{
+                    //    weeklyplanItem.UsedEh = weeklyplanItem.UsedEh + workSchedule.EH_Booking;
+                    //    weeklyplanItem.RemainingEh = weeklyplanItem.EhTotal - weeklyplanItem.UsedEh;
+                    //}
                 }
             }
 
