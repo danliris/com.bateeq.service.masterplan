@@ -17,7 +17,7 @@ namespace Com.Bateeq.Service.Masterplan.WebApi.Controllers
     public class BlockingPlanController : BaseController<BlockingPlan, BlockingPlanViewModel, IBlockingPlanFacade>
     {
         private static readonly string apiVersion = "1.0";
-        public BlockingPlanController(IIdentityService identityService, IValidateService validateService, IBlockingPlanFacade sectionFacade, IMapper mapper) : base(identityService, validateService, sectionFacade, mapper, apiVersion)
+        public BlockingPlanController(IIdentityService identityService, IValidateService validateService, IBlockingPlanFacade sectionFacade, IMapper mapper) :base(identityService, validateService, sectionFacade, mapper, apiVersion)
         {
         }
     }

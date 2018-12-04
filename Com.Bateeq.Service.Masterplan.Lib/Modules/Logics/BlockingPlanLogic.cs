@@ -16,16 +16,20 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
         private readonly BookingOrderLogic BookingOrderLogic;
         private readonly BookingOrderDetailLogic BookingOrderDetailLogic;
         private readonly BlockingPlanWorkScheduleLogic BlockingPlanWorkScheduleLogic;
+        private readonly WeeklyPlanLogic WeeklyPlanLogic;
         private readonly MasterplanDbContext DbContext;
+        protected DbSet<BookingOrderDetail> _DbSet;
+        protected DbSet<BlockingPlan> _blockingPlans;
 
-        
-
-        public BlockingPlanLogic(BookingOrderLogic bookingOrderLogic, BookingOrderDetailLogic bookingOrderDetailLogic, BlockingPlanWorkScheduleLogic blockingPlanWorkScheduleLogic, IIdentityService identityService, MasterplanDbContext dbContext) : base(identityService, dbContext)
+        public BlockingPlanLogic(BookingOrderLogic bookingOrderLogic, BookingOrderDetailLogic bookingOrderDetailLogic, BlockingPlanWorkScheduleLogic blockingPlanWorkScheduleLogic, WeeklyPlanLogic weeklyPlanLogic, IIdentityService identityService, MasterplanDbContext dbContext) : base(identityService, dbContext)
         {
             this.BlockingPlanWorkScheduleLogic = blockingPlanWorkScheduleLogic;
             this.BookingOrderLogic = bookingOrderLogic;
             this.DbContext = dbContext;
             this.BookingOrderDetailLogic = bookingOrderDetailLogic;
+            this.WeeklyPlanLogic = weeklyPlanLogic;
+            _DbSet = dbContext.Set<BookingOrderDetail>();
+            _blockingPlans = dbContext.Set<BlockingPlan>();
         }
 
         public override void CreateModel(BlockingPlan model)
@@ -54,95 +58,122 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
         {
             BlockingPlan blockingPlan = await DbSet.Include(d => d.WorkSchedules).FirstOrDefaultAsync(d => d.Id.Equals(id) && d.IsDeleted.Equals(false));
 
-            if (blockingPlan.IsModified==true)
+            if (blockingPlan.IsModified == true)
             {
                 blockingPlan.BookingOrder = await DbContext
                                                  .BookingOrders.Include(bo => bo.DetailConfirms)
                                                  .IgnoreQueryFilters()
                                                  .FirstOrDefaultAsync(d => d.Id.Equals(blockingPlan.BookingOrderId));
 
-                blockingPlan.BookingOrder.DetailConfirms =  DbContext
+                blockingPlan.BookingOrder.DetailConfirms = DbContext
                                                             .BookingOrderDetails
-                                                            .Where(bod =>bod.BookingOrderId == blockingPlan.BookingOrder.Id && bod.IsConfirmDelete == false)
+                                                            .Where(bod => bod.BookingOrderId == blockingPlan.BookingOrder.Id && bod.IsConfirmDelete == false)
                                                             .ToList();
             }
             else
             {
                 blockingPlan.BookingOrder = await DbContext.BookingOrders.Include(d => d.DetailConfirms).FirstOrDefaultAsync(d => d.Id.Equals(blockingPlan.BookingOrderId));
             }
-           
+
             return blockingPlan;
         }
 
-
         public override async void UpdateModel(int id, BlockingPlan model)
-       {
-            if (model.WorkSchedules != null)
+        {
+            try
             {
-
-                HashSet<int> detailIds = BlockingPlanWorkScheduleLogic.GetBlockingPlanWorkScheduleIds(id);
-                int countConfirmed = 0;
-
-                #region Looping Detail Blocking Plan Work Schedule Logic
-                foreach (int detailId in detailIds)
+                if (model.WorkSchedules != null)
                 {
-                    BlockingPlanWorkSchedule detail = model.WorkSchedules.FirstOrDefault(prop => prop.Id.Equals(detailId));
-                    if (detail == null)
+
+                    HashSet<int> detailIds = BlockingPlanWorkScheduleLogic.GetBlockingPlanWorkScheduleIds(id);
+
+                    int countConfirmed = 0;
+
+                    #region Looping Detail Blocking Plan Work Schedule Logic
+                    foreach (int detailId in detailIds)
                     {
-                        await BlockingPlanWorkScheduleLogic.DeleteModel(detailId);
+                        BlockingPlanWorkSchedule detail = model.WorkSchedules.FirstOrDefault(prop => prop.Id.Equals(detailId));
+                        if (detail == null)
+                        {
+                            await BlockingPlanWorkScheduleLogic.DeleteModel(detailId);
+                           
+                        }
+                        else
+                        {
+                            if (detail.isConfirmed == true)
+                            {
+                                countConfirmed++;
+                            }
+                            BlockingPlanWorkScheduleLogic.UpdateModel(detailId, detail);
+                        }
+
+                    }
+                    #endregion
+
+                    #region  Looping Item in Model WorkSchedules
+                    foreach (BlockingPlanWorkSchedule item in model.WorkSchedules)
+                    {
+                        if (item.Id == 0)
+                            BlockingPlanWorkScheduleLogic.CreateModel(item);
+
+                    }
+                    #endregion
+
+                    #region Set Status Blocking Plan Sewing (FULL CONFIRMED, BOOKING, HALF_CONFIRMED)
+                    if (countConfirmed == model.WorkSchedules.Count)
+                    {
+                        if (countConfirmed == 0)
+                        {
+                            model.Status = BlockingPlanStatus.BOOKING;
+                        }
+                        else
+                        {
+                             model.Status = BlockingPlanStatus.FULL_CONFIRMED;
+                        }
+                        
+                    }
+                    else if (countConfirmed == 0)
+                    {
+                        model.Status = BlockingPlanStatus.BOOKING;
                     }
                     else
                     {
-                        if (detail.isConfirmed == true)
-                        {
-                            countConfirmed++;
-                        }
-                        BlockingPlanWorkScheduleLogic.UpdateModel(detailId, detail);
+                        model.Status = BlockingPlanStatus.HALF_CONFIRMED;
                     }
-                }
-                #endregion
+                    #endregion
 
-                #region  Looping Item in Model WorkSchedules
-                foreach (BlockingPlanWorkSchedule item in model.WorkSchedules)
-                {
-                    if (item.Id == 0)
-                        BlockingPlanWorkScheduleLogic.CreateModel(item);
-                }
-                #endregion
+                    if (model.IsModified == false || model.IsModified == null)
+                    {
+                        model.IsModified = true;
+                    }
 
-                #region Set Status Blocking Plan Sewing (FULL CONFIRMED, BOOKING, HALF_CONFIRMED)
-                if (countConfirmed == model.WorkSchedules.Count)
-                {
-                    model.Status = BlockingPlanStatus.FULL_CONFIRMED;
-                }
-                else if (countConfirmed == 0)
-                {
-                    model.Status = BlockingPlanStatus.BOOKING;
-                }
-                else
-                {
-                    model.Status = BlockingPlanStatus.HALF_CONFIRMED;
-                }
-                #endregion
 
-            }
-            try
-            {
-                BookingOrderDetailLogic.UpdateBookingOrderDetailConfirm(model.BookingOrderId);
-                if (model.IsModified == false || model.IsModified == null)
-                {
-                    model.IsModified = true;
+                    //  #region UpdateBookingOrderDetailConfirm
+                    //  foreach (var item in model.BookingOrder)
+                    //  {
+                    //      if (model.IsModified == false || model.IsModified == null)
+                    //      {
+                    //          model.IsModified = true;
+                    //          base.UpdateModel(id, model);
+                    //      }
+
+                    ////      _blockingPlans.Add(item);
+                    //  }
+
+                    //  base.UpdateModel(id, model);
+                    //  await DbContext.SaveChangesAsync();
+                    //  #endregion
+
+                    BookingOrderDetailLogic.UpdateBookingOrderDetailConfirm(model.BookingOrderId);
+                    base.UpdateModel(id, model);
                 }
-                base.UpdateModel(id, model);
             }
             catch (Exception Ex)
             {
                 throw new Exception(Ex.ToString());
             }
-
         }
 
-        
         public void UpdateModelStatus(int id, BlockingPlan modelBP, string status)
         {
             modelBP.Status = status;
@@ -150,12 +181,12 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
             {
                 modelBP.IsModified = false;
             }
-            
+
             base.UpdateModel(id, modelBP);
         }
 
         public Task<bool> UpdateModelStatus(int bookingOrderId, string status)
-        {        
+        {
             try
             {
                 bool hasBlockingPlan = false;
@@ -166,10 +197,11 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
                                        .FirstOrDefault();
 
                 // Jika Ada return hasBlockingPlan = True  else return hasBlockingPlan = False
-                if (modelBP != null){
-                   hasBlockingPlan = true;
-                   modelBP.Status = status;
-                   base.UpdateModel(bookingOrderId, modelBP);
+                if (modelBP != null)
+                {
+                    hasBlockingPlan = true;
+                    modelBP.Status = status;
+                    base.UpdateModel(bookingOrderId, modelBP);
                 }
                 return Task.FromResult(hasBlockingPlan);
             }
@@ -202,6 +234,6 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
             DbSet.Update(model);
         }
 
-        
+
     }
 }
