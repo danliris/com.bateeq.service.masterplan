@@ -7,7 +7,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Models
 {
     public class WeeklyPlan : StandardEntity, IValidatableObject
     {
-        public int Year { get; set; }
+        public string Year { get; set; }
         public string UnitId { get; set; }
         public string UnitCode { get; set; }
         public string UnitName { get; set; }

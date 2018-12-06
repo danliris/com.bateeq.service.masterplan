@@ -20,6 +20,145 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Migrations
                 .HasAnnotation("ProductVersion", "2.0.1-rtm-125")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("Com.Bateeq.Service.Masterplan.Lib.Models.BlockingPlan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<bool>("Active");
+
+                    b.Property<int>("BookingOrderId");
+
+                    b.Property<string>("CreatedAgent")
+                        .IsRequired()
+                        .HasMaxLength(255);
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(255);
+
+                    b.Property<DateTime>("CreatedUtc");
+
+                    b.Property<string>("DeletedAgent")
+                        .IsRequired()
+                        .HasMaxLength(255);
+
+                    b.Property<string>("DeletedBy")
+                        .IsRequired()
+                        .HasMaxLength(255);
+
+                    b.Property<DateTime>("DeletedUtc");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<bool?>("IsModified");
+
+                    b.Property<string>("LastModifiedAgent")
+                        .IsRequired()
+                        .HasMaxLength(255);
+
+                    b.Property<string>("LastModifiedBy")
+                        .IsRequired()
+                        .HasMaxLength(255);
+
+                    b.Property<DateTime>("LastModifiedUtc");
+
+                    b.Property<string>("Status");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BlockingPlans");
+                });
+
+            modelBuilder.Entity("Com.Bateeq.Service.Masterplan.Lib.Models.BlockingPlanWorkSchedule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<bool>("Active");
+
+                    b.Property<string>("Article");
+
+                    b.Property<int>("BlockingPlanId");
+
+                    b.Property<string>("Counter");
+
+                    b.Property<string>("CreatedAgent")
+                        .IsRequired()
+                        .HasMaxLength(255);
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(255);
+
+                    b.Property<DateTime>("CreatedUtc");
+
+                    b.Property<string>("DeletedAgent")
+                        .IsRequired()
+                        .HasMaxLength(255);
+
+                    b.Property<string>("DeletedBy")
+                        .IsRequired()
+                        .HasMaxLength(255);
+
+                    b.Property<DateTime>("DeletedUtc");
+
+                    b.Property<DateTimeOffset>("DeliveryDate");
+
+                    b.Property<double>("EH_Booking");
+
+                    b.Property<double>("EH_Remaining");
+
+                    b.Property<int>("Efficiency");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("LastModifiedAgent")
+                        .IsRequired()
+                        .HasMaxLength(255);
+
+                    b.Property<string>("LastModifiedBy")
+                        .IsRequired()
+                        .HasMaxLength(255);
+
+                    b.Property<DateTime>("LastModifiedUtc");
+
+                    b.Property<string>("RO");
+
+                    b.Property<double>("RemainingEh");
+
+                    b.Property<string>("Remark");
+
+                    b.Property<double>("SMV_Sewing");
+
+                    b.Property<string>("Style");
+
+                    b.Property<int>("TotalOrder");
+
+                    b.Property<string>("UnitId");
+
+                    b.Property<string>("UnitText");
+
+                    b.Property<int>("WeekId");
+
+                    b.Property<string>("WeekText");
+
+                    b.Property<int>("YearId");
+
+                    b.Property<string>("YearText")
+                        .HasMaxLength(100);
+
+                    b.Property<bool>("isConfirmed");
+
+                    b.Property<bool>("isHasRoViewing");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BlockingPlanId");
+
+                    b.ToTable("BlockingPlanWorkSchedules");
+                });
+
             modelBuilder.Entity("Com.Bateeq.Service.Masterplan.Lib.Models.BookingOrder", b =>
                 {
                     b.Property<int>("Id")
@@ -27,12 +166,18 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Migrations
 
                     b.Property<bool>("Active");
 
+                    b.Property<int?>("BlockingPlanId");
+
                     b.Property<DateTimeOffset>("BookingDate");
 
                     b.Property<int>("BuyerId");
 
                     b.Property<string>("BuyerName")
                         .HasMaxLength(300);
+
+                    b.Property<int>("CanceledBookingOrder");
+
+                    b.Property<DateTimeOffset>("CanceledDate");
 
                     b.Property<string>("Code")
                         .HasMaxLength(100);
@@ -59,7 +204,15 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Migrations
 
                     b.Property<DateTimeOffset>("DeliveryDate");
 
+                    b.Property<int>("ExpiredBookingOrder");
+
+                    b.Property<DateTimeOffset>("ExpiredDeletedDate");
+
+                    b.Property<int?>("InitialOrderQuantity");
+
                     b.Property<bool>("IsDeleted");
+
+                    b.Property<bool?>("IsModified");
 
                     b.Property<string>("LastModifiedAgent")
                         .IsRequired()
@@ -82,9 +235,87 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Migrations
 
                     b.Property<int>("SerialNumber");
 
+                    b.Property<int>("canceledItem");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("BlockingPlanId")
+                        .IsUnique()
+                        .HasFilter("[BlockingPlanId] IS NOT NULL");
+
                     b.ToTable("BookingOrders");
+                });
+
+            modelBuilder.Entity("Com.Bateeq.Service.Masterplan.Lib.Models.BookingOrderDetail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<bool>("Active");
+
+                    b.Property<string>("Article")
+                        .HasMaxLength(500);
+
+                    b.Property<int>("BookingOrderId");
+
+                    b.Property<DateTimeOffset>("ConfirmDate");
+
+                    b.Property<string>("Counter")
+                        .HasMaxLength(500);
+
+                    b.Property<string>("CreatedAgent")
+                        .IsRequired()
+                        .HasMaxLength(255);
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(255);
+
+                    b.Property<DateTime>("CreatedUtc");
+
+                    b.Property<string>("DeletedAgent")
+                        .IsRequired()
+                        .HasMaxLength(255);
+
+                    b.Property<string>("DeletedBy")
+                        .IsRequired()
+                        .HasMaxLength(255);
+
+                    b.Property<DateTime>("DeletedUtc");
+
+                    b.Property<DateTimeOffset>("DeliveryDate");
+
+                    b.Property<bool>("IsAddNew");
+
+                    b.Property<bool>("IsConfirmDelete");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("LastModifiedAgent")
+                        .IsRequired()
+                        .HasMaxLength(255);
+
+                    b.Property<string>("LastModifiedBy")
+                        .IsRequired()
+                        .HasMaxLength(255);
+
+                    b.Property<DateTime>("LastModifiedUtc");
+
+                    b.Property<string>("RO")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("Remark");
+
+                    b.Property<string>("Style")
+                        .HasMaxLength(500);
+
+                    b.Property<int>("Total");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookingOrderId");
+
+                    b.ToTable("BookingOrderDetails");
                 });
 
             modelBuilder.Entity("Com.Bateeq.Service.Masterplan.Lib.Models.Section", b =>
@@ -185,7 +416,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Migrations
 
                     b.Property<string>("UnitName");
 
-                    b.Property<int>("Year")
+                    b.Property<string>("Year")
                         .HasMaxLength(4);
 
                     b.HasKey("Id");
@@ -200,7 +431,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Migrations
 
                     b.Property<bool>("Active");
 
-                    b.Property<int>("AhTotal");
+                    b.Property<double>("AhTotal");
 
                     b.Property<string>("CreatedAgent")
                         .IsRequired()
@@ -224,7 +455,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Migrations
 
                     b.Property<int>("Efficiency");
 
-                    b.Property<int>("EhTotal");
+                    b.Property<double>("EhTotal");
 
                     b.Property<DateTimeOffset>("EndDate");
 
@@ -244,13 +475,13 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Migrations
 
                     b.Property<int>("Operator");
 
-                    b.Property<int>("RemainingEh");
+                    b.Property<double>("RemainingEh");
 
                     b.Property<DateTimeOffset>("StartDate");
 
-                    b.Property<int>("UsedEh");
+                    b.Property<double>("UsedEh");
 
-                    b.Property<int>("WeekNumber");
+                    b.Property<string>("WeekNumber");
 
                     b.Property<int>("WeeklyPlanId");
 
@@ -261,6 +492,29 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Migrations
                     b.HasIndex("WeeklyPlanId");
 
                     b.ToTable("WeeklyPlanItems");
+                });
+
+            modelBuilder.Entity("Com.Bateeq.Service.Masterplan.Lib.Models.BlockingPlanWorkSchedule", b =>
+                {
+                    b.HasOne("Com.Bateeq.Service.Masterplan.Lib.Models.BlockingPlan", "BlockingPlan")
+                        .WithMany("WorkSchedules")
+                        .HasForeignKey("BlockingPlanId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Com.Bateeq.Service.Masterplan.Lib.Models.BookingOrder", b =>
+                {
+                    b.HasOne("Com.Bateeq.Service.Masterplan.Lib.Models.BlockingPlan", "BlockingPlan")
+                        .WithOne()
+                        .HasForeignKey("Com.Bateeq.Service.Masterplan.Lib.Models.BookingOrder", "BlockingPlanId");
+                });
+
+            modelBuilder.Entity("Com.Bateeq.Service.Masterplan.Lib.Models.BookingOrderDetail", b =>
+                {
+                    b.HasOne("Com.Bateeq.Service.Masterplan.Lib.Models.BookingOrder", "BookingOrder")
+                        .WithMany("DetailConfirms")
+                        .HasForeignKey("BookingOrderId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Com.Bateeq.Service.Masterplan.Lib.Models.WeeklyPlanItem", b =>

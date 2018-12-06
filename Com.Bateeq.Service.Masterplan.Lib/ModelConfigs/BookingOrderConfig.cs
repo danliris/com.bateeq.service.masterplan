@@ -13,6 +13,16 @@ namespace Com.Bateeq.Service.Masterplan.Lib.ModelConfigs
             builder.Property(b => b.SectionName).HasMaxLength(300);
             builder.Ignore(c => c.BuyerCode);
             builder.Property(b => b.BuyerName).HasMaxLength(300);
+            builder
+                .HasMany(b => b.DetailConfirms)
+                .WithOne(d => d.BookingOrder)
+                .HasForeignKey(d => d.BookingOrderId)
+                .IsRequired();
+            builder
+                .HasOne(b => b.BlockingPlan)
+                .WithOne()
+                .HasForeignKey<BookingOrder>(c => c.BlockingPlanId)
+                .IsRequired(false);
         }
     }
 }

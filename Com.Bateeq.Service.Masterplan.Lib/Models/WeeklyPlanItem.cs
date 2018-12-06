@@ -10,15 +10,15 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Models
     {
         public int WeeklyPlanId { get; set; }
         public virtual WeeklyPlan WeeklyPlan { get; set; }
-        public int WeekNumber { get; set; }
+        public string WeekNumber { get; set; }
         public int Month { get; set; }
         public int Efficiency { get; set; }
         public int Operator { get; set; }
         public int WorkingHours { get; set; }
-        public int AhTotal { get; set; }
-        public int EhTotal { get; set; }
-        public int UsedEh { get; set; }
-        public int RemainingEh { get; set; }
+        public double AhTotal { get; set; }
+        public double EhTotal { get; set; }
+        public double UsedEh { get; set; }
+        public double RemainingEh { get; set; }
         public DateTimeOffset StartDate { get; set; }
         public DateTimeOffset EndDate { get; set; }
 
