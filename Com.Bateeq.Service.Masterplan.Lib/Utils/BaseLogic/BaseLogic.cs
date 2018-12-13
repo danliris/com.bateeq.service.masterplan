@@ -47,10 +47,5 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Utils.BaseLogic
             EntityExtension.FlagForDelete(model, IdentityService.Username, "masterplan-service", true);
             DbSet.Update(model);
         }
-
-        internal void UpdateModel(int id, BookingOrderDetail itemBOD)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
