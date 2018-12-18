@@ -44,8 +44,8 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
                   .Include(d => d.DetailConfirms)
                   .FirstOrDefaultAsync(d => d.Id.Equals(id) && d.IsDeleted.Equals(false));
 
-            query.DetailConfirms =await  DbContext.BookingOrderDetails
-                                        .Where(b => b.BookingOrderId == query.Id && b.IsConfirmDelete==false).ToListAsync();
+            query.DetailConfirms = await DbContext.BookingOrderDetails
+                                        .Where(b => b.BookingOrderId == query.Id && b.IsConfirmDelete == false).ToListAsync();
             return query;
         }
 
@@ -70,14 +70,14 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
                     if (modelbod == null)
                     {
                         await BookingOrderDetailLogic.DeleteModel(detailId);
-                    }  
+                    }
                     else
                     {
                         if (modelbod.IsDeleted)
                         {
                             modelbod.IsConfirmDelete = true;
-                            BookingOrderDetailLogic.UpdateModel(detailId, modelbod);
                         }
+                        BookingOrderDetailLogic.UpdateModel(detailId, modelbod);
                     }
                 }
 
