@@ -76,8 +76,8 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
                         if (modelbod.IsDeleted)
                         {
                             modelbod.IsConfirmDelete = true;
+                            BookingOrderDetailLogic.UpdateModel(detailId, modelbod);
                         }
-                        BookingOrderDetailLogic.UpdateModel(detailId, modelbod);
                     }
                 }
 
