@@ -126,8 +126,10 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade
             //BlockingPlanLogic.UpdateModel(id, model);
 
             #region BookingOrderUpdate
-            EntityExtension.FlagForUpdate(model.BookingOrder, IdentityService.Username, "masterplan-service");
-            _BookingOrderDbSet.Update(model.BookingOrder);
+            BookingOrderLogic.UpdateModel(model.BookingOrder.Id, model.BookingOrder);
+
+            //EntityExtension.FlagForUpdate(model.BookingOrder, IdentityService.Username, "masterplan-service");
+            //_BookingOrderDbSet.Update(model.BookingOrder);
             #endregion
 
             #region Looping 
@@ -142,15 +144,19 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade
                 {
                     var itemToDelete = await _BPWorkSchedulesDbSet
                                              .FirstOrDefaultAsync(f => f.Id.Equals(itemId));
-                    EntityExtension.FlagForDelete(itemToDelete, IdentityService.Username, "masterplan-service");
-                    _BPWorkSchedulesDbSet.Update(itemToDelete);
+
+                    _BlockingPlanWorkScheduleLogic.UpdateModel(itemToDelete.Id, itemToDelete);
+                    //EntityExtension.FlagForDelete(itemToDelete, IdentityService.Username, "masterplan-service");
+                    //_BPWorkSchedulesDbSet.Update(itemToDelete);
                 }
                 else
                 {
                     if (item.isConfirmed)
                         confirmedItems++;
-                    EntityExtension.FlagForUpdate(item, IdentityService.Username, "masterplan-service");
-                    _BPWorkSchedulesDbSet.Update(item);
+
+                    _BlockingPlanWorkScheduleLogic.UpdateModel(item.Id, item);
+                    //EntityExtension.FlagForUpdate(item, IdentityService.Username, "masterplan-service");
+                    //_BPWorkSchedulesDbSet.Update(item);
                 }
             }
 
@@ -158,8 +164,9 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade
             {
                 if (item.Id <= 0)
                 {
-                    EntityExtension.FlagForCreate(item, IdentityService.Username, "masterplan-service");
-                    _BPWorkSchedulesDbSet.Add(item);
+                    _BlockingPlanWorkScheduleLogic.CreateModel(item);
+                    //EntityExtension.FlagForCreate(item, IdentityService.Username, "masterplan-service");
+                    //_BPWorkSchedulesDbSet.Add(item);
                 }
             }
             #endregion
@@ -248,8 +255,10 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade
             #endregion
 
             #region BlockingPlanUpdate
-            EntityExtension.FlagForUpdate(model, IdentityService.Username, "masterplan-service");
-            DbSet.Update(model);
+            BlockingPlanLogic.UpdateModel(model.Id, model);
+
+            //EntityExtension.FlagForUpdate(model, IdentityService.Username, "masterplan-service");
+            //DbSet.Update(model);
             #endregion
 
             return await DbContext.SaveChangesAsync();
