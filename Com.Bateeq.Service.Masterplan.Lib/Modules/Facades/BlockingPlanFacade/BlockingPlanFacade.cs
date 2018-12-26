@@ -79,6 +79,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade
                     "Id", "BookingOrder", "Status"
                 };
             queryBP = queryBP
+                .Where(item => item.IsDeleted == false)
                 .Select(bp => new BlockingPlan
                 {
                     Id = bp.Id,
@@ -100,7 +101,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BlockingPlanFacade
                             ExpiredDeletedDate = bo.ExpiredDeletedDate
                         }).IgnoreQueryFilters()
                         .FirstOrDefault(),
-                    Status = bp.Status,
+                    Status = bp.Status
                 });
 
             Dictionary<string, string> orderBYDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(orderBY);

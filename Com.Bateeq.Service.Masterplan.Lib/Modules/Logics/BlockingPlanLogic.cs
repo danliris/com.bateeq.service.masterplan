@@ -224,14 +224,17 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
 
             foreach (var item in model.WorkSchedules)
             {
-                EntityExtension.FlagForDelete(item, IdentityService.Username, "masterplan-service");
+                //EntityExtension.FlagForDelete(item, IdentityService.Username, "masterplan-service");
+                await BlockingPlanWorkScheduleLogic.DeleteModel(item.Id);
             }
 
             BookingOrder bookingOrder = await BookingOrderLogic.ReadModelById(model.BookingOrderId);
             BookingOrderLogic.UpdateModelBlockingPlanId(bookingOrder.Id, bookingOrder, null);
-
+            
             EntityExtension.FlagForDelete(model, IdentityService.Username, "masterplan-service", true);
             DbSet.Update(model);
+
+            await DbContext.SaveChangesAsync();
         }
 
 
