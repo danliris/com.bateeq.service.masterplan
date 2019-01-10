@@ -12,11 +12,13 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
     {
         private BookingOrderDetail BookingOrderDetail;
         private readonly MasterplanDbContext _dbContext;
+        private readonly DbSet<BookingOrder> _bookingOrder;
 
         public BookingOrderDetailLogic(IIdentityService identityService, MasterplanDbContext dbContext, BookingOrderDetail bookingOrderDetail) : base(identityService, dbContext)
         {
             _dbContext = dbContext;
             BookingOrderDetail = bookingOrderDetail;
+            _bookingOrder = _dbContext.Set<BookingOrder>();
         }
 
         public HashSet<int> GetBookingOrderDetailIds(int id)
@@ -32,18 +34,19 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
         {
             try
             {
-                List<BookingOrderDetail> modelBOD = _dbContext
-                                                   .BookingOrderDetails
-                                                   .Where(Querybod => Querybod.BookingOrderId == id && Querybod.IsDeleted == false)
-                                                   .ToList();
+                //List<BookingOrderDetail> modelBOD = _dbContext
+                //                                   .BookingOrderDetails
+                //                                   .Where(Querybod => Querybod.BookingOrderId == id && Querybod.IsDeleted == false)
+                //                                   .ToList();
+
+                var bookingOrder =  await _bookingOrder.Where(item => item.IsDeleted == false && item.Id == id).FirstOrDefaultAsync();
 
                 #region Looping Item on model Booking Order Detail
-                foreach (var itemBOD in modelBOD)
+                foreach (var itemBOD in bookingOrder.DetailConfirms)
                 {
                     if (itemBOD.IsConfirmDelete == true)
                     {
                         itemBOD.IsDeleted = true;
-                        await base.DeleteModel(itemBOD.Id);
                     }
                     else
                     {
@@ -51,15 +54,15 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
                         {
                             itemBOD.IsAddNew = false;
                         }
-                        base.UpdateModel(id, itemBOD);
                     }
                 }
                 #endregion
 
+                _bookingOrder.Update(bookingOrder);
             }
             catch (System.Exception Ex)
             {
-                throw new System.Exception($"Terjadi kesalaha saat melakukan update ,Pesan Error Sebagai Berikut : {Ex}");
+                throw new System.Exception($"Terjadi kesalahan saat melakukan update ,Pesan Error Sebagai Berikut : {Ex}");
             }
         }
     }
