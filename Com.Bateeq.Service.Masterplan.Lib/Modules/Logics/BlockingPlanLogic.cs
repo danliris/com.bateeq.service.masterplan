@@ -96,7 +96,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
                         if (detail == null)
                         {
                             await BlockingPlanWorkScheduleLogic.DeleteModel(detailId);
-                           
+
                         }
                         else
                         {
@@ -128,9 +128,9 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
                         }
                         else
                         {
-                             model.Status = BlockingPlanStatus.FULL_CONFIRMED;
+                            model.Status = BlockingPlanStatus.FULL_CONFIRMED;
                         }
-                        
+
                     }
                     else if (countConfirmed == 0)
                     {
@@ -222,6 +222,13 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
         {
             BlockingPlan model = await ReadModelById(id);
 
+            var workschedules = model.WorkSchedules;
+
+            foreach (var workschedule in workschedules)
+            {
+                await WeeklyPlanLogic.DeleteByWeeklyplanItemByIdAndWeekId(workschedule);
+            }
+
             foreach (var item in model.WorkSchedules)
             {
                 //EntityExtension.FlagForDelete(item, IdentityService.Username, "masterplan-service");
@@ -230,7 +237,7 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Logics
 
             BookingOrder bookingOrder = await BookingOrderLogic.ReadModelById(model.BookingOrderId);
             BookingOrderLogic.UpdateModelBlockingPlanId(bookingOrder.Id, bookingOrder, null);
-            
+
             EntityExtension.FlagForDelete(model, IdentityService.Username, "masterplan-service", true);
             DbSet.Update(model);
 
