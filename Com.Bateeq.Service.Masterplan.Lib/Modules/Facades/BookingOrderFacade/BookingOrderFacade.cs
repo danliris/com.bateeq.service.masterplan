@@ -74,10 +74,13 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
                         OrderQuantity = field.OrderQuantity,
                         DeliveryDate = field.DeliveryDate,
                         Remark = field.Remark,
-                        DetailConfirms = new List<BookingOrderDetail>(field.DetailConfirms.Select(d => new BookingOrderDetail
-                        {
-                            Total = d.Total
-                        })),
+                        DetailConfirms = new List<BookingOrderDetail>(
+                                                field.DetailConfirms
+                                                     .Where(x => x.IsConfirmDelete == false)
+                                                     .Select(d => new BookingOrderDetail
+                                                     {
+                                                         Total = d.Total
+                                                     })),
                         BlockingPlanId = field.BlockingPlanId,
                         IsModified = field.IsModified,
                         CanceledBookingOrder = field.CanceledBookingOrder,
@@ -85,6 +88,8 @@ namespace Com.Bateeq.Service.Masterplan.Lib.Modules.Facades.BookingOrderFacade
                         ExpiredDeletedDate = field.ExpiredDeletedDate
 
                     });
+
+
 
                 Dictionary<string, string> orderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(order);
                 query = QueryHelper<BookingOrder>.Order(query, orderDictionary);
